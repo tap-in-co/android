@@ -1,0 +1,167 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/card_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="5dp">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvAddress"
+                android:layout_width="0dp"
+
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:gravity="center_vertical"
+                android:maxLines="1"
+                android:paddingTop="5dp"
+                android:text="NAme"
+                android:textAppearance="?android:attr/textAppearanceSmallInverse"
+                android:textColor="@color/colorText"
+                android:typeface="normal" />
+
+            <TextView
+                android:id="@+id/tvPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:maxLines="1"
+                android:paddingTop="5dp"
+                android:text="$$$$"
+                android:textAppearance="?android:attr/textAppearanceSmallInverse"
+                android:textColor="@color/colorText"
+                android:typeface="normal" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvWebsite"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:maxLines="1"
+            android:paddingTop="5dp"
+            android:text="NAme"
+            android:textAppearance="?android:attr/textAppearanceSmallInverse"
+            android:textColor="@color/colorText"
+            android:typeface="normal" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/textViewBusinessType"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:maxLines="1"
+                android:paddingTop="5dp"
+                android:text="NAme"
+                android:textAppearance="?android:attr/textAppearanceSmallInverse"
+                android:textColor="@color/colorHighlight"
+                android:typeface="normal" />
+
+            <TextView
+                android:id="@+id/tvPaymentEmail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:maxLines="1"
+                android:paddingTop="5dp"
+                android:text="NAme"
+                android:textAppearance="?android:attr/textAppearanceSmallInverse"
+                android:textColor="@color/colorText"
+                android:typeface="normal" />
+
+            <TextView
+                android:id="@+id/tvTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:maxLines="1"
+                android:paddingTop="5dp"
+                android:text="NAme"
+                android:textAppearance="?android:attr/textAppearanceSmallInverse"
+                android:textColor="@color/colorText"
+                android:typeface="normal" />
+
+        </LinearLayout>
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <RatingBar
+                android:id="@+id/ratingBar"
+                style="?attr/ratingBarStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:theme="@style/RatingBar" />
+
+            <TextView
+                android:id="@+id/tvRateCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="6dp"
+                android:layout_toRightOf="@id/ratingBar"
+                android:gravity="center_vertical"
+                android:maxLines="1"
+                android:paddingTop="5dp"
+                android:text="(5)"
+                android:textAllCaps="true"
+                android:textAppearance="?android:attr/textAppearanceSmallInverse"
+                android:textColor="@color/colorTextLight"
+                android:typeface="normal" />
+
+            <TextView
+                android:id="@+id/textViewOpenClosed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:gravity="center_vertical"
+                android:maxLines="1"
+                android:paddingTop="5dp"
+                android:text="NAme"
+                android:textAllCaps="true"
+                android:textAppearance="?android:attr/textAppearanceSmallInverse"
+                android:textColor="@color/colorTextLight"
+                android:typeface="normal" />
+
+        </RelativeLayout>
+
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/ivFood"
+        android:layout_width="match_parent"
+        android:layout_height="130dp"
+        android:src="@color/gray" />
+
+    <ListView
+        android:id="@+id/lvFoodDetail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+
+</LinearLayout>
