@@ -7,10 +7,63 @@
     android:orientation="vertical"
     tools:context="com.tapin.tapin.HomeActivity">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/colorPrimary"></LinearLayout>
+        android:background="@color/colorPrimary">
+
+        <ImageView
+            android:id="@+id/ivHeaderLogo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:src="@drawable/ic_tap_in_logo" />
+
+        <TextView
+            android:id="@+id/tvHeaderTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:maxWidth="@dimen/_100sdp"
+            android:text="@string/app_name"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_18sdp"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/tvHeaderLeft"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:padding="@dimen/_10sdp"
+            android:text="Back"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_15sdp"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/tvHeaderRight"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:padding="@dimen/_10sdp"
+            android:text="Done"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_15sdp"
+            android:visibility="gone" />
+
+
+    </RelativeLayout>
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/viewpager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -28,13 +81,6 @@
 
     </android.support.design.widget.AppBarLayout>
 
-
-    <android.support.v4.view.ViewPager
-        android:id="@+id/viewpager"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     <android.support.design.widget.TabLayout
         android:id="@+id/tabs"

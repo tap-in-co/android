@@ -1,7 +1,8 @@
 package com.tapin.tapin.adapter;
 
-import android.app.Activity;
 import android.location.Location;
+import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -13,9 +14,12 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.tapin.tapin.HomeActivity;
 import com.tapin.tapin.R;
 import com.tapin.tapin.common.GPSTracker;
+import com.tapin.tapin.fragment.BusinessDetailFragment;
 import com.tapin.tapin.model.BusinessInfo;
+import com.tapin.tapin.utils.URLs;
 import com.tapin.tapin.utils.Utils;
 
 import java.text.ParseException;
@@ -34,14 +38,14 @@ public class BusinessAdpater extends RecyclerView.Adapter<BusinessAdpater.ViewHo
     private View mSelectedView;
 
     String time;
-    Activity activity;
+    FragmentActivity activity;
 
     Calendar calendar;
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
 
     GPSTracker gps;
 
-    public BusinessAdpater(Activity activity, ArrayList<BusinessInfo> data, String time) {
+    public BusinessAdpater(FragmentActivity activity, ArrayList<BusinessInfo> data, String time) {
 //        mData = data;
 
 //        mDataOriginal.addAll((Collection<? extends BusinessInfo>) mData.clone());
@@ -86,7 +90,7 @@ public class BusinessAdpater extends RecyclerView.Adapter<BusinessAdpater.ViewHo
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder viewHolder, int position) {
+    public void onBindViewHolder(ViewHolder viewHolder, final int position) {
         viewHolder.textViewName.setText(mData.get(position).name + "");
         viewHolder.textViewDescription.setText(Utils.isNotEmpty(mData.get(position).keywords) ? mData.get(position).keywords : "");
         viewHolder.textViewBusinessType.setText(Utils.isNotEmpty(mData.get(position).type) ? mData.get(position).type : "");
@@ -105,7 +109,7 @@ public class BusinessAdpater extends RecyclerView.Adapter<BusinessAdpater.ViewHo
 
         }
 
-        Glide.with(activity).load("https://tapforall.com/staging/tap-in/customer_files/icons/" + mData.get(position).icon).into(viewHolder.imageViewIcon);
+        Glide.with(activity).load(URLs.IMAGE_URL + mData.get(position).icon).into(viewHolder.imageViewIcon);
 
         try {
             Date dateOpening = simpleDateFormat.parse(mData.get(position).opening_time);
@@ -116,6 +120,7 @@ public class BusinessAdpater extends RecyclerView.Adapter<BusinessAdpater.ViewHo
 
             Calendar calendarClosing = Calendar.getInstance();
             calendarClosing.setTimeInMillis(dateClosing.getTime());
+
 
             if (calendar.getTimeInMillis() > calendarOpening.getTimeInMillis()
                     && calendar.getTimeInMillis() < calendarClosing.getTimeInMillis()) {
@@ -137,21 +142,12 @@ public class BusinessAdpater extends RecyclerView.Adapter<BusinessAdpater.ViewHo
         viewHolder.card_view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                FragmentTransaction trans = activity.getFragmentManager().beginTransaction();
-        /*
-         * IMPORTANT: We use the "root frame" defined in
-         * "root_fragment.xml" as the reference to replace fragment
-         */
-//                trans.replace(R.id.root_frame, new SecondFragment());
 
-        /*
-         * IMPORTANT: The following lines allow us to add the fragment
-         * to the stack and return to it later, by pressing back
-         */
-//                trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-//                trans.addToBackStack(null);
-//
-//                trans.commit();
+                BusinessDetailFragment businessDetailFragment = new BusinessDetailFragment();
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("businessInfo", mData.get(position));
+                businessDetailFragment.setArguments(bundle);
+                ((HomeActivity) activity).addFragment(businessDetailFragment);
             }
         });
     }
@@ -192,7 +188,7 @@ public class BusinessAdpater extends RecyclerView.Adapter<BusinessAdpater.ViewHo
 
         for (int i = 0; i < mDataOriginal.size(); i++) {
 
-            if (mDataOriginal.get(i).keywords.toLowerCase().contains(search.toLowerCase())) {
+            if (mDataOriginal.get(i).keywords.contains(search.toLowerCase())) {
                 mData.add(mDataOriginal.get(i));
             }
         }

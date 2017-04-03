@@ -5,6 +5,8 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.view.LayoutInflater;
 
+import com.tapin.tapin.R;
+
 public class AlertMessages {
     Activity context;
     LayoutInflater inflater;
@@ -121,7 +123,7 @@ public class AlertMessages {
     }
 
     public void showCustomMessage(String title, String message, DialogInterface.OnClickListener dialogInterface) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.datepicker);
         builder.setTitle(title);
         builder.setMessage(message).setCancelable(false)
                 .setPositiveButton("Ok", dialogInterface)

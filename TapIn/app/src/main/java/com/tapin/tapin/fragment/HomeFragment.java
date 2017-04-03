@@ -18,6 +18,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -96,7 +98,7 @@ public class HomeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
-
+        initHeader();
         context = getActivity();
         mLocationManager = (LocationManager) getActivity().getSystemService(context.LOCATION_SERVICE);
         int permissionCheck = ContextCompat.checkSelfPermission(context,
@@ -234,6 +236,20 @@ public class HomeFragment extends Fragment {
         protected void onPreExecute() {
 
         }
+    }
+
+    public void initHeader() {
+        ImageView ivHeaderLogo = (ImageView) getActivity().findViewById(R.id.ivHeaderLogo);
+        TextView tvHeaderTitle = (TextView) getActivity().findViewById(R.id.tvHeaderTitle);
+        TextView tvHeaderLeft = (TextView) getActivity().findViewById(R.id.tvHeaderLeft);
+        TextView tvHeaderRight = (TextView) getActivity().findViewById(R.id.tvHeaderRight);
+
+        ivHeaderLogo.setVisibility(View.VISIBLE);
+        tvHeaderTitle.setVisibility(View.GONE);
+        tvHeaderLeft.setVisibility(View.GONE);
+        tvHeaderRight.setVisibility(View.GONE);
+
+
     }
 
 

@@ -8,17 +8,21 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.tapin.tapin.fragment.HomeFragment;
 import com.tapin.tapin.fragment.NotificationsFragment;
 import com.tapin.tapin.fragment.PointsFragment;
 import com.tapin.tapin.fragment.ProfileFragment;
+import com.tapin.tapin.utils.Debug;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +42,8 @@ public class HomeActivity extends AppCompatActivity {
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        initHeader();
 
 //        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -76,6 +82,26 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        //initHeader();
+    }
+
+    public void initHeader() {
+        ImageView ivHeaderLogo = (ImageView) findViewById(R.id.ivHeaderLogo);
+        TextView tvHeaderTitle = (TextView) findViewById(R.id.tvHeaderTitle);
+        TextView tvHeaderLeft = (TextView) findViewById(R.id.tvHeaderLeft);
+        TextView tvHeaderRight = (TextView) findViewById(R.id.tvHeaderRight);
+
+        ivHeaderLogo.setVisibility(View.VISIBLE);
+        tvHeaderTitle.setVisibility(View.GONE);
+        tvHeaderLeft.setVisibility(View.GONE);
+        tvHeaderRight.setVisibility(View.GONE);
+
+
+    }
+
+    @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == 1001) {
@@ -109,22 +135,22 @@ public class HomeActivity extends AppCompatActivity {
 
         TextView tabOne = (TextView) LayoutInflater.from(this).inflate(R.layout.view_tab_layout, null);
         tabOne.setText("Home");
-        tabOne.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_home, 0, 0);
+        tabOne.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_tab_home, 0, 0);
         tabLayout.getTabAt(0).setCustomView(tabOne);
 
         TextView tabTwo = (TextView) LayoutInflater.from(this).inflate(R.layout.view_tab_layout, null);
         tabTwo.setText("Profile");
-        tabTwo.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_profile, 0, 0);
+        tabTwo.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_tab_profile, 0, 0);
         tabLayout.getTabAt(1).setCustomView(tabTwo);
 
         TextView tabThree = (TextView) LayoutInflater.from(this).inflate(R.layout.view_tab_layout, null);
         tabThree.setText("Notifications");
-        tabThree.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_notifications, 0, 0);
+        tabThree.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_tab_notifications, 0, 0);
         tabLayout.getTabAt(2).setCustomView(tabThree);
 
         TextView tabFour = (TextView) LayoutInflater.from(this).inflate(R.layout.view_tab_layout, null);
         tabFour.setText("Points");
-        tabFour.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_points, 0, 0);
+        tabFour.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_tab_points, 0, 0);
         tabLayout.getTabAt(3).setCustomView(tabFour);
     }
 
@@ -156,4 +182,35 @@ public class HomeActivity extends AppCompatActivity {
             return mFragmentTitleList.get(position);
         }
     }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Fragment fragment=getCurrentFragment();
+
+        Debug.e("onBackPressed ", "fragment=" + fragment);
+
+
+    }
+
+    public void addFragment(Fragment fragment) {
+
+        Debug.e("addFragment", "fragment=" + fragment.toString());
+        FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
+        trans.replace(R.id.home_content, fragment);
+        trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        trans.addToBackStack(fragment.toString());
+        trans.commit();
+    }
+
+    private Fragment getCurrentFragment() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        int stackCount = fragmentManager.getBackStackEntryCount();
+        if( fragmentManager.getFragments() != null ) return fragmentManager.getFragments().get( stackCount > 0 ? stackCount-1 : stackCount );
+        else return null;
+    }
+
+
+
+
 }

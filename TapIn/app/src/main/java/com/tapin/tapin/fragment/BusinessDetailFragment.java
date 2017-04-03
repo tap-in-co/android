@@ -1,27 +1,43 @@
 package com.tapin.tapin.fragment;
 
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Telephony;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewPager;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
+import com.tapin.tapin.HomeActivity;
 import com.tapin.tapin.R;
+import com.tapin.tapin.adapter.BusinessDetailAdapter;
+import com.tapin.tapin.adapter.SlidingImage_Adapter;
 import com.tapin.tapin.model.BusinessInfo;
-import com.tapin.tapin.utils.URLs;
+import com.tapin.tapin.utils.Constant;
+import com.tapin.tapin.utils.Debug;
 import com.tapin.tapin.utils.Utils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 public class BusinessDetailFragment extends Fragment {
@@ -33,6 +49,7 @@ public class BusinessDetailFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    private ViewPager mPager;
 
 
     public BusinessDetailFragment() {
@@ -73,6 +90,7 @@ public class BusinessDetailFragment extends Fragment {
 
     Calendar calendar;
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
+    BusinessDetailAdapter adapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -80,10 +98,16 @@ public class BusinessDetailFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_business_detail, null);
     }
 
+    BusinessInfo businessInfo;
+
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         this.view = view;
+
+        businessInfo = (BusinessInfo) getArguments().getSerializable("businessInfo");
+        initHeader();
+
         cardView = (LinearLayout) view.findViewById(R.id.card_view);
         tvAddress = (TextView) view.findViewById(R.id.tvAddress);
         tvPrice = (TextView) view.findViewById(R.id.tvPrice);
@@ -94,27 +118,79 @@ public class BusinessDetailFragment extends Fragment {
         ratingBar = (RatingBar) view.findViewById(R.id.ratingBar);
         tvRateCount = (TextView) view.findViewById(R.id.tvRateCount);
         textViewOpenClosed = (TextView) view.findViewById(R.id.textViewOpenClosed);
-        ivFood = (ImageView) view.findViewById(R.id.ivFood);
+        //  ivFood = (ImageView) view.findViewById(R.id.ivFood);
+        mPager = (ViewPager) view.findViewById(R.id.pager);
         lvFoodDetail = (ListView) view.findViewById(R.id.lvFoodDetail);
-
-        BusinessInfo businessInfo = (BusinessInfo) getArguments().getSerializable("businessInfo");
+        adapter = new BusinessDetailAdapter(getActivity(), Utils.getColor(businessInfo.bg_color), Utils.getColor(businessInfo.text_color));
+        adapter.addAll(Constant.getBusinessList(businessInfo.customerProfileName));
+        lvFoodDetail.setAdapter(adapter);
 
         setBusinessData(businessInfo);
+
+        lvFoodDetail.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+
+                if (adapter.getItem(i).display_name.equalsIgnoreCase("Catering")) {
+                    CateringFragment businessDetailFragment = new CateringFragment();
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("businessInfo", businessInfo);
+                    businessDetailFragment.setArguments(bundle);
+                    ((HomeActivity) getActivity()).addFragment(businessDetailFragment);
+                } else if (adapter.getItem(i).display_name.contains("Text")) {
+                    sendSMS();
+                }
+
+
+            }
+        });
+        tvWebsite.setOnClickListener(onClickListenerWebsite);
+        tvAddress.setOnClickListener(onClickListenerAddress);
+
     }
 
+    Timer timer;
+
     private void setBusinessData(BusinessInfo businessInfo) {
+
+        // image slider
+
+        if (businessInfo.pictures.endsWith(",")) {
+            businessInfo.pictures = businessInfo.pictures.substring(0, businessInfo.pictures.length() - 1);
+        }
+
+        final List<String> image_list = Arrays.asList((businessInfo.pictures.split("\\s*,\\s*")));
+        Debug.e("Arraylist", image_list + "-");
+        mPager.setAdapter(new SlidingImage_Adapter(getActivity(), businessInfo.businessID, image_list));
+        TimerTask timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                mPager.post(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        mPager.setCurrentItem((mPager.getCurrentItem() + 1) % image_list.size());
+                    }
+                });
+            }
+        };
+        timer = new Timer();
+        timer.schedule(timerTask, 3000, 3000);
+
+
+        //  views
         tvAddress.setText(Utils.isNotEmpty(businessInfo.address) ? businessInfo.address : "");
-//        tvPrice.setText(Utils.isNotEmpty(businessInfo.website)?businessInfo.website:"");
         tvWebsite.setText(Utils.isNotEmpty(businessInfo.website) ? businessInfo.website : "");
         textViewBusinessType.setText(Utils.isNotEmpty(businessInfo.customerProfileName) ? businessInfo.customerProfileName : "");
         tvPaymentEmail.setText(Utils.isNotEmpty(businessInfo.neighborhood) ? businessInfo.neighborhood : "");
-        tvTime.setText(Utils.isNotEmpty(businessInfo.address) ? businessInfo.address : "");
+        tvTime.setText(Utils.getOpenTime(businessInfo.opening_time, businessInfo.closing_time));
+        ratingBar.setRating((float) businessInfo.rating);
+        // tvRateCount.setText(Utils.isNotEmpty(businessInfo.ti_rating) ? "("+businessInfo.ti_rating +")": "");
+        // tvPrice.setText(Utils.isNotEmpty(businessInfo.website)?businessInfo.website:"");
 
-        ratingBar = (RatingBar) view.findViewById(R.id.ratingBar);
 
-        tvRateCount.setText(Utils.isNotEmpty(businessInfo.address) ? businessInfo.address : "");
-        textViewOpenClosed.setText(Utils.isNotEmpty(businessInfo.address) ? businessInfo.address : "");
-
+        // open - close now
         try {
             Date dateOpening = simpleDateFormat.parse(businessInfo.opening_time);
             Date dateClosing = simpleDateFormat.parse(businessInfo.closing_time);
@@ -124,7 +200,7 @@ public class BusinessDetailFragment extends Fragment {
 
             Calendar calendarClosing = Calendar.getInstance();
             calendarClosing.setTimeInMillis(dateClosing.getTime());
-
+            calendar = Calendar.getInstance();
             if (calendar.getTimeInMillis() > calendarOpening.getTimeInMillis()
                     && calendar.getTimeInMillis() < calendarClosing.getTimeInMillis()) {
                 textViewOpenClosed.setText("OPEN NOW");
@@ -140,11 +216,119 @@ public class BusinessDetailFragment extends Fragment {
         }
 
 
-        ratingBar.setRating((float) businessInfo.rating);
-        Glide.with(getActivity()).load(URLs.IMAGE_URL + "" + businessInfo.icon).into(ivFood);
+        //Glide.with(getActivity()).load(URLs.IMAGE_URL + "" + businessInfo.icon).into(ivFood);
 
 
-        lvFoodDetail = (ListView) view.findViewById(R.id.lvFoodDetail);
     }
 
+    private void initHeader() {
+        final ImageView ivHeaderLogo = (ImageView) getActivity().findViewById(R.id.ivHeaderLogo);
+        final TextView tvHeaderTitle = (TextView) getActivity().findViewById(R.id.tvHeaderTitle);
+        final TextView tvHeaderLeft = (TextView) getActivity().findViewById(R.id.tvHeaderLeft);
+        final TextView tvHeaderRight = (TextView) getActivity().findViewById(R.id.tvHeaderRight);
+
+        ivHeaderLogo.setVisibility(View.GONE);
+        tvHeaderTitle.setVisibility(View.VISIBLE);
+        tvHeaderLeft.setVisibility(View.VISIBLE);
+        tvHeaderRight.setVisibility(View.GONE);
+
+
+        tvHeaderTitle.setText(businessInfo.name + "");
+
+        tvHeaderLeft.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getActivity().onBackPressed();
+                ((HomeActivity) getActivity()).initHeader();
+
+
+            }
+        });
+
+    }
+
+    @Override
+    public void onResume() {
+
+        super.onResume();
+
+        getView().setFocusableInTouchMode(true);
+        getView().requestFocus();
+        getView().setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+
+                if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
+
+                    // handle back button
+                    getActivity().onBackPressed();
+                    ((HomeActivity) getActivity()).initHeader();
+                    return true;
+
+                }
+
+                return false;
+            }
+        });
+    }
+
+    View.OnClickListener onClickListenerAddress = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://maps.google.com/maps?daddr=" + tvAddress.getText().toString()));
+            intent.setPackage("com.google.android.apps.maps");
+            try {
+                startActivity(intent);
+            } catch (ActivityNotFoundException ex) {
+                try {
+                    Intent unrestrictedIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://maps.google.com/maps?daddr=" + tvAddress.getText().toString()));
+                    startActivity(unrestrictedIntent);
+                } catch (ActivityNotFoundException innerEx) {
+                    Toast.makeText(getActivity(), "Please install a maps application", Toast.LENGTH_LONG).show();
+                }
+            }
+        }
+    };
+
+    View.OnClickListener onClickListenerWebsite = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+
+            String url = tvWebsite.getText().toString();
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setData(Uri.parse(url));
+            startActivity(i);
+        }
+    };
+
+    private void sendSMS() {
+
+        String messageBody = businessInfo.name + "\n" + businessInfo.address + "\n" + businessInfo.city + "\n" + businessInfo.state + "-" + businessInfo.zipcode;
+
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) // At least KitKat
+        {
+            String defaultSmsPackageName = Telephony.Sms.getDefaultSmsPackage(getActivity()); // Need to change the build to API 19
+
+            Intent sendIntent = new Intent(Intent.ACTION_SEND);
+            sendIntent.setType("text/plain");
+            sendIntent.putExtra("address", businessInfo.phone);
+            sendIntent.putExtra(Intent.EXTRA_TEXT, messageBody);
+
+            if (defaultSmsPackageName != null)// Can be null in case that there is no default, then the user would be able to choose
+            // any app that support this intent.
+            {
+                sendIntent.setPackage(defaultSmsPackageName);
+            }
+            startActivity(sendIntent);
+
+        } else // For early versions, do what worked for you before.
+        {
+            Intent smsIntent = new Intent(android.content.Intent.ACTION_VIEW);
+            smsIntent.setType("vnd.android-dir/mms-sms");
+            smsIntent.putExtra("address", "" + businessInfo.phone);
+            smsIntent.putExtra("sms_body", "" + messageBody);
+            startActivity(smsIntent);
+        }
+    }
 }

@@ -18,6 +18,7 @@ import android.text.TextUtils;
 import android.view.Display;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -41,6 +42,20 @@ public class Utils {
         Pattern pattern = Pattern.compile(expression, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(inputStr);
         return matcher.matches();
+    }
+    public static boolean isValidMobile(String phone) {
+        boolean check=false;
+        if(!Pattern.matches("[a-zA-Z]+", phone)) {
+            if(phone.length() < 6 || phone.length() > 13) {
+                // if(phone.length() != 10) {
+                check = false;
+            } else {
+                check = true;
+            }
+        } else {
+            check=false;
+        }
+        return check;
     }
 
     public final static boolean isValidOrganizationEmail(String target) {
@@ -281,7 +296,6 @@ public class Utils {
     }
 
 
-
     public static Typeface getTypeface1(Context activity) {
         Typeface font = Typeface.createFromAsset(activity.getAssets(),
                 "proxima-nova-light.otf");
@@ -369,8 +383,6 @@ public class Utils {
 
         return result;
     }
-
-
 
 
     public static String getTimeDifference(String datestr) {
@@ -468,7 +480,6 @@ public class Utils {
     }
 
 
-
     public static Date getDateInUTC() {
 //        Calendar cal_Two = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 
@@ -508,5 +519,47 @@ public class Utils {
         return result;
     }
 
+    public static String getOpenTime(String open_time, String close_time) {
 
+        if (isEmpty(open_time) || isEmpty(close_time))
+            return "";
+
+        try {
+            SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm:ss");
+            Date date = dateFormatter.parse(open_time);
+            Date date1 = dateFormatter.parse(close_time);
+
+            SimpleDateFormat timeFormatter = new SimpleDateFormat("h:mm a");
+            String displayValue1 = timeFormatter.format(date);
+            String displayValue2 = timeFormatter.format(date1);
+
+            return displayValue1 + "-" + displayValue2;
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return "";
+
+    }
+
+    public static String getColor(String color) {
+
+        if (isEmpty(color)) {
+            return "#000000";
+        }
+        color = color.replace("rgb", "");
+        color = color.replace("(", "");
+        color = color.replace(")", "");
+        String rgb_list[] = color.split("\\s*,\\s*");
+        //Log.e("Colors==", color + "==" + rgb_list);
+        String hex = String.format("#%02x%02x%02x", Integer.parseInt(rgb_list[0]), Integer.parseInt(rgb_list[1]), Integer.parseInt(rgb_list[2]));
+        return (hex);
+    }
+    public static void disableEditText(EditText editText) {
+        editText.setFocusable(false);
+//        editText.setEnabled(false);
+        editText.setCursorVisible(false);
+        editText.setKeyListener(null);
+//        editText.setBackgroundColor(Color.TRANSPARENT);
+    }
 }
