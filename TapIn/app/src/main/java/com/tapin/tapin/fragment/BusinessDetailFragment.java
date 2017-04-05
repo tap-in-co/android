@@ -222,10 +222,10 @@ public class BusinessDetailFragment extends Fragment {
     }
 
     private void initHeader() {
-        final ImageView ivHeaderLogo = (ImageView) getActivity().findViewById(R.id.ivHeaderLogo);
-        final TextView tvHeaderTitle = (TextView) getActivity().findViewById(R.id.tvHeaderTitle);
-        final TextView tvHeaderLeft = (TextView) getActivity().findViewById(R.id.tvHeaderLeft);
-        final TextView tvHeaderRight = (TextView) getActivity().findViewById(R.id.tvHeaderRight);
+        final ImageView ivHeaderLogo = (ImageView) view.findViewById(R.id.ivHeaderLogo);
+        final TextView tvHeaderTitle = (TextView) view.findViewById(R.id.tvHeaderTitle);
+        final TextView tvHeaderLeft = (TextView) view.findViewById(R.id.tvHeaderLeft);
+        final TextView tvHeaderRight = (TextView) view.findViewById(R.id.tvHeaderRight);
 
         ivHeaderLogo.setVisibility(View.GONE);
         tvHeaderTitle.setVisibility(View.VISIBLE);
@@ -239,7 +239,6 @@ public class BusinessDetailFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 getActivity().onBackPressed();
-                ((HomeActivity) getActivity()).initHeader();
 
 
             }
@@ -262,7 +261,6 @@ public class BusinessDetailFragment extends Fragment {
 
                     // handle back button
                     getActivity().onBackPressed();
-                    ((HomeActivity) getActivity()).initHeader();
                     return true;
 
                 }

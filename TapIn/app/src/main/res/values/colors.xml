@@ -12,6 +12,8 @@
     <color name="gray">#CAC9D1</color>
     <color name="yellow">#FFBA4D</color>
     <color name="black">#000000</color>
+    <color name="yellow_dark">#F4821F</color>
+    <color name="dim_green">#BCD4D4</color>
 
 
 </resources>

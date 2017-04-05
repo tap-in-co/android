@@ -5,8 +5,12 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.TextView;
 
 import com.tapin.tapin.R;
+import com.tapin.tapin.adapter.NotificationAdapter;
 
 
 public class NotificationsFragment extends Fragment {
@@ -51,11 +55,35 @@ public class NotificationsFragment extends Fragment {
         }
     }
 
+    ListView lvNotifications;
+    NotificationAdapter adapter;
+    View view;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_notifications, container, false);
+        view= inflater.inflate(R.layout.fragment_notifications, container, false);
+
+        initHeader();
+
+        lvNotifications= (ListView) view.findViewById(R.id.lvNotifications);
+        adapter=new NotificationAdapter(getActivity());
+        lvNotifications.setAdapter(adapter);
+
+        return view;
+    }
+    public void initHeader() {
+        ImageView ivHeaderLogo = (ImageView) view.findViewById(R.id.ivHeaderLogo);
+        TextView tvHeaderTitle = (TextView) view.findViewById(R.id.tvHeaderTitle);
+        TextView tvHeaderLeft = (TextView) view.findViewById(R.id.tvHeaderLeft);
+        TextView tvHeaderRight = (TextView) view.findViewById(R.id.tvHeaderRight);
+
+        ivHeaderLogo.setVisibility(View.GONE);
+        tvHeaderTitle.setVisibility(View.VISIBLE);
+        tvHeaderLeft.setVisibility(View.GONE);
+        tvHeaderRight.setVisibility(View.GONE);
+
+
     }
 
 

@@ -7,7 +7,9 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.util.DisplayMetrics;
 
+import com.google.gson.Gson;
 import com.tapin.tapin.R;
+import com.tapin.tapin.model.UserInfo;
 
 
 public class PreferenceManager extends Application {
@@ -301,13 +303,13 @@ public class PreferenceManager extends Application {
         prefEditor.commit();
     }
 
-    public static String getTagline() {
-        return preferences.getString("tagline", "");
+    public static String getAgeGroup() {
+        return preferences.getString("age_group", "");
     }
 
-    public static void putTagline(String tagline) {
+    public static void putAgeGroup(String age_group) {
 
-        prefEditor.putString("tagline", tagline);
+        prefEditor.putString("age_group", age_group);
         prefEditor.commit();
     }
 
@@ -334,6 +336,7 @@ public class PreferenceManager extends Application {
         prefEditor.putString("funding_type", tagline);
         prefEditor.commit();
     }
+
     public static String getSavedLocation() {
         return preferences.getString("location", "");
     }
@@ -369,41 +372,24 @@ public class PreferenceManager extends Application {
         return preferences.getString("regId", "");
     }
 
-//    public static void setUserData(UserInfo userInfo) {
-//
-//
-//        putFirstname(userInfo.first_name);
-//        putLastname(userInfo.last_name);
-//        if (Utils.isNotEmpty(userInfo.username))
-//            putUsername(userInfo.username);
-//        putEmail(userInfo.email);
-//        if (Utils.isNotEmpty(userInfo.token_type))
-//            putTokenType(userInfo.token_type);
-//        if (Utils.isNotEmpty(userInfo.access_token)) {
-//            putAccessToken(userInfo.access_token);
-//        }
-//        putLastActive(userInfo.last_active);
-//        if (Utils.isNotEmpty(userInfo.qb_login))
-//            putQBLogin(userInfo.qb_login);
-//        if (Utils.isNotEmpty(userInfo.qb_password))
-//            putQBPassword(userInfo.qb_password);
-//        putRating(userInfo.rating);
-//        if (Utils.isNotEmpty(userInfo.user_id)) {
-//            putUserId(userInfo.user_id + "");
-//        }
-//        putProfilePic(userInfo.avatar);
-//        putFullname(userInfo.full_name);
-//        putCity(userInfo.city);
-//        putState(userInfo.state);
-//        putCountry(userInfo.country);
-//        putTagline(userInfo.tag_line);
-//        putBirthday(userInfo.birthday);
-//        putDescription(userInfo.description);
-//        putPhone(userInfo.phone_number);
-//        prefEditor.putString("userInfo", new Gson().toJson(userInfo).toString());
-//
-//        prefEditor.commit();
-//    }
+    public static void setUserData(UserInfo userInfo) {
+
+
+        if (Utils.isNotEmpty(userInfo.nickname))
+            putUsername(userInfo.nickname);
+        putEmail(userInfo.email1);
+
+        if (Utils.isNotEmpty(userInfo.uid)) {
+            putUserId(userInfo.uid);
+        }
+        putAgeGroup(userInfo.age_group);
+        putBirthday(userInfo.dob);
+        putDescription(userInfo.qrcode_file);
+        putPhone(userInfo.sms_no);
+        prefEditor.putString("userInfo", new Gson().toJson(userInfo).toString());
+
+        prefEditor.commit();
+    }
 //
 //    public static void putNotificationData(UserInfo userInfoData) {
 //

@@ -5,8 +5,12 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.TextView;
 
 import com.tapin.tapin.R;
+import com.tapin.tapin.adapter.PointsAdapter;
 
 
 public class PointsFragment extends Fragment {
@@ -51,12 +55,35 @@ public class PointsFragment extends Fragment {
         }
     }
 
+    ListView lvPoints;
+    PointsAdapter pointsAdapter;
+    View view;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_points, container, false);
+        view = inflater.inflate(R.layout.fragment_points, container, false);
+
+        //initHeader();
+
+        pointsAdapter = new PointsAdapter(getActivity());
+        lvPoints = (ListView) view.findViewById(R.id.lvPoints);
+        lvPoints.setAdapter(pointsAdapter);
+
+        return view;
     }
 
+    public void initHeader() {
+        ImageView ivHeaderLogo = (ImageView) view.findViewById(R.id.ivHeaderLogo);
+        TextView tvHeaderTitle = (TextView) view.findViewById(R.id.tvHeaderTitle);
+        TextView tvHeaderLeft = (TextView) view.findViewById(R.id.tvHeaderLeft);
+        TextView tvHeaderRight = (TextView) view.findViewById(R.id.tvHeaderRight);
 
+        ivHeaderLogo.setVisibility(View.VISIBLE);
+        tvHeaderTitle.setVisibility(View.GONE);
+        tvHeaderLeft.setVisibility(View.GONE);
+        tvHeaderRight.setVisibility(View.GONE);
+
+
+    }
 }

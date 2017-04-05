@@ -65,11 +65,13 @@ public class CateringFragment extends Fragment {
     EditText etLocation;
     EditText etAdditionalNotes;
     Button btnSendRequest;
+    View view;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_catering, null);
+        view = inflater.inflate(R.layout.fragment_catering, null);
+        return view;
     }
 
     @Override
@@ -189,13 +191,13 @@ public class CateringFragment extends Fragment {
     }
 
     private void initHeader() {
-        final ImageView ivHeaderLogo = (ImageView) getActivity().findViewById(R.id.ivHeaderLogo);
-        final TextView tvHeaderTitle = (TextView) getActivity().findViewById(R.id.tvHeaderTitle);
-        final TextView tvHeaderLeft = (TextView) getActivity().findViewById(R.id.tvHeaderLeft);
-        final TextView tvHeaderRight = (TextView) getActivity().findViewById(R.id.tvHeaderRight);
+        final ImageView ivHeaderLogo = (ImageView) view.findViewById(R.id.ivHeaderLogo);
+        final TextView tvHeaderTitle = (TextView) view.findViewById(R.id.tvHeaderTitle);
+        final TextView tvHeaderLeft = (TextView) view.findViewById(R.id.tvHeaderLeft);
+        final TextView tvHeaderRight = (TextView) view.findViewById(R.id.tvHeaderRight);
 
         ivHeaderLogo.setVisibility(View.GONE);
-        tvHeaderTitle.setVisibility(View.VISIBLE);
+        tvHeaderTitle.setVisibility(View.GONE);
         tvHeaderLeft.setVisibility(View.VISIBLE);
         tvHeaderRight.setVisibility(View.GONE);
 
@@ -206,7 +208,6 @@ public class CateringFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 getActivity().onBackPressed();
-                //((HomeActivity) getActivity()).initHeader();
 
 
             }
@@ -229,7 +230,6 @@ public class CateringFragment extends Fragment {
 
                     // handle back button
                     getActivity().onBackPressed();
-//                    ((HomeActivity) getActivity()).initHeader();
                     return true;
 
                 }
@@ -320,9 +320,7 @@ public class CateringFragment extends Fragment {
             messages.showCustomMessage("Stop", "Please enter event attendees", null);
         } else if (Utils.isEmpty(etLocation.getText().toString())) {
             messages.showCustomMessage("Stop", "Please enter event location", null);
-        }
-
-        else {
+        } else {
 
 
             if (!Utils.isInternetConnected(getActivity())) {
@@ -393,31 +391,26 @@ public class CateringFragment extends Fragment {
 
 
     }
-    View.OnClickListener onClickListenerAddress=new View.OnClickListener() {
+
+    View.OnClickListener onClickListenerAddress = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://maps.google.com/maps?daddr="+tvAddress.getText().toString()));
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://maps.google.com/maps?daddr=" + tvAddress.getText().toString()));
             intent.setPackage("com.google.android.apps.maps");
-            try
-            {
+            try {
                 startActivity(intent);
-            }
-            catch(ActivityNotFoundException ex)
-            {
-                try
-                {
-                    Intent unrestrictedIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://maps.google.com/maps?daddr="+tvAddress.getText().toString()));
+            } catch (ActivityNotFoundException ex) {
+                try {
+                    Intent unrestrictedIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://maps.google.com/maps?daddr=" + tvAddress.getText().toString()));
                     startActivity(unrestrictedIntent);
-                }
-                catch(ActivityNotFoundException innerEx)
-                {
+                } catch (ActivityNotFoundException innerEx) {
                     Toast.makeText(getActivity(), "Please install a maps application", Toast.LENGTH_LONG).show();
                 }
             }
         }
     };
 
-    View.OnClickListener onClickListenerWebsite=new View.OnClickListener() {
+    View.OnClickListener onClickListenerWebsite = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
 
@@ -427,5 +420,6 @@ public class CateringFragment extends Fragment {
             startActivity(i);
         }
     };
+
 
 }

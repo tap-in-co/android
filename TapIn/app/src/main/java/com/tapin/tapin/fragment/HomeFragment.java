@@ -93,11 +93,11 @@ public class HomeFragment extends Fragment {
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
 
     EditText etSearch;
-
+    View view;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_home, container, false);
+        view = inflater.inflate(R.layout.fragment_home, container, false);
         initHeader();
         context = getActivity();
         mLocationManager = (LocationManager) getActivity().getSystemService(context.LOCATION_SERVICE);
@@ -239,10 +239,10 @@ public class HomeFragment extends Fragment {
     }
 
     public void initHeader() {
-        ImageView ivHeaderLogo = (ImageView) getActivity().findViewById(R.id.ivHeaderLogo);
-        TextView tvHeaderTitle = (TextView) getActivity().findViewById(R.id.tvHeaderTitle);
-        TextView tvHeaderLeft = (TextView) getActivity().findViewById(R.id.tvHeaderLeft);
-        TextView tvHeaderRight = (TextView) getActivity().findViewById(R.id.tvHeaderRight);
+        ImageView ivHeaderLogo = (ImageView) view.findViewById(R.id.ivHeaderLogo);
+        TextView tvHeaderTitle = (TextView) view.findViewById(R.id.tvHeaderTitle);
+        TextView tvHeaderLeft = (TextView) view.findViewById(R.id.tvHeaderLeft);
+        TextView tvHeaderRight = (TextView) view.findViewById(R.id.tvHeaderRight);
 
         ivHeaderLogo.setVisibility(View.VISIBLE);
         tvHeaderTitle.setVisibility(View.GONE);
