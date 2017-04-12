@@ -188,7 +188,7 @@ public class BusinessAdpater extends RecyclerView.Adapter<BusinessAdpater.ViewHo
 
         for (int i = 0; i < mDataOriginal.size(); i++) {
 
-            if (mDataOriginal.get(i).keywords.contains(search.toLowerCase())) {
+            if (mDataOriginal.get(i).keywords!=null && mDataOriginal.get(i).keywords.contains(search.toLowerCase())) {
                 mData.add(mDataOriginal.get(i));
             }
         }

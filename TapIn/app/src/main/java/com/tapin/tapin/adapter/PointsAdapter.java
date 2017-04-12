@@ -8,17 +8,20 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.tapin.tapin.R;
+import com.tapin.tapin.model.PointInfo;
+import com.tapin.tapin.utils.Utils;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 public class PointsAdapter extends BaseAdapter {
 
-    private List<String> objects = new ArrayList<String>();
+    private List<PointInfo> objects = new ArrayList<PointInfo>();
 
     private Context context;
     private LayoutInflater layoutInflater;
-
+    SimpleDateFormat format = new SimpleDateFormat("d");
     public PointsAdapter(Context context) {
         this.context = context;
         this.layoutInflater = LayoutInflater.from(context);
@@ -27,12 +30,11 @@ public class PointsAdapter extends BaseAdapter {
     @Override
     public int getCount() {
 
-        return 10;
-        //return objects.size();
+        return objects.size();
     }
 
     @Override
-    public String getItem(int position) {
+    public PointInfo getItem(int position) {
         return objects.get(position);
     }
 
@@ -52,13 +54,21 @@ public class PointsAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
+        PointInfo pointInfo = getItem(position);
+        holder.tvDate.setText(Utils.getPointsDate(pointInfo.activity_time));
+//        holder.tvEarnedPoints.setText(pointInfo.);
+        holder.tvPoints.setText(pointInfo.points);
         return convertView;
     }
 
-    private void initializeViews(String object, ViewHolder holder) {
-        //TODO implement
 
+    public void addAll(List<PointInfo> listPointInfos) {
 
+        if (listPointInfos != null) {
+            objects.clear();
+            objects.addAll(listPointInfos);
+        }
+        notifyDataSetChanged();
     }
 
     protected class ViewHolder {

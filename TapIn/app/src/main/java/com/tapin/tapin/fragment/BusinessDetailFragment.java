@@ -21,15 +21,23 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 import com.tapin.tapin.HomeActivity;
 import com.tapin.tapin.R;
 import com.tapin.tapin.adapter.BusinessDetailAdapter;
 import com.tapin.tapin.adapter.SlidingImage_Adapter;
 import com.tapin.tapin.model.BusinessInfo;
+import com.tapin.tapin.model.GetPointsResp;
 import com.tapin.tapin.utils.Constant;
 import com.tapin.tapin.utils.Debug;
+import com.tapin.tapin.utils.PreferenceManager;
+import com.tapin.tapin.utils.URLs;
 import com.tapin.tapin.utils.Utils;
 
+import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -38,6 +46,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import cz.msebera.android.httpclient.Header;
 
 
 public class BusinessDetailFragment extends Fragment {
@@ -126,6 +136,7 @@ public class BusinessDetailFragment extends Fragment {
         lvFoodDetail.setAdapter(adapter);
 
         setBusinessData(businessInfo);
+        getAllPoints();
 
         lvFoodDetail.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -328,5 +339,42 @@ public class BusinessDetailFragment extends Fragment {
             smsIntent.putExtra("sms_body", "" + messageBody);
             startActivity(smsIntent);
         }
+    }
+
+    private void getAllPoints() {
+        RequestParams params = new RequestParams();
+        params.put("businessID", businessInfo.businessID);
+        params.put("cmd", "get_all_points");
+        params.put("consumerID", PreferenceManager.getUserId());
+
+
+        AsyncHttpClient client = new AsyncHttpClient();
+        client.setTimeout(Constant.TIMEOUT);
+        client.post(URLs.REWARD, params, new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+
+                try {
+                    String content = new String(responseBody, "UTF-8");
+                    GetPointsResp userInfo = new Gson().fromJson(content, GetPointsResp.class);
+                    PreferenceManager.putPointsData(userInfo);
+                    ((HomeActivity) getActivity()).refreshPointsFragment();
+                    Debug.e("getAllPoint", content + "-");
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                Debug.e("getAllPoint fail", responseBody + "-");
+                error.printStackTrace();
+            }
+
+            @Override
+            public void onFinish() {
+                super.onFinish();
+            }
+        });
     }
 }

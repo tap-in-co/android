@@ -11,6 +11,8 @@ import android.widget.TextView;
 
 import com.tapin.tapin.R;
 import com.tapin.tapin.adapter.PointsAdapter;
+import com.tapin.tapin.model.GetPointsResp;
+import com.tapin.tapin.utils.PreferenceManager;
 
 
 public class PointsFragment extends Fragment {
@@ -58,6 +60,9 @@ public class PointsFragment extends Fragment {
     ListView lvPoints;
     PointsAdapter pointsAdapter;
     View view;
+    TextView tvPoints;
+    TextView tvTotalPoints;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -66,9 +71,16 @@ public class PointsFragment extends Fragment {
 
         //initHeader();
 
+        tvTotalPoints = (TextView) view.findViewById(R.id.tvTotalPoints);
+        tvPoints = (TextView) view.findViewById(R.id.tvPoints);
+
+
         pointsAdapter = new PointsAdapter(getActivity());
         lvPoints = (ListView) view.findViewById(R.id.lvPoints);
         lvPoints.setAdapter(pointsAdapter);
+
+
+        refreshData();
 
         return view;
     }
@@ -85,5 +97,16 @@ public class PointsFragment extends Fragment {
         tvHeaderRight.setVisibility(View.GONE);
 
 
+    }
+
+    public void refreshData() {
+
+        GetPointsResp getPointsResp = PreferenceManager.getPointsData();
+        if (getPointsResp != null) {
+
+            pointsAdapter.addAll(getPointsResp.getPointsInfo.listPointInfos);
+            tvPoints.setText("Points: " + getPointsResp.getPointsInfo.total_available_points);
+            tvTotalPoints.setText("Your total points for all all businesses: " + getPointsResp.getPointsInfo.total_earned_points);
+        }
     }
 }

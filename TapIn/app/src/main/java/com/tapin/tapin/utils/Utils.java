@@ -14,6 +14,7 @@ import android.media.ExifInterface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Environment;
+import android.provider.Settings;
 import android.text.TextUtils;
 import android.view.Display;
 import android.view.View;
@@ -359,7 +360,7 @@ public class Utils {
         return result;
     }
 
-    public static String convertGMTToLocal(String str) {
+    public static String getPointsDate(String str) {
 
         if (isEmpty(str))
             return "";
@@ -376,7 +377,7 @@ public class Utils {
         inputFormat.setTimeZone(TimeZone.getDefault());
 
 
-        SimpleDateFormat outputFormat = new SimpleDateFormat("MMM dd, yyyy HH:mm");
+        SimpleDateFormat outputFormat = new SimpleDateFormat("MMM dd HH:mm a");
         String result = outputFormat.format(date);
         //Debug.e("convertGMTToLocal", "" + result);
 
@@ -561,5 +562,11 @@ public class Utils {
         editText.setCursorVisible(false);
         editText.setKeyListener(null);
 //        editText.setBackgroundColor(Color.TRANSPARENT);
+    }
+
+    public static String getDeviceID(Activity activity) {
+        String android_id = Settings.Secure.getString(activity.getContentResolver(),
+                Settings.Secure.ANDROID_ID);
+        return android_id;
     }
 }

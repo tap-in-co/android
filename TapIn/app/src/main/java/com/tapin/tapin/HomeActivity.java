@@ -48,7 +48,9 @@ public class HomeActivity extends AppCompatActivity {
 //        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         viewPager = (ViewPager) findViewById(R.id.viewpager);
+        viewPager.setOffscreenPageLimit(4);
         setupViewPager(viewPager);
+
 
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
@@ -122,13 +124,24 @@ public class HomeActivity extends AppCompatActivity {
     }
 
 
+    ProfileFragment profileFragment;
+    HomeFragment homeFragment;
+    NotificationsFragment notificationsFragment;
+    PointsFragment pointsFragment;
+
     private void setupViewPager(ViewPager viewPager) {
+        profileFragment = new ProfileFragment();
+        homeFragment = new HomeFragment();
+        notificationsFragment = new NotificationsFragment();
+        pointsFragment = new PointsFragment();
+
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(new HomeFragment(), "Home");
-        adapter.addFragment(new ProfileFragment(), "Profile");
-        adapter.addFragment(new NotificationsFragment(), "Notifications");
-        adapter.addFragment(new PointsFragment(), "Points");
+        adapter.addFragment(homeFragment, "Home");
+        adapter.addFragment(profileFragment, "Profile");
+        adapter.addFragment(notificationsFragment, "Notifications");
+        adapter.addFragment(pointsFragment, "Points");
         viewPager.setAdapter(adapter);
+
     }
 
     private void setupTabIcons() {
@@ -186,7 +199,7 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        Fragment fragment=getCurrentFragment();
+        Fragment fragment = getCurrentFragment();
 
         Debug.e("onBackPressed ", "fragment=" + fragment);
 
@@ -206,11 +219,16 @@ public class HomeActivity extends AppCompatActivity {
     private Fragment getCurrentFragment() {
         FragmentManager fragmentManager = getSupportFragmentManager();
         int stackCount = fragmentManager.getBackStackEntryCount();
-        if( fragmentManager.getFragments() != null ) return fragmentManager.getFragments().get( stackCount > 0 ? stackCount-1 : stackCount );
+        if (fragmentManager.getFragments() != null)
+            return fragmentManager.getFragments().get(stackCount > 0 ? stackCount - 1 : stackCount);
         else return null;
     }
 
+    public void refreshPointsFragment()
 
+    {
+        pointsFragment.refreshData();
+    }
 
 
 }

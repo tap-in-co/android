@@ -17,6 +17,7 @@ import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
+import com.tapin.tapin.BuildConfig;
 import com.tapin.tapin.R;
 import com.tapin.tapin.model.UserInfo;
 import com.tapin.tapin.utils.AlertMessages;
@@ -99,6 +100,13 @@ public class ProfileFragment extends Fragment {
         btnBack = (Button) view.findViewById(R.id.btnBack);
         btnSave = (Button) view.findViewById(R.id.btnSave);
 
+
+        etEmail.setText(Utils.isNotEmpty(PreferenceManager.getEmail()) ? PreferenceManager.getEmail() : "");
+        etZipcode.setText(Utils.isNotEmpty(PreferenceManager.getZipcode()) ? PreferenceManager.getZipcode() : "");
+        etNickname.setText(Utils.isNotEmpty(PreferenceManager.getUsername()) ? PreferenceManager.getUsername() : "");
+        etSMSNumber.setText(Utils.isNotEmpty(PreferenceManager.getPhone()) ? PreferenceManager.getPhone() : "");
+
+
         UsPhoneNumberFormatter addLineNumberFormatter = new UsPhoneNumberFormatter(
                 new WeakReference<EditText>(etSMSNumber));
         //   etSMSNumber.addTextChangedListener(addLineNumberFormatter);
@@ -108,6 +116,7 @@ public class ProfileFragment extends Fragment {
 
         return view;
     }
+
     public void initHeader() {
         ImageView ivHeaderLogo = (ImageView) view.findViewById(R.id.ivHeaderLogo);
         TextView tvHeaderTitle = (TextView) view.findViewById(R.id.tvHeaderTitle);
@@ -121,6 +130,7 @@ public class ProfileFragment extends Fragment {
 
 
     }
+
     ProgressDialog progressDialog;
     View.OnClickListener onClickListenerSave = new View.OnClickListener() {
         @Override
@@ -149,15 +159,14 @@ public class ProfileFragment extends Fragment {
                 params.put("email", etEmail.getText().toString());
                 params.put("zipcode", etZipcode.getText().toString());
                 params.put("nickname", etNickname.getText().toString());
+                params.put("app_ver", BuildConfig.VERSION_NAME);
+
 //                params.put("age_group", etEmail.getText().toString());
                 params.put("sms_no", etSMSNumber.getText().toString());
 //                params.put("device_token", etDate.getText().toString());
+                params.put("cmd", "update");
+                params.put("uuid", Utils.getDeviceID(getActivity()));
 
-                if (Utils.isNotEmpty(PreferenceManager.getUserId()))
-                {
-                    params.put("cmd", "update");
-                    params.put("uuid", PreferenceManager.getUserId());
-                }
 
                 AsyncHttpClient client = new AsyncHttpClient();
                 client.setTimeout(Constant.TIMEOUT);

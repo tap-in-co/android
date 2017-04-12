@@ -8,8 +8,12 @@ import android.content.pm.PackageManager;
 import android.util.DisplayMetrics;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.tapin.tapin.R;
+import com.tapin.tapin.model.GetPointsResp;
 import com.tapin.tapin.model.UserInfo;
+
+import java.lang.reflect.Type;
 
 
 public class PreferenceManager extends Application {
@@ -139,13 +143,13 @@ public class PreferenceManager extends Application {
         prefEditor.commit();
     }
 
-    public static void putStudentType(String stype) {
-        prefEditor.putString("student_type", stype);
+    public static void putZipcode(String zipcode) {
+        prefEditor.putString("zipcode", zipcode);
         prefEditor.commit();
     }
 
-    public static String getStudentType() {
-        return preferences.getString("student_type", "");
+    public static String getZipcode() {
+        return preferences.getString("zipcode", "");
     }
 
     public static String getDegreeType() {
@@ -377,55 +381,77 @@ public class PreferenceManager extends Application {
 
         if (Utils.isNotEmpty(userInfo.nickname))
             putUsername(userInfo.nickname);
-        putEmail(userInfo.email1);
+
+        if (Utils.isNotEmpty(userInfo.email1))
+            putEmail(userInfo.email1);
 
         if (Utils.isNotEmpty(userInfo.uid)) {
             putUserId(userInfo.uid);
         }
-        putAgeGroup(userInfo.age_group);
+        if (Utils.isNotEmpty(userInfo.age_group))
+            putAgeGroup(userInfo.age_group);
+
         putBirthday(userInfo.dob);
         putDescription(userInfo.qrcode_file);
-        putPhone(userInfo.sms_no);
+
+        if (Utils.isNotEmpty(userInfo.sms_no))
+            putPhone(userInfo.sms_no);
+
+
+        if (Utils.isNotEmpty(userInfo.zipcode))
+            putZipcode(userInfo.zipcode);
+
         prefEditor.putString("userInfo", new Gson().toJson(userInfo).toString());
 
         prefEditor.commit();
     }
-//
-//    public static void putNotificationData(UserInfo userInfoData) {
-//
-//
-//        UserInfo userInfo = getUserInfo();
-//        if (userInfo != null) {
-//            userInfo.notify_task_assigned = userInfoData.notify_task_assigned;
-//            userInfo.notify_task_bids = userInfoData.notify_task_bids;
-//            userInfo.push_notify_allowed = userInfoData.push_notify_allowed;
-//            userInfo.listCategoryNotifications = userInfoData.listCategoryNotifications;
-//
-//            prefEditor.putString("userInfo", new Gson().toJson(userInfo).toString());
-//            prefEditor.commit();
-//
-//        }
-//
-//
-//    }
 
 
-//
-//    public static UserInfo getUserInfo() {
-//        UserInfo userInfo = null;
-//        String content = preferences.getString("userInfo", "");
-//        if (Utils.isEmpty(content))
-//            return userInfo;
-//        try {
-//            Type type = new TypeToken<UserInfo>() {
-//            }.getType();
-//            userInfo = new Gson().fromJson(content,
-//                    type);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        return userInfo;
-//    }
+    public static UserInfo getUserInfo() {
+        UserInfo userInfo = null;
+        String content = preferences.getString("userInfo", "");
+        if (Utils.isEmpty(content))
+            return userInfo;
+        try {
+            Type type = new TypeToken<UserInfo>() {
+            }.getType();
+            userInfo = new Gson().fromJson(content,
+                    type);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return userInfo;
+    }
+
+
+    public static void putPointsData(GetPointsResp getPointsResp) {
+
+        if (getPointsResp != null) {
+
+            prefEditor.putString("PointsData", new Gson().toJson(getPointsResp).toString());
+            prefEditor.commit();
+
+        }
+
+
+    }
+
+    public static GetPointsResp getPointsData() {
+        GetPointsResp userInfo = null;
+        String content = preferences.getString("PointsData", "");
+        if (Utils.isEmpty(content))
+            return userInfo;
+        try {
+            Type type = new TypeToken<GetPointsResp>() {
+            }.getType();
+            userInfo = new Gson().fromJson(content,
+                    type);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return userInfo;
+    }
+
 
     public static void resetAll() {
 
