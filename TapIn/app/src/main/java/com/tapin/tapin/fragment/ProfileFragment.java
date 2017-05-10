@@ -13,6 +13,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -163,7 +164,8 @@ public class ProfileFragment extends Fragment {
 
 //                params.put("age_group", etEmail.getText().toString());
                 params.put("sms_no", etSMSNumber.getText().toString());
-//                params.put("device_token", etDate.getText().toString());
+                String refreshedToken = FirebaseInstanceId.getInstance().getToken();
+//                params.put("device_token",refreshedToken);
                 params.put("cmd", "update");
                 params.put("uuid", Utils.getDeviceID(getActivity()));
 

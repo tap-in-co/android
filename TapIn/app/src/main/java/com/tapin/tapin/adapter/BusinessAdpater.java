@@ -14,7 +14,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.tapin.tapin.HomeActivity;
+import com.tapin.tapin.activity.HomeActivity;
 import com.tapin.tapin.R;
 import com.tapin.tapin.common.GPSTracker;
 import com.tapin.tapin.fragment.BusinessDetailFragment;
@@ -97,6 +97,7 @@ public class BusinessAdpater extends RecyclerView.Adapter<BusinessAdpater.ViewHo
         viewHolder.textViewCity.setText(mData.get(position).city + "");
 
         if (gps.canGetLocation()) {
+
             Location crntLocation = new Location("crntlocation");
             crntLocation.setLatitude(gps.getLatitude());
             crntLocation.setLongitude(gps.getLongitude());
@@ -145,7 +146,7 @@ public class BusinessAdpater extends RecyclerView.Adapter<BusinessAdpater.ViewHo
 
                 BusinessDetailFragment businessDetailFragment = new BusinessDetailFragment();
                 Bundle bundle = new Bundle();
-                bundle.putSerializable("businessInfo", mData.get(position));
+                bundle.putSerializable("BUSINESS_INFO", mData.get(position));
                 businessDetailFragment.setArguments(bundle);
                 ((HomeActivity) activity).addFragment(businessDetailFragment);
             }

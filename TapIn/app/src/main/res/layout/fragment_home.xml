@@ -1,9 +1,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="match_parent">
 
-    >
     <RelativeLayout
         android:id="@+id/relHeader"
         android:layout_width="match_parent"
@@ -57,10 +56,10 @@
     </RelativeLayout>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_below="@+id/relHeader"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@+id/relHeader"
         android:orientation="vertical"
         tools:context="com.tapin.tapin.fragment.HomeFragment">
 
@@ -68,7 +67,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/gray"
-            android:padding="10dp">
+            android:focusableInTouchMode="true"
+            android:focusable="true"
+            android:padding="8dp">
 
             <EditText
                 android:id="@+id/etSearch"

@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "1053169592804",
+    "firebase_url": "https://tapin-c8273.firebaseio.com",
+    "project_id": "tapin-c8273",
+    "storage_bucket": "tapin-c8273.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1053169592804:android:d255d4ece5e24760",
+        "android_client_info": {
+          "package_name": "com.tapin.tapin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1053169592804-leglkev0mus2kk1d16ou7eapru2k2ieh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tapin.tapin",
+            "certificate_hash": "3f73fce6c066c1b883b22d32889749d0f633a863"
+          }
+        },
+        {
+          "client_id": "1053169592804-qfqq8th6g5und0j65qlirfgqiqr4bpu6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCQHeOXA8QCO3dCsKCXXPF9ebEFYIiRD-M"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1053169592804-qfqq8th6g5und0j65qlirfgqiqr4bpu6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

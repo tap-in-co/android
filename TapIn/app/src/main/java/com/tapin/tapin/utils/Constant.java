@@ -121,12 +121,10 @@ public class Constant {
         return str;
     }
 
-    public static ArrayList<BusinessType> getBusinessList(String b_name)
-    {
+    public static ArrayList<BusinessType> getBusinessList(String b_name) {
         for (int i = 0; i < listBusinessTypeLists.size(); i++) {
 
-            if(listBusinessTypeLists.get(i).name.equalsIgnoreCase(b_name))
-            {
+            if (listBusinessTypeLists.get(i).name.equalsIgnoreCase(b_name)) {
                 return listBusinessTypeLists.get(i).listbuBusinessTypes;
             }
         }

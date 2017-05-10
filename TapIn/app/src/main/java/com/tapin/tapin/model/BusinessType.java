@@ -7,10 +7,10 @@ import java.io.Serializable;
  */
 
 public class BusinessType implements Cloneable, Serializable {
+
     public String display_name;
     public String request_Service;
     public String icon;
-
 
     protected Object clone() throws CloneNotSupportedException {
         return super.clone();

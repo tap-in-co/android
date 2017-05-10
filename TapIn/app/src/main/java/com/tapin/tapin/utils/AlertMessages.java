@@ -2,12 +2,14 @@ package com.tapin.tapin.utils;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.view.LayoutInflater;
 
 import com.tapin.tapin.R;
 
 public class AlertMessages {
+
     Activity context;
     LayoutInflater inflater;
 
@@ -15,6 +17,15 @@ public class AlertMessages {
         this.context = context;
         inflater = context.getLayoutInflater();
     }
+
+    static AlertDialogCallback alertDialogCallback;
+
+    public interface AlertDialogCallback {
+
+        public void clickedButtonText(String s);
+
+    }
+
 
     public void showNetworkAlert() {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -132,6 +143,36 @@ public class AlertMessages {
         AlertDialog alert = builder.create();
         alert.show();
 
+    }
+
+    public static void alert(Context context, String title, String message, final String positiveBtn, final String negativeBtn, final AlertDialogCallback alertDialogCallback) {
+
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
+
+        if (title.length() > 0) {
+            alertDialog.setTitle(title);
+        }
+        alertDialog.setMessage(message);
+
+        alertDialog.setPositiveButton(positiveBtn, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+
+                dialog.dismiss();
+                alertDialogCallback.clickedButtonText(positiveBtn);
+
+            }
+        });
+
+        alertDialog.setNegativeButton(negativeBtn, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+
+                dialog.dismiss();
+                alertDialogCallback.clickedButtonText(negativeBtn);
+
+            }
+        });
+
+        alertDialog.show();
     }
 
 

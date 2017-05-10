@@ -331,13 +331,13 @@ public class PreferenceManager extends Application {
         prefEditor.commit();
     }
 
-    public static String getFundingType() {
-        return preferences.getString("funding_type", "");
+    public static String getNotificationLink() {
+        return preferences.getString("notification_link", "");
     }
 
-    public static void putFundingType(String tagline) {
+    public static void putNotificationLink(String notification_link) {
 
-        prefEditor.putString("funding_type", tagline);
+        prefEditor.putString("notification_link", notification_link);
         prefEditor.commit();
     }
 
@@ -351,13 +351,13 @@ public class PreferenceManager extends Application {
         prefEditor.commit();
     }
 
-    public static String getSavedLocationLatitude() {
-        return preferences.getString("location_latitude", "");
+    public static boolean getIsSubmitRestaurent() {
+        return preferences.getBoolean("submit_restaurent", false);
     }
 
-    public static void putSavedLocationLatitude(String location_latitude) {
+    public static void putIsSubmitRestaurent(boolean submit_restaurent) {
 
-        prefEditor.putString("location_latitude", location_latitude);
+        prefEditor.putBoolean("submit_restaurent", submit_restaurent);
         prefEditor.commit();
     }
 

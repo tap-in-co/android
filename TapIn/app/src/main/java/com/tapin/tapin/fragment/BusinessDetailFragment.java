@@ -25,7 +25,7 @@ import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
-import com.tapin.tapin.HomeActivity;
+import com.tapin.tapin.activity.HomeActivity;
 import com.tapin.tapin.R;
 import com.tapin.tapin.adapter.BusinessDetailAdapter;
 import com.tapin.tapin.adapter.SlidingImage_Adapter;
@@ -84,6 +84,13 @@ public class BusinessDetailFragment extends Fragment {
         return fragment;
     }
 
+
+    View view;
+
+    TextView tvToolbarLeft;
+    TextView tvToolbarTitle;
+    ImageView ivTitleDropDown;
+
     private LinearLayout cardView;
     private TextView tvAddress;
     private TextView tvPrice;
@@ -96,72 +103,74 @@ public class BusinessDetailFragment extends Fragment {
     private TextView textViewOpenClosed;
     private ImageView ivFood;
     private ListView lvFoodDetail;
-    View view;
+
+    Timer timer;
 
     Calendar calendar;
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
+
+    BusinessInfo businessInfo;
     BusinessDetailAdapter adapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_business_detail, null);
-    }
 
-    BusinessInfo businessInfo;
+        view = inflater.inflate(R.layout.fragment_business_detail, container, false);
+
+        return view;
+
+    }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         this.view = view;
 
-        businessInfo = (BusinessInfo) getArguments().getSerializable("businessInfo");
+        businessInfo = (BusinessInfo) getArguments().getSerializable("BUSINESS_INFO");
+
         initHeader();
 
-        cardView = (LinearLayout) view.findViewById(R.id.card_view);
-        tvAddress = (TextView) view.findViewById(R.id.tvAddress);
-        tvPrice = (TextView) view.findViewById(R.id.tvPrice);
-        tvWebsite = (TextView) view.findViewById(R.id.tvWebsite);
-        textViewBusinessType = (TextView) view.findViewById(R.id.textViewBusinessType);
-        tvPaymentEmail = (TextView) view.findViewById(R.id.tvPaymentEmail);
-        tvTime = (TextView) view.findViewById(R.id.tvTime);
-        ratingBar = (RatingBar) view.findViewById(R.id.ratingBar);
-        tvRateCount = (TextView) view.findViewById(R.id.tvRateCount);
-        textViewOpenClosed = (TextView) view.findViewById(R.id.textViewOpenClosed);
-        //  ivFood = (ImageView) view.findViewById(R.id.ivFood);
-        mPager = (ViewPager) view.findViewById(R.id.pager);
-        lvFoodDetail = (ListView) view.findViewById(R.id.lvFoodDetail);
-        adapter = new BusinessDetailAdapter(getActivity(), Utils.getColor(businessInfo.bg_color), Utils.getColor(businessInfo.text_color));
-        adapter.addAll(Constant.getBusinessList(businessInfo.customerProfileName));
-        lvFoodDetail.setAdapter(adapter);
+        initViews();
 
         setBusinessData(businessInfo);
+
         getAllPoints();
 
         lvFoodDetail.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
-
                 if (adapter.getItem(i).display_name.equalsIgnoreCase("Catering")) {
+
                     CateringFragment businessDetailFragment = new CateringFragment();
                     Bundle bundle = new Bundle();
                     bundle.putSerializable("businessInfo", businessInfo);
                     businessDetailFragment.setArguments(bundle);
                     ((HomeActivity) getActivity()).addFragment(businessDetailFragment);
-                } else if (adapter.getItem(i).display_name.contains("Text")) {
-                    sendSMS();
-                }
 
+                } else if (adapter.getItem(i).display_name.contains("Text")) {
+
+                    sendSMS();
+
+                } else if (adapter.getItem(i).display_name.contains("Order Food")) {
+
+                    OrderFoodListFragment businessDetailFragment = new OrderFoodListFragment();
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("BUSINESS_INFO", businessInfo);
+                    businessDetailFragment.setArguments(bundle);
+                    ((HomeActivity) getActivity()).addFragment(businessDetailFragment);
+
+                }
 
             }
         });
+
         tvWebsite.setOnClickListener(onClickListenerWebsite);
         tvAddress.setOnClickListener(onClickListenerAddress);
 
     }
-
-    Timer timer;
 
     private void setBusinessData(BusinessInfo businessInfo) {
 
@@ -233,33 +242,55 @@ public class BusinessDetailFragment extends Fragment {
     }
 
     private void initHeader() {
-        final ImageView ivHeaderLogo = (ImageView) view.findViewById(R.id.ivHeaderLogo);
-        final TextView tvHeaderTitle = (TextView) view.findViewById(R.id.tvHeaderTitle);
-        final TextView tvHeaderLeft = (TextView) view.findViewById(R.id.tvHeaderLeft);
-        final TextView tvHeaderRight = (TextView) view.findViewById(R.id.tvHeaderRight);
 
-        ivHeaderLogo.setVisibility(View.GONE);
-        tvHeaderTitle.setVisibility(View.VISIBLE);
-        tvHeaderLeft.setVisibility(View.VISIBLE);
-        tvHeaderRight.setVisibility(View.GONE);
+        tvToolbarLeft = (TextView) view.findViewById(R.id.tvToolbarLeft);
+        tvToolbarTitle = (TextView) view.findViewById(R.id.tvToolbarTitle);
+        ivTitleDropDown = (ImageView) view.findViewById(R.id.ivTitleDropDown);
 
+        tvToolbarLeft.setVisibility(View.VISIBLE);
+        tvToolbarLeft.setText("Back");
 
-        tvHeaderTitle.setText(businessInfo.name + "");
-
-        tvHeaderLeft.setOnClickListener(new View.OnClickListener() {
+        tvToolbarLeft.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 getActivity().onBackPressed();
+            }
+        });
 
+        tvToolbarTitle.setText(businessInfo.short_name + "");
 
+        tvToolbarLeft.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getActivity().onBackPressed();
             }
         });
 
     }
 
+    private void initViews() {
+
+        cardView = (LinearLayout) view.findViewById(R.id.card_view);
+        tvAddress = (TextView) view.findViewById(R.id.tvAddress);
+        tvPrice = (TextView) view.findViewById(R.id.tvPrice);
+        tvWebsite = (TextView) view.findViewById(R.id.tvWebsite);
+        textViewBusinessType = (TextView) view.findViewById(R.id.textViewBusinessType);
+        tvPaymentEmail = (TextView) view.findViewById(R.id.tvPaymentEmail);
+        tvTime = (TextView) view.findViewById(R.id.tvTime);
+        ratingBar = (RatingBar) view.findViewById(R.id.ratingBar);
+        tvRateCount = (TextView) view.findViewById(R.id.tvRateCount);
+        textViewOpenClosed = (TextView) view.findViewById(R.id.textViewOpenClosed);
+
+        mPager = (ViewPager) view.findViewById(R.id.pager);
+        lvFoodDetail = (ListView) view.findViewById(R.id.lvFoodDetail);
+        adapter = new BusinessDetailAdapter(getActivity(), Utils.getColor(businessInfo.bg_color), Utils.getColor(businessInfo.text_color));
+        adapter.addAll(Constant.getBusinessList(businessInfo.customerProfileName));
+        lvFoodDetail.setAdapter(adapter);
+
+    }
+
     @Override
     public void onResume() {
-
         super.onResume();
 
         getView().setFocusableInTouchMode(true);
@@ -342,6 +373,7 @@ public class BusinessDetailFragment extends Fragment {
     }
 
     private void getAllPoints() {
+
         RequestParams params = new RequestParams();
         params.put("businessID", businessInfo.businessID);
         params.put("cmd", "get_all_points");
@@ -358,7 +390,8 @@ public class BusinessDetailFragment extends Fragment {
                     String content = new String(responseBody, "UTF-8");
                     GetPointsResp userInfo = new Gson().fromJson(content, GetPointsResp.class);
                     PreferenceManager.putPointsData(userInfo);
-                    ((HomeActivity) getActivity()).refreshPointsFragment();
+                    if (getActivity() != null)
+                        ((HomeActivity) getActivity()).refreshPointsFragment();
                     Debug.e("getAllPoint", content + "-");
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();

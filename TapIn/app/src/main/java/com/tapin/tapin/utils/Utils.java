@@ -16,6 +16,7 @@ import android.net.NetworkInfo;
 import android.os.Environment;
 import android.provider.Settings;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -44,6 +45,7 @@ public class Utils {
         Matcher matcher = pattern.matcher(inputStr);
         return matcher.matches();
     }
+
     public static boolean isValidMobile(String phone) {
         boolean check=false;
         if(!Pattern.matches("[a-zA-Z]+", phone)) {
@@ -87,32 +89,13 @@ public class Utils {
 
     public static boolean isInternetConnected(Context mContext) {
 
-        try {
-            ConnectivityManager connect = null;
-            connect = (ConnectivityManager) mContext
-                    .getSystemService(Context.CONNECTIVITY_SERVICE);
-
-            if (connect != null) {
-                NetworkInfo resultMobile = connect
-                        .getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-
-                NetworkInfo resultWifi = connect
-                        .getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-
-                if ((resultMobile != null && resultMobile
-                        .isConnectedOrConnecting())
-                        || (resultWifi != null && resultWifi
-                        .isConnectedOrConnecting())) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        ConnectivityManager cm = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        if (activeNetwork != null) {
+            return true;
+        } else {
+            return false;
         }
-
-        return false;
     }
 
 

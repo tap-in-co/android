@@ -1,4 +1,4 @@
-package com.tapin.tapin;
+package com.tapin.tapin.activity;
 
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -13,11 +13,14 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.tapin.tapin.R;
 import com.tapin.tapin.fragment.HomeFragment;
 import com.tapin.tapin.fragment.NotificationsFragment;
 import com.tapin.tapin.fragment.PointsFragment;
@@ -28,7 +31,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class HomeActivity extends AppCompatActivity {
-
 
     private Toolbar toolbar;
     private TabLayout tabLayout;
@@ -42,6 +44,10 @@ public class HomeActivity extends AppCompatActivity {
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+
+        String refreshedToken = FirebaseInstanceId.getInstance().getToken();
+        Log.d("HomeActivity", "Refreshed token: " + refreshedToken);
 
         initHeader();
 
@@ -90,6 +96,7 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     public void initHeader() {
+
         ImageView ivHeaderLogo = (ImageView) findViewById(R.id.ivHeaderLogo);
         TextView tvHeaderTitle = (TextView) findViewById(R.id.tvHeaderTitle);
         TextView tvHeaderLeft = (TextView) findViewById(R.id.tvHeaderLeft);
@@ -99,7 +106,6 @@ public class HomeActivity extends AppCompatActivity {
         tvHeaderTitle.setVisibility(View.GONE);
         tvHeaderLeft.setVisibility(View.GONE);
         tvHeaderRight.setVisibility(View.GONE);
-
 
     }
 
@@ -202,7 +208,6 @@ public class HomeActivity extends AppCompatActivity {
         Fragment fragment = getCurrentFragment();
 
         Debug.e("onBackPressed ", "fragment=" + fragment);
-
 
     }
 

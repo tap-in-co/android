@@ -36,8 +36,10 @@ public class BusinessDetailAdapter extends BaseAdapter {
     public void addAll(ArrayList<BusinessType> businessList) {
 
         if (businessList != null) {
+
             data.addAll(businessList);
             notifyDataSetChanged();
+
         }
     }
 
@@ -64,7 +66,6 @@ public class BusinessDetailAdapter extends BaseAdapter {
             holder = new ViewHolder();
             convertView = inflter.inflate(R.layout.list_item_business_detail, viewGroup, false);
 
-
             holder.llDetailContainer = (LinearLayout) convertView.findViewById(R.id.llDetailContainer);
             holder.ivCategory = (ImageView) convertView.findViewById(R.id.ivCategory);
             holder.tvBusinessType = (TextView) convertView.findViewById(R.id.tvBusinessType);
@@ -78,6 +79,7 @@ public class BusinessDetailAdapter extends BaseAdapter {
 
 
         BusinessType businessType = getItem(i);
+
         holder.tvBusinessType.setText(businessType.display_name);
 
         if (businessType.display_name.equalsIgnoreCase("Order Food")) {
@@ -85,6 +87,7 @@ public class BusinessDetailAdapter extends BaseAdapter {
         } else {
             holder.llPreviousOrder.setVisibility(View.GONE);
         }
+
         holder.ivCategory.setImageResource(getIcon(businessType.icon));
 //        holder.llDetailContainer.setBackgroundColor(ContextCompat.getColor(context, bg_color));
         Debug.e("Colorm at "+i,bg_color+" : "+text_color);
@@ -92,6 +95,7 @@ public class BusinessDetailAdapter extends BaseAdapter {
         holder.tvBusinessType.setTextColor(Color.parseColor(text_color));
 
         return convertView;
+
     }
 
     private int getIcon(String s) {

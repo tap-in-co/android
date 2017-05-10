@@ -29,7 +29,10 @@ import com.tapin.tapin.common.NetworkStatus;
 import com.tapin.tapin.common.StaticData;
 import com.tapin.tapin.model.BusinessInfo;
 import com.tapin.tapin.model.BusinessResp;
+import com.tapin.tapin.utils.AlertMessages;
 import com.tapin.tapin.utils.Debug;
+import com.tapin.tapin.utils.ProgressHUD;
+import com.tapin.tapin.utils.Utils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -94,12 +97,22 @@ public class HomeFragment extends Fragment {
 
     EditText etSearch;
     View view;
+
+    ProgressHUD pd;
+    AlertMessages messages;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         view = inflater.inflate(R.layout.fragment_home, container, false);
+
+        messages = new AlertMessages(getActivity());
+
         initHeader();
+
         context = getActivity();
+
         mLocationManager = (LocationManager) getActivity().getSystemService(context.LOCATION_SERVICE);
         int permissionCheck = ContextCompat.checkSelfPermission(context,
                 android.Manifest.permission.ACCESS_FINE_LOCATION);
@@ -132,6 +145,7 @@ public class HomeFragment extends Fragment {
 
         // search filter
         etSearch = (EditText) view.findViewById(R.id.etSearch);
+        etSearch.setActivated(false);
         etSearch.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -153,10 +167,14 @@ public class HomeFragment extends Fragment {
 
         // fetch data from api
         networkStatus = new NetworkStatus(context);
-        if (networkStatus.isOnline()) {
+
+        if (Utils.isInternetConnected(getActivity())) {
+
+            pd = ProgressHUD.show(getActivity(), getActivity().getResources().getString(R.string.please_wait), true, false);
             new GetData().execute();
+
         } else {
-            Toast.makeText(context, "Internet connection not available. Please try again later.", Toast.LENGTH_SHORT);
+            messages.showErrorInConnection();
         }
 
         return view;
@@ -223,11 +241,11 @@ public class HomeFragment extends Fragment {
                 recyclerViewBusiness.setAdapter(businessAdpater);
                 Debug.e("Data", businesses.size() + "-");
 
+                if (pd != null && pd.isShowing()) {
+                    pd.dismiss();
+                }
 
-            } catch (
-                    JSONException e)
-
-            {
+            } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
@@ -249,8 +267,5 @@ public class HomeFragment extends Fragment {
         tvHeaderLeft.setVisibility(View.GONE);
         tvHeaderRight.setVisibility(View.GONE);
 
-
     }
-
-
 }

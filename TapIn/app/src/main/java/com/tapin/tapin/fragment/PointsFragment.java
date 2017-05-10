@@ -102,6 +102,7 @@ public class PointsFragment extends Fragment {
     public void refreshData() {
 
         GetPointsResp getPointsResp = PreferenceManager.getPointsData();
+
         if (getPointsResp != null) {
 
             pointsAdapter.addAll(getPointsResp.getPointsInfo.listPointInfos);

@@ -7,6 +7,7 @@ import java.io.Serializable;
  */
 
 public class BusinessInfo implements Cloneable, Serializable {
+
     public String name;
     public String type;
     public String keywords;
@@ -68,7 +69,6 @@ public class BusinessInfo implements Cloneable, Serializable {
     public String opening_time;
     public String closing_time;
     public String ti_rating;
-
 
 
     protected Object clone() throws CloneNotSupportedException {

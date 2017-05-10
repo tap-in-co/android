@@ -8,9 +8,9 @@ import java.util.ArrayList;
  */
 
 public class BusinessTypeList implements Cloneable, Serializable {
+
     public String name;
    public ArrayList<BusinessType> listbuBusinessTypes=new ArrayList<>();
-
 
     protected Object clone() throws CloneNotSupportedException {
         return super.clone();

@@ -33,7 +33,6 @@
             android:gravity="center"
             android:layout_marginTop="@dimen/_25sdp"
             android:text="Your total points for all all businesses: 0"
-
             android:textColor="@color/white"
             android:textSize="@dimen/_14sdp"
             android:textStyle="bold|italic" />

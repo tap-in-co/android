@@ -18,90 +18,88 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 public class NetworkStatus {
-	ConnectivityManager connectivityManager;
-	Context context;
-	boolean connected = false;
 
-	public NetworkStatus(Context context) {
-		this.context = context;
-	}
+    ConnectivityManager connectivityManager;
+    Context context;
+    boolean connected = false;
 
-	public boolean isOnline() {
-		try {
-			connectivityManager = (ConnectivityManager) context
-					.getSystemService(Context.CONNECTIVITY_SERVICE);
-			NetworkInfo networkInfo = connectivityManager
-					.getActiveNetworkInfo();
+    public NetworkStatus(Context context) {
+        this.context = context;
+    }
 
-			if (networkInfo != null) {
-				if (networkInfo.getType() == ConnectivityManager.TYPE_WIFI)
-					if (networkInfo.isConnectedOrConnecting())
-						connected = true;
-				if (networkInfo.getType() == ConnectivityManager.TYPE_MOBILE)
-					if (networkInfo.isConnectedOrConnecting())
-						connected = true;
-			}
-			return connected;
-		} catch (Exception e) {
-			Log.v("Connectivity Exception:", e.toString());
-		}
-		return connected;
+    public boolean isOnline() {
 
-	}
+        try {
+            connectivityManager = (ConnectivityManager) context
+                    .getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo networkInfo = connectivityManager
+                    .getActiveNetworkInfo();
 
-	public boolean isOnline(Context context) {
+            if (networkInfo != null) {
+                connected = true;
+            }
+            return connected;
+        } catch (Exception e) {
+            Log.v("Connectivity Exception:", e.toString());
+        }
+        return connected;
 
-		try {
-			connectivityManager = (ConnectivityManager) context
-					.getSystemService(Context.CONNECTIVITY_SERVICE);
-			NetworkInfo networkInfo = connectivityManager
-					.getActiveNetworkInfo();
+    }
 
-			if (networkInfo != null) {
-				if (networkInfo.getType() == ConnectivityManager.TYPE_WIFI)
-					if (networkInfo.isConnectedOrConnecting())
-						connected = true;
-				if (networkInfo.getType() == ConnectivityManager.TYPE_MOBILE)
-					if (networkInfo.isConnectedOrConnecting())
-						connected = true;
-			}
-			return connected;
-		} catch (Exception e) {
-			Log.v("Connectivity Exception:", e.toString());
-		}
-		return connected;
+    public boolean isOnline(Context context) {
 
-	}
+        try {
+            connectivityManager = (ConnectivityManager) context
+                    .getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo networkInfo = connectivityManager
+                    .getActiveNetworkInfo();
 
-	public static String getResponce(String strUr, String method) {
+            if (networkInfo != null) {
+                if (networkInfo.getType() == ConnectivityManager.TYPE_WIFI)
+                    if (networkInfo.isConnectedOrConnecting())
+                        connected = true;
+                if (networkInfo.getType() == ConnectivityManager.TYPE_MOBILE)
+                    if (networkInfo.isConnectedOrConnecting())
+                        connected = true;
+            }
+            return connected;
+        } catch (Exception e) {
+            Log.v("Connectivity Exception:", e.toString());
+        }
+        return connected;
 
-		try {
-			URL url = new URL(strUr);
-			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-			connection.setReadTimeout(10000);
-			connection.setConnectTimeout(15000);
-			connection.setRequestMethod(method);
-			connection.setDoInput(true);
-			connection.connect();
+    }
 
-			InputStream inputStream = connection.getInputStream();
+    public static String getResponce(String strUr, String method) {
 
-			BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-			String line;
-			StringBuffer buffer= new StringBuffer();
-			while((line=reader.readLine())!=null){
-				buffer.append(line);
-			}
+        try {
+            URL url = new URL(strUr);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setReadTimeout(10000);
+            connection.setConnectTimeout(15000);
+            connection.setRequestMethod(method);
+            connection.setDoInput(true);
+            connection.connect();
 
-			Log.v("Server Answer:", buffer.toString());
+            InputStream inputStream = connection.getInputStream();
 
-			return buffer.toString();
-		} catch (Exception e) {
-			Log.v("Server Exception:", e.toString());
-		}
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+            String line;
+            StringBuffer buffer = new StringBuffer();
+            while ((line = reader.readLine()) != null) {
+                buffer.append(line);
+            }
 
-		return "";
+            Log.v("Server Answer:", buffer.toString());
 
-	}
+            return buffer.toString();
+
+        } catch (Exception e) {
+            Log.v("Server Exception:", e.toString());
+        }
+
+        return "";
+
+    }
 
 }
