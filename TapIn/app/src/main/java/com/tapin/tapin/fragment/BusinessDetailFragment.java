@@ -156,7 +156,7 @@ public class BusinessDetailFragment extends Fragment {
 
                 } else if (adapter.getItem(i).display_name.contains("Order Food")) {
 
-                    OrderFoodListFragment businessDetailFragment = new OrderFoodListFragment();
+                    MenuFoodListFragment businessDetailFragment = new MenuFoodListFragment();
                     Bundle bundle = new Bundle();
                     bundle.putSerializable("BUSINESS_INFO", businessInfo);
                     businessDetailFragment.setArguments(bundle);
@@ -391,7 +391,7 @@ public class BusinessDetailFragment extends Fragment {
                     GetPointsResp userInfo = new Gson().fromJson(content, GetPointsResp.class);
                     PreferenceManager.putPointsData(userInfo);
                     if (getActivity() != null)
-                        ((HomeActivity) getActivity()).refreshPointsFragment();
+//                        ((HomeActivity) getActivity()).refreshPointsFragment();
                     Debug.e("getAllPoint", content + "-");
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();

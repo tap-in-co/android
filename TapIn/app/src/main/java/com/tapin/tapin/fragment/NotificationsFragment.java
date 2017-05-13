@@ -128,7 +128,7 @@ public class NotificationsFragment extends Fragment {
                     String content = new String(responseBody, "UTF-8");
                     GetPointsResp userInfo = new Gson().fromJson(content, GetPointsResp.class);
                     PreferenceManager.putPointsData(userInfo);
-                    ((HomeActivity) getActivity()).refreshPointsFragment();
+//                    ((HomeActivity) getActivity()).refreshPointsFragment();
                     Debug.e("Notification", content + "-");
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
@@ -182,7 +182,7 @@ public class NotificationsFragment extends Fragment {
                     String content = new String(responseBody, "UTF-8");
                     GetPointsResp userInfo = new Gson().fromJson(content, GetPointsResp.class);
                     PreferenceManager.putPointsData(userInfo);
-                    ((HomeActivity) getActivity()).refreshPointsFragment();
+//                    ((HomeActivity) getActivity()).refreshPointsFragment();
                     Debug.e("Notification", content + "-");
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();

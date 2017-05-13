@@ -13,6 +13,7 @@ import com.bumptech.glide.Glide;
 import com.tapin.tapin.R;
 import com.tapin.tapin.model.BusinessMenu;
 import com.tapin.tapin.model.OrderInfo;
+import com.tapin.tapin.utils.URLs;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -90,7 +91,9 @@ public class OrderStickyListViewAdapter extends BaseAdapter implements StickyLis
             }
         });
 
-//        Glide.with(context).load(orderInfo.).placeholder(R.color.gray).into(holder.ivFood);
+        String imageUrl = URLs.IMAGE_URL1 + orderInfo.businessID + "/products/" + orderInfo.pictures;
+
+        Glide.with(context).load(imageUrl).centerCrop().placeholder(R.color.gray).into(holder.ivFood);
 
         return convertView;
     }

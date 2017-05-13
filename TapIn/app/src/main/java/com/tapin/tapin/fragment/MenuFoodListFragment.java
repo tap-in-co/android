@@ -1,6 +1,5 @@
 package com.tapin.tapin.fragment;
 
-import android.app.Dialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
@@ -8,8 +7,8 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -38,6 +37,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -47,7 +47,7 @@ import cz.msebera.android.httpclient.Header;
 import se.emilsjolander.stickylistheaders.ExpandableStickyListHeadersListView;
 
 
-public class OrderFoodListFragment extends Fragment {
+public class MenuFoodListFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -58,7 +58,7 @@ public class OrderFoodListFragment extends Fragment {
     private String mParam2;
 
 
-    public OrderFoodListFragment() {
+    public MenuFoodListFragment() {
         // Required empty public constructor
     }
 
@@ -71,8 +71,8 @@ public class OrderFoodListFragment extends Fragment {
      * @return A new instance of fragment HomeFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static OrderFoodListFragment newInstance(String param1, String param2) {
-        OrderFoodListFragment fragment = new OrderFoodListFragment();
+    public static MenuFoodListFragment newInstance(String param1, String param2) {
+        MenuFoodListFragment fragment = new MenuFoodListFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -110,13 +110,14 @@ public class OrderFoodListFragment extends Fragment {
     ProgressHUD pd;
     AlertMessages messages;
 
+    int totalOrders = 0;
     List<OrderInfo> listOrdered = new ArrayList<>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        view = inflater.inflate(R.layout.fragment_order_food_list, container, false);
+        view = inflater.inflate(R.layout.fragment_menu_food_list, container, false);
 
         messages = new AlertMessages(getActivity());
 
@@ -129,9 +130,13 @@ public class OrderFoodListFragment extends Fragment {
         initViews();
 
         if (Utils.isInternetConnected(getActivity())) {
+
             getMenuOfFoods();
+
         } else {
+
             messages.showErrorInConnection();
+
         }
 
         return view;
@@ -243,7 +248,32 @@ public class OrderFoodListFragment extends Fragment {
             @Override
             public void addOrder(OrderInfo orderInfo) {
 
-                showDialog(orderInfo);
+                if (orderInfo.listOptions != null && orderInfo.listOptions.size() > 0) {
+
+                    boolean isOptionAvailable = false;
+
+                    CHECK_OPTIONS_DATA:
+                    for (int i = 0; i < orderInfo.listOptions.size(); i++) {
+
+                        if (orderInfo.listOptions.get(i).optionData != null && orderInfo.listOptions.get(i).optionData.size() > 0) {
+
+                            isOptionAvailable = true;
+
+                            break CHECK_OPTIONS_DATA;
+
+                        }
+
+                    }
+
+                    if (isOptionAvailable) {
+                        showOptionDialog(orderInfo);
+                    } else {
+                        showDialog(orderInfo);
+                    }
+
+                } else {
+                    showDialog(orderInfo);
+                }
 
             }
         });
@@ -255,14 +285,15 @@ public class OrderFoodListFragment extends Fragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int pos, long l) {
 
                 String category = listBusinessMenu.get(pos).category;
+
                 FIND_CATEGORY:
                 for (int i = 0; i < listOrders.size(); i++) {
 
                     if (listOrders.get(i).category_name.equalsIgnoreCase(category)) {
 
-                        if (i!=0){
-                            lvOrderFood.setSelection(i-1);
-                        }else{
+                        if (i != 0) {
+                            lvOrderFood.setSelection(i - 1);
+                        } else {
                             lvOrderFood.setSelection(i);
                         }
 
@@ -273,6 +304,63 @@ public class OrderFoodListFragment extends Fragment {
 
                 ivTitleDropDown.setImageResource(R.drawable.ic_arrow_drop_down);
                 lvMenu.setVisibility(View.GONE);
+
+            }
+        });
+    }
+
+    private void showOptionDialog(final OrderInfo orderInfo) {
+
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
+
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_food_option, null);
+        dialogBuilder.setView(dialogView);
+
+        final AlertDialog alertDialog = dialogBuilder.create();
+        alertDialog.show();
+
+        LinearLayout llHeaderView = (LinearLayout) dialogView.findViewById(R.id.llHeaderView);
+
+        EditText etNote = (EditText) dialogView.findViewById(R.id.etNote);
+
+        ((Button) dialogView.findViewById(R.id.btnCancel)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                alertDialog.dismiss();
+            }
+        });
+
+        ((Button) dialogView.findViewById(R.id.btnAddOrder)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                alertDialog.dismiss();
+
+                boolean isAlreadyAdded = false;
+
+                CHECK_PRODUCT_ID:
+                for (int i = 0; i < listOrdered.size(); i++) {
+
+                    if (listOrdered.get(i).product_id.equalsIgnoreCase(orderInfo.product_id)) {
+
+                        isAlreadyAdded = true;
+                        listOrdered.get(i).quantity++;
+                        break CHECK_PRODUCT_ID;
+
+                    }
+                }
+
+                if (!isAlreadyAdded) {
+                    listOrdered.add(orderInfo);
+                }
+
+                totalOrders++;
+
+                if (totalOrders <= 1) {
+                    tvToolbarRight.setText("" + totalOrders + " Order");
+                } else {
+                    tvToolbarRight.setText("" + totalOrders + " Orders");
+                }
 
             }
         });
@@ -304,12 +392,30 @@ public class OrderFoodListFragment extends Fragment {
 
                 alertDialog.dismiss();
 
-                listOrdered.add(orderInfo);
+                boolean isAlreadyAdded = false;
+                CHECK_PRODUCT_ID:
+                for (int i = 0; i < listOrdered.size(); i++) {
 
-                if (listOrdered.size() <= 1) {
-                    tvToolbarRight.setText("" + listOrdered.size() + " Order");
+                    if (listOrdered.get(i).product_id.equalsIgnoreCase(orderInfo.product_id)) {
+
+                        isAlreadyAdded = true;
+                        listOrdered.get(i).quantity++;
+                        break CHECK_PRODUCT_ID;
+
+                    }
+
+                }
+
+                if (!isAlreadyAdded) {
+                    listOrdered.add(orderInfo);
+                }
+
+                totalOrders++;
+
+                if (totalOrders <= 1) {
+                    tvToolbarRight.setText("" + totalOrders + " Order");
                 } else {
-                    tvToolbarRight.setText("" + listOrdered.size() + " Orders");
+                    tvToolbarRight.setText("" + totalOrders + " Orders");
                 }
 
             }
@@ -365,6 +471,7 @@ public class OrderFoodListFragment extends Fragment {
                 OrderFragment orderFragment = new OrderFragment();
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("BUSINESS_INFO", businessInfo);
+                bundle.putSerializable("ORDERED_LIST", (Serializable) listOrdered);
                 orderFragment.setArguments(bundle);
                 ((HomeActivity) getActivity()).addFragment(orderFragment);
 

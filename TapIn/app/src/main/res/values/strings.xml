@@ -80,4 +80,18 @@
     <item>Japan</item>
     <item>Jordan</item>
     </string-array>
+
+    <!--DASHBOARD-->
+    <string name="home">Home</string>
+    <string name="profile">Profile</string>
+    <string name="notifications">Notifications</string>
+    <string name="points">Points</string>
+
+    <string-array name="tabs">
+        <item>@string/home</item>
+        <item>@string/profile</item>
+        <item>@string/notifications</item>
+        <item>@string/points</item>
+    </string-array>
+
 </resources>

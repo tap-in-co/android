@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#1a1a1a</color>
-    <color name="colorPrimaryDark">#000000</color>
+    <color name="colorPrimary">#FB6209</color>
+    <color name="colorPrimaryDark">#FB6209</color>
     <color name="colorAccent">#FFFFFF</color>
 
-    <color name="orange">#FC6424</color>
+    <color name="bg_window">#FBFBFB</color>
+
+    <color name="gray">#B8B8B8</color>
+    <color name="orange">#FB6209</color>
 
     <color name="colorText">#202020</color>
     <color name="colorTextLight">#808080</color>
@@ -12,15 +15,13 @@
     <color name="colorHighlight">#9933ff</color>
     <color name="white">#FFFFFF</color>
     <color name="light_gray">#FBFBFB</color>
-    <color name="gray">#CAC9D1</color>
     <color name="yellow">#FFBA4D</color>
     <color name="black">#000000</color>
-    <color name="yellow_dark">#FC6424</color>
+    <color name="yellow_dark">#FB6209</color>
     <color name="dim_green">#BCD4D4</color>
     <color name="green">#469EA0</color>
     <color name="red">#CE2C3B</color>
 
     <color name="light_blue">#51D1CF</color>
-
 
 </resources>

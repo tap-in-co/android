@@ -2,10 +2,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/light_gray"
     android:orientation="vertical"
     tools:context="com.tapin.tapin.fragment.HomeFragment">
-
-
 
     <RelativeLayout
         android:id="@+id/relHeader"
@@ -18,8 +17,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:visibility="gone"
-            android:src="@drawable/ic_tap_in_logo" />
+            android:src="@drawable/ic_tap_in_logo"
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/tvHeaderTitle"
@@ -58,6 +57,7 @@
 
 
     </RelativeLayout>
+
     <ListView
         android:id="@+id/lvNotifications"
         android:layout_width="match_parent"

@@ -25,6 +25,7 @@ import com.tapin.tapin.utils.AlertMessages;
 import com.tapin.tapin.utils.Constant;
 import com.tapin.tapin.utils.Debug;
 import com.tapin.tapin.utils.PreferenceManager;
+import com.tapin.tapin.utils.ProgressHUD;
 import com.tapin.tapin.utils.URLs;
 import com.tapin.tapin.utils.Utils;
 
@@ -86,11 +87,16 @@ public class ProfileFragment extends Fragment {
     Button btnBack;
     Button btnSave;
 
+    ProgressHUD pd;
+    AlertMessages messages;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_profile, container, false);
+
+        messages = new AlertMessages(getActivity());
 
         initHeader();
 
@@ -119,26 +125,14 @@ public class ProfileFragment extends Fragment {
     }
 
     public void initHeader() {
-        ImageView ivHeaderLogo = (ImageView) view.findViewById(R.id.ivHeaderLogo);
-        TextView tvHeaderTitle = (TextView) view.findViewById(R.id.tvHeaderTitle);
-        TextView tvHeaderLeft = (TextView) view.findViewById(R.id.tvHeaderLeft);
-        TextView tvHeaderRight = (TextView) view.findViewById(R.id.tvHeaderRight);
 
-        ivHeaderLogo.setVisibility(View.GONE);
-        tvHeaderTitle.setVisibility(View.VISIBLE);
-        tvHeaderLeft.setVisibility(View.GONE);
-        tvHeaderRight.setVisibility(View.GONE);
-
+        ((TextView) view.findViewById(R.id.tvToolbarTitle)).setText("Profile");
 
     }
 
-    ProgressDialog progressDialog;
     View.OnClickListener onClickListenerSave = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-
-
-            AlertMessages messages = new AlertMessages(getActivity());
 
             if (etNickname.getText().toString().length() < 2) {
                 messages.showCustomMessage("Stop", "Nickname must be more the 2 chars long.", null);
@@ -154,8 +148,8 @@ public class ProfileFragment extends Fragment {
                 messages.showCustomMessage("Stop", "Please enter valid Email id", null);
             } else {
 
+                pd = ProgressHUD.show(getActivity(), "Loading...", true, false);
 
-                progressDialog = ProgressDialog.show(getActivity(), "", "Loading...");
                 RequestParams params = new RequestParams();
                 params.put("email", etEmail.getText().toString());
                 params.put("zipcode", etZipcode.getText().toString());
@@ -169,7 +163,6 @@ public class ProfileFragment extends Fragment {
                 params.put("cmd", "update");
                 params.put("uuid", Utils.getDeviceID(getActivity()));
 
-
                 AsyncHttpClient client = new AsyncHttpClient();
                 client.setTimeout(Constant.TIMEOUT);
                 client.post(URLs.PROFILE, params, new AsyncHttpResponseHandler() {
@@ -178,12 +171,16 @@ public class ProfileFragment extends Fragment {
 
                         try {
                             String content = new String(responseBody, "UTF-8");
+
+                            Debug.e("RES_PROFILE_INFO", "-" + content + "-");
+
                             UserInfo userInfo = new Gson().fromJson(content, UserInfo.class);
                             PreferenceManager.setUserData(userInfo);
-                            Debug.e("save request succ", content + "-");
+
                         } catch (UnsupportedEncodingException e) {
                             e.printStackTrace();
                         }
+
                     }
 
                     @Override
@@ -195,13 +192,17 @@ public class ProfileFragment extends Fragment {
                     @Override
                     public void onFinish() {
                         super.onFinish();
-                        progressDialog.dismiss();
+                        if (pd != null && pd.isShowing()) {
+                            pd.dismiss();
+                            pd = null;
+                        }
                     }
                 });
 
             }
         }
     };
+
     View.OnClickListener onClickListenerBack = new View.OnClickListener() {
         @Override
         public void onClick(View view) {

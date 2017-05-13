@@ -133,6 +133,27 @@ public class AlertMessages {
 
     }
 
+    public void showCustomMessage(String title, String message) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+
+        if (title.length() > 0) {
+            builder.setTitle(title);
+        }
+
+        builder.setMessage(message).setCancelable(false)
+                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+
+                        dialog.cancel();
+
+                    }
+                });
+
+        AlertDialog alert = builder.create();
+        alert.show();
+
+    }
+
     public void showCustomMessage(String title, String message, DialogInterface.OnClickListener dialogInterface) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.datepicker);
         builder.setTitle(title);
@@ -174,8 +195,6 @@ public class AlertMessages {
 
         alertDialog.show();
     }
-
-
 
 
 }

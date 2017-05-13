@@ -378,7 +378,6 @@ public class PreferenceManager extends Application {
 
     public static void setUserData(UserInfo userInfo) {
 
-
         if (Utils.isNotEmpty(userInfo.nickname))
             putUsername(userInfo.nickname);
 

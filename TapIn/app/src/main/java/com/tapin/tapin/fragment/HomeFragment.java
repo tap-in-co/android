@@ -3,6 +3,7 @@ package com.tapin.tapin.fragment;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
+import android.media.Image;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,8 +13,10 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +26,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 import com.tapin.tapin.R;
 import com.tapin.tapin.adapter.BusinessAdpater;
 import com.tapin.tapin.common.NetworkStatus;
@@ -30,8 +36,10 @@ import com.tapin.tapin.common.StaticData;
 import com.tapin.tapin.model.BusinessInfo;
 import com.tapin.tapin.model.BusinessResp;
 import com.tapin.tapin.utils.AlertMessages;
+import com.tapin.tapin.utils.Constant;
 import com.tapin.tapin.utils.Debug;
 import com.tapin.tapin.utils.ProgressHUD;
+import com.tapin.tapin.utils.URLs;
 import com.tapin.tapin.utils.Utils;
 
 import org.json.JSONException;
@@ -40,6 +48,8 @@ import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+
+import cz.msebera.android.httpclient.Header;
 
 
 public class HomeFragment extends Fragment {
@@ -86,7 +96,6 @@ public class HomeFragment extends Fragment {
 
     Context context;
 
-    NetworkStatus networkStatus;
     ArrayList<BusinessInfo> businesses = new ArrayList<>();
     BusinessAdpater businessAdpater;
     RecyclerView recyclerViewBusiness;
@@ -164,14 +173,10 @@ public class HomeFragment extends Fragment {
             }
         });
 
-
-        // fetch data from api
-        networkStatus = new NetworkStatus(context);
-
         if (Utils.isInternetConnected(getActivity())) {
 
             pd = ProgressHUD.show(getActivity(), getActivity().getResources().getString(R.string.please_wait), true, false);
-            new GetData().execute();
+            getData();
 
         } else {
             messages.showErrorInConnection();
@@ -200,72 +205,61 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    private class GetData extends AsyncTask<String, String, String> {
+    private void getData() {
 
-        @Override
-        protected String doInBackground(String... params) {
-            return networkStatus.getResponce(StaticData.HOME, "GET");
-        }
+        AsyncHttpClient client = new AsyncHttpClient();
+        client.setTimeout(Constant.TIMEOUT);
 
-        @Override
-        protected void onPostExecute(String result) {
-            try {
+        RequestParams params = new RequestParams();
 
-                BusinessResp businessResp = new Gson().fromJson(result, BusinessResp.class);
+        client.get(getActivity(), URLs.GET_HOME_DATA, params, new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
 
-                JSONObject object = new JSONObject(result);
-//                if (object.getInt("status") == 0) {
-//                    businesses.clear();
+                try {
 
-//                    JSONArray jsonArray = object.getJSONArray("data");
-//
-//                    for (int i = 0; i < jsonArray.length(); i++) {
-//                        JSONObject jsonObject = jsonArray.getJSONObject(i);
-//                        BusinessInfo business = new BusinessInfo();
-//                       // business.setId(jsonObject.getString("businessID"));
-//                        business.setName(jsonObject.getString("name"));
-//                        business.setType(jsonObject.getString("businessTypes"));
-//                        business.setKeywords(jsonObject.getString("keywords"));
-//                        business.setIcon(jsonObject.getString("icon"));
-//                        business.setCity(jsonObject.getString("city"));
-//                        business.setRating(jsonObject.getDouble("rating"));
-//                        business.setLat(jsonObject.getDouble("lat"));
-//                        business.setLng(jsonObject.getDouble("lng"));
-//                        business.setOpeningTime(jsonObject.getString("opening_time"));
-//                        business.setClosingTime(jsonObject.getString("closing_time"));
-//                        businesses.add(business);
-//                    }
+                    String content = new String(responseBody, "UTF-8");
+                    Log.e("RES_ALL_HOTEL", "" + content);
 
+                    BusinessResp businessResp = new Gson().fromJson(content, BusinessResp.class);
 
-                businessAdpater = new BusinessAdpater(getActivity(), (ArrayList<BusinessInfo>) businessResp.listBusinessInfos, simpleDateFormat.format(calendar.getTime()));
-                recyclerViewBusiness.setAdapter(businessAdpater);
-                Debug.e("Data", businesses.size() + "-");
+                    businessAdpater = new BusinessAdpater(getActivity(), (ArrayList<BusinessInfo>) businessResp.listBusinessInfos, simpleDateFormat.format(calendar.getTime()));
+                    recyclerViewBusiness.setAdapter(businessAdpater);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
                 if (pd != null && pd.isShowing()) {
                     pd.dismiss();
+                    pd = null;
                 }
 
-            } catch (JSONException e) {
-                e.printStackTrace();
             }
-        }
 
-        @Override
-        protected void onPreExecute() {
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
 
-        }
+                if (pd != null && pd.isShowing()) {
+                    pd.dismiss();
+                    pd = null;
+                }
+
+            }
+        });
+
     }
 
     public void initHeader() {
-        ImageView ivHeaderLogo = (ImageView) view.findViewById(R.id.ivHeaderLogo);
-        TextView tvHeaderTitle = (TextView) view.findViewById(R.id.tvHeaderTitle);
-        TextView tvHeaderLeft = (TextView) view.findViewById(R.id.tvHeaderLeft);
-        TextView tvHeaderRight = (TextView) view.findViewById(R.id.tvHeaderRight);
 
-        ivHeaderLogo.setVisibility(View.VISIBLE);
-        tvHeaderTitle.setVisibility(View.GONE);
-        tvHeaderLeft.setVisibility(View.GONE);
-        tvHeaderRight.setVisibility(View.GONE);
+        Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
+
+        toolbar.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.white));
+
+        ((TextView) view.findViewById(R.id.tvToolbarTitle)).setVisibility(View.GONE);
+
+        ImageView ivToolbarLogo = (ImageView) view.findViewById(R.id.ivToolbarLogo);
+        ivToolbarLogo.setVisibility(View.VISIBLE);
 
     }
 }

@@ -11,17 +11,17 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_weight="1.3"
         android:orientation="vertical">
 
         <TextView
+            android:id="@+id/tvHotelName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/light_gray"
             android:gravity="center"
             android:padding="10dp"
-            android:text="Clacklams Center &amp; Good Movers"
-            android:textColor="@color/yellow"
+            android:textColor="@color/colorPrimary"
             android:textStyle="bold" />
 
         <ListView
@@ -32,7 +32,7 @@
             android:background="@color/white"
             android:divider="@color/gray"
             android:dividerHeight="1dp"
-            tools:listitem="@layout/list_item_order">
+            tools:listitem="@layout/list_item_order_food">
 
         </ListView>
 
@@ -46,19 +46,16 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
+            android:layout_height="wrap_content"
             android:background="@color/colorDivider"
             android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_marginTop="5dp"
-                android:layout_weight="1"
+                android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <include layout="@layout/list_item_order" />
+                <include layout="@layout/list_item_order_food" />
 
             </LinearLayout>
 
@@ -71,21 +68,20 @@
 
         </LinearLayout>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="20dp"
-            android:background="@drawable/bg_orange_rounded"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
             android:gravity="center"
-            android:paddingBottom="10dp"
-            android:paddingLeft="40dp"
-            android:paddingRight="40dp"
-            android:paddingTop="10dp"
-            android:text="Continue"
-            android:textColor="@color/white"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+            android:layout_weight="1">
+
+            <Button
+                android:id="@+id/btnContinue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@drawable/btn_continue"/>
+
+        </LinearLayout>
 
     </LinearLayout>
 

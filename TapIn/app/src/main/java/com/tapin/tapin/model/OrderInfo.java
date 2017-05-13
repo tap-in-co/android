@@ -9,7 +9,7 @@ import java.util.List;
  * Created by Narendra on 4/25/17.
  */
 
-public class OrderInfo implements Serializable,Cloneable{
+public class OrderInfo implements Serializable, Cloneable {
 
     @SerializedName("product_id")
     public String product_id;
@@ -91,5 +91,7 @@ public class OrderInfo implements Serializable,Cloneable{
 
     @SerializedName("options")
     public List<Options> listOptions;
+
+    public int quantity = 1;
 
 }

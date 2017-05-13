@@ -62,6 +62,10 @@ public class BusinessInfo implements Cloneable, Serializable {
     public String display_icon_products;
     public String display_icon_product_categories;
     public String pickup_later;
+    public String pickup_counter_charge;
+    public String pickup_location_charge;
+    public String delivery_table_charge;
+    public String delivery_location_charge;
     public String promotion_discount_amount;
     public String promotion_message;
     public String promotion_code;
