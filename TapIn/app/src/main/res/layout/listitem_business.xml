@@ -1,46 +1,73 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/card_view"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
 
-    <RelativeLayout
+    <LinearLayout
+        android:id="@+id/layoutContent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true">
+        android:orientation="horizontal"
+        android:padding="5dp">
 
         <LinearLayout
-            android:id="@+id/layoutContent"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="5dp">
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvBusinessName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:maxLines="1"
+                android:paddingTop="5dp"
+                android:text="NAme"
+                android:textAppearance="?android:attr/textAppearanceSmallPopupMenu"
+                android:textColor="@color/colorText"
+                android:textStyle="bold"
+                android:typeface="normal" />
+
+            <TextView
+                android:id="@+id/tvDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:maxLines="2"
+                android:paddingTop="5dp"
+                android:text="NAme"
+                android:textAppearance="?android:attr/textAppearanceSmallInverse"
+                android:textColor="@color/colorText"
+                android:typeface="normal" />
 
             <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:orientation="vertical">
+                android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/textViewName"
-                    android:layout_width="match_parent"
+                    android:id="@+id/tvBusinessType"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:gravity="center_vertical"
                     android:maxLines="1"
                     android:paddingTop="5dp"
                     android:text="NAme"
-                    android:textAppearance="?android:attr/textAppearanceSmallPopupMenu"
-                    android:textColor="@color/colorText"
-                    android:textStyle="bold"
+                    android:textAppearance="?android:attr/textAppearanceSmallInverse"
+                    android:textColor="@color/colorHighlight"
                     android:typeface="normal" />
 
                 <TextView
-                    android:id="@+id/textViewDescription"
-                    android:layout_width="match_parent"
+                    android:id="@+id/tvNeighbourhood"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:gravity="center_vertical"
                     android:maxLines="1"
                     android:paddingTop="5dp"
@@ -49,96 +76,78 @@
                     android:textColor="@color/colorText"
                     android:typeface="normal" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/textViewBusinessType"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center_vertical"
-                        android:maxLines="1"
-                        android:paddingTop="5dp"
-                        android:text="NAme"
-                        android:textAppearance="?android:attr/textAppearanceSmallInverse"
-                        android:textColor="@color/colorHighlight"
-                        android:typeface="normal" />
-
-                    <TextView
-                        android:id="@+id/textViewCity"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center_vertical"
-                        android:maxLines="1"
-                        android:paddingTop="5dp"
-                        android:text="NAme"
-                        android:textAppearance="?android:attr/textAppearanceSmallInverse"
-                        android:textColor="@color/colorText"
-                        android:typeface="normal" />
-
-                    <TextView
-                        android:id="@+id/textViewLocation"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center_vertical"
-                        android:maxLines="1"
-                        android:paddingTop="5dp"
-                        android:text="NAme"
-                        android:textAppearance="?android:attr/textAppearanceSmallInverse"
-                        android:textColor="@color/colorText"
-                        android:typeface="normal" />
-
-                </LinearLayout>
-
-
-                <RatingBar
-                    android:id="@+id/ratingBar"
-                    style="?attr/ratingBarStyleSmall"
+                <TextView
+                    android:id="@+id/tvDistance"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:theme="@style/RatingBar" />
-
-
-                <TextView
-                    android:id="@+id/textViewOpenClosed"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:gravity="center_vertical"
                     android:maxLines="1"
                     android:paddingTop="5dp"
                     android:text="NAme"
+                    android:textAppearance="?android:attr/textAppearanceSmallInverse"
+                    android:textColor="@color/colorText"
+                    android:typeface="normal" />
+
+            </LinearLayout>
+
+            <RatingBar
+                android:id="@+id/ratingBar"
+                style="?attr/ratingBarStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:theme="@style/RatingBar" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tvOpenStatus"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:maxLines="1"
+                    android:paddingTop="5dp"
+                    android:text="Name"
                     android:textAllCaps="true"
                     android:textAppearance="?android:attr/textAppearanceSmallInverse"
                     android:textColor="@color/colorTextLight"
                     android:typeface="normal" />
 
+                <TextView
+                    android:id="@+id/tvOpeningTime"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:maxLines="1"
+                    android:paddingTop="5dp"
+                    android:text="11 AM - 2 PM"
+                    android:textAllCaps="true"
+                    android:textAppearance="?android:attr/textAppearanceSmallInverse"
+                    android:textColor="@color/colorText"
+                    android:textStyle="bold"
+                    android:typeface="normal" />
+
             </LinearLayout>
-
-
-            <ImageView
-                android:id="@+id/imageViewIcon"
-                android:layout_width="100dp"
-                android:layout_height="match_parent"
-                app:srcCompat="@mipmap/ic_launcher_round" />
 
         </LinearLayout>
 
+        <ImageView
+            android:id="@+id/ivBusinessIcon"
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            app:srcCompat="@mipmap/ic_launcher_round" />
 
-        <LinearLayout
-            android:id="@+id/bottomDivider"
-            android:layout_width="match_parent"
-            android:layout_height="0.5dp"
-            android:layout_alignParentBottom="false"
-            android:layout_below="@+id/layoutContent"
-            android:background="@color/colorDivider"
-            android:orientation="horizontal"></LinearLayout>
+    </LinearLayout>
 
-    </RelativeLayout>
+    <View
+        android:id="@+id/bottomDivider"
+        android:layout_width="match_parent"
+        android:layout_height="0.8dp"
+        android:background="@color/colorDivider" />
 
-</RelativeLayout>
+</LinearLayout>

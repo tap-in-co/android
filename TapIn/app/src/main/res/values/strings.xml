@@ -86,6 +86,9 @@
     <string name="profile">Profile</string>
     <string name="notifications">Notifications</string>
     <string name="points">Points</string>
+    <string name="order_summary">Order Summary</string>
+    <string name="payment">Payment</string>
+    <string name="confirmation">Confirmation</string>
 
     <string-array name="tabs">
         <item>@string/home</item>

@@ -1,5 +1,6 @@
 package com.tapin.tapin.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -13,12 +14,16 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.tapin.tapin.R;
+import com.tapin.tapin.activity.HomeActivity;
+import com.tapin.tapin.fragment.MenuFoodListFragment;
 import com.tapin.tapin.model.BusinessType;
+import com.tapin.tapin.utils.AlertMessages;
 import com.tapin.tapin.utils.Debug;
 
 import java.util.ArrayList;
 
 public class BusinessDetailAdapter extends BaseAdapter {
+
     Context context;
 
     LayoutInflater inflter;
@@ -26,11 +31,27 @@ public class BusinessDetailAdapter extends BaseAdapter {
     String bg_color;
     String text_color;
 
-    public BusinessDetailAdapter(FragmentActivity activity, String bg, String text) {
+    AlertMessages messages;
+
+    int previousOrder = 0;
+
+    PreviousOrderClickListener previousOrderClickListener;
+
+    public interface PreviousOrderClickListener {
+
+        public void clicked(String s);
+
+    }
+
+    public BusinessDetailAdapter(Context activity, String bg, String text, PreviousOrderClickListener pOrderClickListener) {
+
+        this.previousOrderClickListener = pOrderClickListener;
         context = activity;
         inflter = (LayoutInflater.from(context));
         bg_color = bg;
         text_color = text;
+
+        messages = new AlertMessages(context);
     }
 
     public void addAll(ArrayList<BusinessType> businessList) {
@@ -88,11 +109,33 @@ public class BusinessDetailAdapter extends BaseAdapter {
             holder.llPreviousOrder.setVisibility(View.GONE);
         }
 
+        holder.tvPreviousOrderCount.setText("" + previousOrder);
+
         holder.ivCategory.setImageResource(getIcon(businessType.icon));
 //        holder.llDetailContainer.setBackgroundColor(ContextCompat.getColor(context, bg_color));
-        Debug.e("Colorm at "+i,bg_color+" : "+text_color);
+        Debug.e("Colorm at " + i, bg_color + " : " + text_color);
         holder.llDetailContainer.setBackgroundColor(Color.parseColor(bg_color));
         holder.tvBusinessType.setTextColor(Color.parseColor(text_color));
+
+        holder.llPreviousOrder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                String positiveButton = "Menu";
+                String negativeButton = "Cancel";
+                String neutralButton = "My Order";
+
+                messages.alert(context, "", "Your previous order was added to your cart, Proceed to", positiveButton, negativeButton, neutralButton, new AlertMessages.AlertDialogCallback() {
+                    @Override
+                    public void clickedButtonText(String s) {
+
+                        previousOrderClickListener.clicked(s);
+
+                    }
+                });
+
+            }
+        });
 
         return convertView;
 
@@ -114,5 +157,12 @@ public class BusinessDetailAdapter extends BaseAdapter {
         TextView tvPreviousOrderCount;
     }
 
+    public void setPreviousOrderCount(int pOrder) {
+
+        this.previousOrder = pOrder;
+
+        notifyDataSetChanged();
+
+    }
 
 }

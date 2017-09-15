@@ -1,19 +1,28 @@
 package com.tapin.tapin.fragment;
 
+import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
@@ -23,9 +32,11 @@ import com.tapin.tapin.R;
 import com.tapin.tapin.activity.HomeActivity;
 import com.tapin.tapin.adapter.OrderStickyListViewAdapter;
 import com.tapin.tapin.adapter.MenuAdapter;
-import com.tapin.tapin.model.BusinessInfo;
+import com.tapin.tapin.model.Business;
 import com.tapin.tapin.model.BusinessMenu;
+import com.tapin.tapin.model.Options;
 import com.tapin.tapin.model.OrderInfo;
+import com.tapin.tapin.model.OrderedInfo;
 import com.tapin.tapin.utils.AlertMessages;
 import com.tapin.tapin.utils.Constant;
 import com.tapin.tapin.utils.PreferenceManager;
@@ -39,7 +50,10 @@ import org.json.JSONObject;
 
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -95,6 +109,7 @@ public class MenuFoodListFragment extends Fragment {
     LinearLayout llToolbarTitle;
     TextView tvToolbarTitle;
     TextView tvToolbarRight;
+    static TextView tvOrderBadge;
     ImageView ivTitleDropDown;
 
     ListView lvMenu;
@@ -102,7 +117,7 @@ public class MenuFoodListFragment extends Fragment {
     List<OrderInfo> listOrders = new ArrayList<>();
     MenuAdapter menuAdapter;
 
-    BusinessInfo businessInfo;
+    Business business;
 
     private ExpandableStickyListHeadersListView lvOrderFood;
     OrderStickyListViewAdapter adapter;
@@ -110,8 +125,7 @@ public class MenuFoodListFragment extends Fragment {
     ProgressHUD pd;
     AlertMessages messages;
 
-    int totalOrders = 0;
-    List<OrderInfo> listOrdered = new ArrayList<>();
+    static ArrayList<OrderedInfo> listOrdered = new ArrayList<>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -121,13 +135,30 @@ public class MenuFoodListFragment extends Fragment {
 
         messages = new AlertMessages(getActivity());
 
-        businessInfo = (BusinessInfo) getArguments().getSerializable("BUSINESS_INFO");
+//        business = (Business) getArguments().getSerializable("BUSINESS_INFO");
+        business = Constant.business;
 
-        menuAdapter = new MenuAdapter(getActivity(), Utils.getColor(businessInfo.bg_color), Utils.getColor(businessInfo.text_color));
+        menuAdapter = new MenuAdapter(getActivity(), Utils.getColor(business.bg_color), Utils.getColor(business.text_color));
 
         initHeader();
 
         initViews();
+
+        Constant.listOrdered = listOrdered;
+
+        if (getArguments() != null) {
+
+            listOrdered = (ArrayList<OrderedInfo>) getArguments().getSerializable("ORDERED_LIST");
+
+            if (listOrdered != null) {
+
+                Constant.listOrdered = listOrdered;
+
+                modifyTotalOrders();
+
+            }
+
+        }
 
         if (Utils.isInternetConnected(getActivity())) {
 
@@ -151,9 +182,9 @@ public class MenuFoodListFragment extends Fragment {
 
         RequestParams params = new RequestParams();
         params.put("cmd", "products_for_business");
-        params.put("businessID", businessInfo.businessID);
+        params.put("businessID", business.businessID);
         params.put("consumer_id", PreferenceManager.getUserId()/*"1234570319"*/);
-        params.put("sub_businesses", businessInfo.sub_businesses);
+        params.put("sub_businesses", business.sub_businesses);
 
         client.get(getActivity(), URLs.BUSINESS_MENU, params, new AsyncHttpResponseHandler() {
             @Override
@@ -205,9 +236,24 @@ public class MenuFoodListFragment extends Fragment {
 
                     }
 
-                    menuAdapter.addAll(listBusinessMenu);
+                    Collections.sort(listOrders, new Comparator<OrderInfo>() {
+                        @Override
+                        public int compare(OrderInfo lhs, OrderInfo rhs) {
+                            return lhs.category_name.compareTo(rhs.category_name);
+                        }
+                    });
 
                     adapter.addAll(listOrders);
+
+                    Collections.sort(listBusinessMenu, new Comparator<BusinessMenu>() {
+                        @Override
+                        public int compare(BusinessMenu lhs, BusinessMenu rhs) {
+                            return lhs.category.compareTo(rhs.category);
+                        }
+                    });
+
+
+                    menuAdapter.addAll(listBusinessMenu);
 
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
@@ -231,6 +277,64 @@ public class MenuFoodListFragment extends Fragment {
                     pd.dismiss();
                     pd = null;
                 }
+
+            }
+        });
+
+    }
+
+    public void initHeader() {
+
+        tvToolbarLeft = (TextView) view.findViewById(R.id.tvToolbarLeft);
+        llToolbarTitle = (LinearLayout) view.findViewById(R.id.llToolbarTitle);
+        tvToolbarTitle = (TextView) view.findViewById(R.id.tvToolbarTitle);
+        tvToolbarRight = (TextView) view.findViewById(R.id.tvToolbarRight);
+        tvOrderBadge = (TextView) view.findViewById(R.id.tvOrderBadge);
+        ivTitleDropDown = (ImageView) view.findViewById(R.id.ivTitleDropDown);
+
+        tvToolbarLeft.setVisibility(View.VISIBLE);
+        tvToolbarLeft.setText("Back");
+        tvToolbarRight.setVisibility(View.VISIBLE);
+        tvToolbarRight.setText("Order");
+        ivTitleDropDown.setVisibility(View.VISIBLE);
+        ivTitleDropDown.setImageResource(R.drawable.ic_arrow_drop_down);
+
+        tvToolbarLeft.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getActivity().onBackPressed();
+            }
+        });
+
+        llToolbarTitle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                ivTitleDropDown.setImageResource(R.drawable.ic_arrow_drop_up);
+
+                if (lvMenu.getVisibility() == View.VISIBLE) {
+                    ivTitleDropDown.setImageResource(R.drawable.ic_arrow_drop_down);
+                    lvMenu.setVisibility(View.GONE);
+                } else {
+                    ivTitleDropDown.setImageResource(R.drawable.ic_arrow_drop_up);
+                    lvMenu.setVisibility(View.VISIBLE);
+                }
+
+            }
+        });
+
+        tvToolbarTitle.setText(business.short_name + " Menu");
+
+        tvToolbarRight.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                OrderFragment orderFragment = new OrderFragment();
+                Bundle bundle = new Bundle();
+//                bundle.putSerializable("BUSINESS_INFO", business);
+                bundle.putSerializable("ORDERED_LIST", (Serializable) listOrdered);
+                orderFragment.setArguments(bundle);
+                ((HomeActivity) getActivity()).addFragment(orderFragment, R.id.frame_home);
 
             }
         });
@@ -309,7 +413,13 @@ public class MenuFoodListFragment extends Fragment {
         });
     }
 
-    private void showOptionDialog(final OrderInfo orderInfo) {
+    private void showOptionDialog(OrderInfo oInfo) {
+
+//        Log.e("OINFO_CHECKED", "" + oInfo.listOptions.get(2).optionData.get(0).isSelected);
+
+        final OrderInfo orderInfo = oInfo;
+
+//        Log.e("ORDERINFO_CHECKED", "" + orderInfo.listOptions.get(2).optionData.get(0).isSelected);
 
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
 
@@ -322,45 +432,191 @@ public class MenuFoodListFragment extends Fragment {
 
         LinearLayout llHeaderView = (LinearLayout) dialogView.findViewById(R.id.llHeaderView);
 
-        EditText etNote = (EditText) dialogView.findViewById(R.id.etNote);
+        ((TextView) dialogView.findViewById(R.id.tvHeader)).setBackgroundColor(Color.parseColor(Utils.getColor(business.bg_color)));
+        final TextView tvOption1 = (TextView) dialogView.findViewById(R.id.tvOption1);
+        tvOption1.setBackgroundColor(Color.parseColor(Utils.getColor(business.bg_color)));
+        final ListView lvOption1 = (ListView) dialogView.findViewById(R.id.lvOption1);
+        final OptionDataAdapter optionDataAdapter1 = new OptionDataAdapter(getActivity());
+        lvOption1.setAdapter(optionDataAdapter1);
+        final TextView tvOption2 = (TextView) dialogView.findViewById(R.id.tvOption2);
+        tvOption2.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.gray));
+        final ListView lvOption2 = (ListView) dialogView.findViewById(R.id.lvOption2);
+        final OptionDataAdapter optionDataAdapter2 = new OptionDataAdapter(getActivity());
+        lvOption2.setAdapter(optionDataAdapter2);
+        final TextView tvOption3 = (TextView) dialogView.findViewById(R.id.tvOption3);
+        tvOption3.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.gray));
+        final ListView lvOption3 = (ListView) dialogView.findViewById(R.id.lvOption3);
+        final OptionDataAdapter optionDataAdapter3 = new OptionDataAdapter(getActivity());
+        lvOption3.setAdapter(optionDataAdapter3);
+        Button btnAddOrder = (Button) dialogView.findViewById(R.id.btnAddOrder);
+        btnAddOrder.setBackgroundColor(Color.parseColor(Utils.getColor(business.bg_color)));
+        Button btnCancel = (Button) dialogView.findViewById(R.id.btnCancel);
+        btnCancel.setBackgroundColor(Color.parseColor(Utils.getColor(business.bg_color)));
 
-        ((Button) dialogView.findViewById(R.id.btnCancel)).setOnClickListener(new View.OnClickListener() {
+        for (int i = 0; i < orderInfo.listOptions.size(); i++) {
+
+            if (i == 0) {
+                tvOption1.setText("" + orderInfo.listOptions.get(i).option_category_name);
+                optionDataAdapter1.addAll(orderInfo.listOptions.get(i).optionData);
+            } else if (i == 1) {
+                tvOption2.setVisibility(View.VISIBLE);
+                lvOption2.setVisibility(View.VISIBLE);
+                tvOption2.setText("" + orderInfo.listOptions.get(i).option_category_name);
+                optionDataAdapter2.addAll(orderInfo.listOptions.get(i).optionData);
+            } else if (i == 2) {
+                tvOption3.setVisibility(View.VISIBLE);
+                lvOption3.setVisibility(View.VISIBLE);
+                tvOption3.setText("" + orderInfo.listOptions.get(i).option_category_name);
+                optionDataAdapter3.addAll(orderInfo.listOptions.get(i).optionData);
+
+            }
+        }
+
+        if (optionDataAdapter1.getCount() > 0) {
+            tvOption1.setEnabled(true);
+        } else {
+            tvOption1.setEnabled(false);
+        }
+        if (optionDataAdapter2.getCount() > 0) {
+            tvOption2.setEnabled(true);
+        } else {
+            tvOption2.setEnabled(false);
+        }
+        if (optionDataAdapter3.getCount() > 0) {
+            tvOption3.setEnabled(true);
+        } else {
+            tvOption3.setEnabled(false);
+        }
+
+        tvOption1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                tvOption1.setBackgroundColor(Color.parseColor(Utils.getColor(business.bg_color)));
+                tvOption2.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.gray));
+                tvOption3.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.gray));
+
+                lvOption1.setVisibility(View.VISIBLE);
+                lvOption2.setVisibility(View.GONE);
+                lvOption3.setVisibility(View.GONE);
+
+            }
+        });
+
+        tvOption2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                tvOption1.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.gray));
+                tvOption2.setBackgroundColor(Color.parseColor(Utils.getColor(business.bg_color)));
+                tvOption3.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.gray));
+
+                lvOption1.setVisibility(View.GONE);
+                lvOption2.setVisibility(View.VISIBLE);
+                lvOption3.setVisibility(View.GONE);
+
+            }
+        });
+
+        tvOption3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                tvOption1.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.gray));
+                tvOption2.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.gray));
+                tvOption3.setBackgroundColor(Color.parseColor(Utils.getColor(business.bg_color)));
+
+                lvOption1.setVisibility(View.GONE);
+                lvOption2.setVisibility(View.GONE);
+                lvOption3.setVisibility(View.VISIBLE);
+
+            }
+        });
+
+        final EditText etNote = (EditText) dialogView.findViewById(R.id.etNote);
+
+        btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 alertDialog.dismiss();
             }
         });
 
-        ((Button) dialogView.findViewById(R.id.btnAddOrder)).setOnClickListener(new View.OnClickListener() {
+        btnAddOrder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 alertDialog.dismiss();
+
+                OrderedInfo orderedInfo = new OrderedInfo();
+
+                orderedInfo.businessID = orderInfo.businessID;
+                orderedInfo.item_note = etNote.getText().toString();
+                orderedInfo.product_id = orderInfo.product_id;
+                orderedInfo.product_description = orderInfo.short_description;
+                orderedInfo.product_imageurl = orderInfo.pictures;
+                orderedInfo.product_name = orderInfo.name;
+
+                orderedInfo.price = Double.parseDouble(orderInfo.price);
+
+                ArrayList<String> product_option = new ArrayList<String>();
+                ArrayList<String> selected_ProductID_array = new ArrayList<String>();
+                ArrayList<String> selectedOptionData = new ArrayList<>();
+
+                for (int i = 0; i < optionDataAdapter1.optionDataList.size(); i++) {
+                    Options.OptionData optionData = optionDataAdapter1.optionDataList.get(i);
+                    if (optionData.isSelected) {
+                        product_option.add(optionData.name + "(" + optionData.price + ")");
+                        selected_ProductID_array.add(optionData.option_id);
+                        orderedInfo.price = orderedInfo.price + Double.parseDouble(optionData.price);
+                        selectedOptionData.add(optionData.option_id);
+                    }
+                }
+
+                for (int i = 0; i < optionDataAdapter2.optionDataList.size(); i++) {
+                    Options.OptionData optionData = optionDataAdapter2.optionDataList.get(i);
+                    if (optionData.isSelected) {
+                        product_option.add(optionData.name + "(" + optionData.price + ")");
+                        selected_ProductID_array.add(optionData.option_id);
+                        orderedInfo.price = orderedInfo.price + Double.parseDouble(optionData.price);
+                        selectedOptionData.add(optionData.option_id);
+                    }
+                }
+
+                for (int i = 0; i < optionDataAdapter3.optionDataList.size(); i++) {
+                    Options.OptionData optionData = optionDataAdapter3.optionDataList.get(i);
+                    if (optionData.isSelected) {
+                        product_option.add(optionData.name + "(" + optionData.price + ")");
+                        selected_ProductID_array.add(optionData.option_id);
+                        orderedInfo.price = orderedInfo.price + Double.parseDouble(optionData.price);
+                        selectedOptionData.add(optionData.option_id);
+                    }
+                }
+
+                orderedInfo.product_option = TextUtils.join(",", product_option);
+                Log.e("PRODUCT_OPTION", "" + orderedInfo.product_option);
+                orderedInfo.selected_ProductID_array = TextUtils.join(",", selected_ProductID_array);
+                Log.e("PRODUCT_OPTION_ARRAY", "" + orderedInfo.selected_ProductID_array);
+                Log.e("PRODUCT_OPTION_PRICE", "" + orderedInfo.price);
+                orderedInfo.listOptions = selectedOptionData;
+                orderedInfo.points = Math.round(orderedInfo.price);
 
                 boolean isAlreadyAdded = false;
 
-                CHECK_PRODUCT_ID:
+                CHECK_PRODUCT_OPTION_ARRAY:
                 for (int i = 0; i < listOrdered.size(); i++) {
-
-                    if (listOrdered.get(i).product_id.equalsIgnoreCase(orderInfo.product_id)) {
-
+                    if (listOrdered.get(i).product_id.equalsIgnoreCase(orderedInfo.product_id) && listOrdered.get(i).selected_ProductID_array.equalsIgnoreCase(orderedInfo.selected_ProductID_array)) {
                         isAlreadyAdded = true;
                         listOrdered.get(i).quantity++;
-                        break CHECK_PRODUCT_ID;
-
+                        break CHECK_PRODUCT_OPTION_ARRAY;
                     }
                 }
 
                 if (!isAlreadyAdded) {
-                    listOrdered.add(orderInfo);
+                    listOrdered.add(orderedInfo);
                 }
 
-                totalOrders++;
-
-                if (totalOrders <= 1) {
-                    tvToolbarRight.setText("" + totalOrders + " Order");
-                } else {
-                    tvToolbarRight.setText("" + totalOrders + " Orders");
-                }
+                modifyTotalOrders();
 
             }
         });
@@ -375,7 +631,7 @@ public class MenuFoodListFragment extends Fragment {
         View dialogView = inflater.inflate(R.layout.dialog_add_note, null);
         dialogBuilder.setView(dialogView);
 
-        EditText etNote = (EditText) dialogView.findViewById(R.id.etNote);
+        final EditText etNote = (EditText) dialogView.findViewById(R.id.etNote);
         final AlertDialog alertDialog = dialogBuilder.create();
         alertDialog.show();
 
@@ -392,88 +648,35 @@ public class MenuFoodListFragment extends Fragment {
 
                 alertDialog.dismiss();
 
+                OrderedInfo orderedInfo = new OrderedInfo();
+
+                orderedInfo.businessID = orderInfo.businessID;
+                orderedInfo.item_note = etNote.getText().toString();
+                orderedInfo.product_id = orderInfo.product_id;
+                orderedInfo.product_description = orderInfo.short_description;
+                orderedInfo.product_imageurl = orderInfo.pictures;
+                orderedInfo.product_name = orderInfo.name;
+                orderedInfo.price = Double.parseDouble(orderInfo.price);
+                orderedInfo.points = Math.round(orderedInfo.price);
+
                 boolean isAlreadyAdded = false;
-                CHECK_PRODUCT_ID:
+
+                CHECK_PRODUCT_OPTION_ARRAY:
                 for (int i = 0; i < listOrdered.size(); i++) {
-
-                    if (listOrdered.get(i).product_id.equalsIgnoreCase(orderInfo.product_id)) {
-
+                    if (listOrdered.get(i).product_id.equalsIgnoreCase(orderedInfo.product_id) && listOrdered.get(i).selected_ProductID_array.equalsIgnoreCase(orderedInfo.selected_ProductID_array)) {
                         isAlreadyAdded = true;
                         listOrdered.get(i).quantity++;
-                        break CHECK_PRODUCT_ID;
-
+                        break CHECK_PRODUCT_OPTION_ARRAY;
                     }
-
                 }
 
                 if (!isAlreadyAdded) {
-                    listOrdered.add(orderInfo);
+
+                    listOrdered.add(orderedInfo);
+
                 }
 
-                totalOrders++;
-
-                if (totalOrders <= 1) {
-                    tvToolbarRight.setText("" + totalOrders + " Order");
-                } else {
-                    tvToolbarRight.setText("" + totalOrders + " Orders");
-                }
-
-            }
-        });
-
-    }
-
-    public void initHeader() {
-
-        tvToolbarLeft = (TextView) view.findViewById(R.id.tvToolbarLeft);
-        llToolbarTitle = (LinearLayout) view.findViewById(R.id.llToolbarTitle);
-        tvToolbarTitle = (TextView) view.findViewById(R.id.tvToolbarTitle);
-        tvToolbarRight = (TextView) view.findViewById(R.id.tvToolbarRight);
-        ivTitleDropDown = (ImageView) view.findViewById(R.id.ivTitleDropDown);
-
-        tvToolbarLeft.setVisibility(View.VISIBLE);
-        tvToolbarLeft.setText("Back");
-        tvToolbarRight.setVisibility(View.VISIBLE);
-        tvToolbarRight.setText("Order");
-        ivTitleDropDown.setVisibility(View.VISIBLE);
-        ivTitleDropDown.setImageResource(R.drawable.ic_arrow_drop_down);
-
-        tvToolbarLeft.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                getActivity().onBackPressed();
-            }
-        });
-
-        llToolbarTitle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                ivTitleDropDown.setImageResource(R.drawable.ic_arrow_drop_up);
-
-                if (lvMenu.getVisibility() == View.VISIBLE) {
-                    ivTitleDropDown.setImageResource(R.drawable.ic_arrow_drop_down);
-                    lvMenu.setVisibility(View.GONE);
-                } else {
-                    ivTitleDropDown.setImageResource(R.drawable.ic_arrow_drop_up);
-                    lvMenu.setVisibility(View.VISIBLE);
-                }
-
-            }
-        });
-
-        tvToolbarTitle.setText(businessInfo.short_name + " Menu");
-
-        tvToolbarRight.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                OrderFragment orderFragment = new OrderFragment();
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("BUSINESS_INFO", businessInfo);
-                bundle.putSerializable("ORDERED_LIST", (Serializable) listOrdered);
-                orderFragment.setArguments(bundle);
-                ((HomeActivity) getActivity()).addFragment(orderFragment);
+                modifyTotalOrders();
 
             }
         });
@@ -502,6 +705,158 @@ public class MenuFoodListFragment extends Fragment {
                 return false;
             }
         });
+    }
+
+    private class OptionDataAdapter extends BaseAdapter {
+
+        public Context context;
+        private ArrayList<Options.OptionData> optionDataList = new ArrayList<>();
+        LayoutInflater inflater;
+
+        public OptionDataAdapter(Context c) {
+            this.context = c;
+            inflater = LayoutInflater.from(context);
+        }
+
+        private class ViewHolder {
+
+            TextView optionName;
+            CheckBox chkBox;
+
+        }
+
+        public void addAll(List<Options.OptionData> list) {
+
+            try {
+                this.optionDataList.clear();
+                this.optionDataList.addAll(list);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            notifyDataSetChanged();
+
+        }
+
+        @Override
+        public int getCount() {
+            return optionDataList.size();
+        }
+
+        @Override
+        public Options.OptionData getItem(int i) {
+            return optionDataList.get(i);
+        }
+
+        @Override
+        public long getItemId(int i) {
+            return i;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+
+            ViewHolder holder = null;
+
+            if (convertView == null) {
+
+                convertView = inflater.inflate(R.layout.list_item_option, null);
+
+                holder = new ViewHolder();
+                holder.optionName = (TextView) convertView.findViewById(R.id.optionName);
+                holder.chkBox = (CheckBox) convertView.findViewById(R.id.chkBox);
+                convertView.setTag(holder);
+
+                holder.chkBox.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View v) {
+
+                        CheckBox cb = (CheckBox) v;
+
+                        Options.OptionData optionData = (Options.OptionData) cb.getTag();
+                        optionData.isSelected = cb.isChecked();
+
+                    }
+                });
+            } else {
+                holder = (ViewHolder) convertView.getTag();
+            }
+
+            Options.OptionData optionData = optionDataList.get(position);
+
+            holder.optionName.setText("" + optionData.name + "($" + optionData.price + ")");
+
+            holder.chkBox.setText("");
+            holder.chkBox.setChecked(optionData.isSelected);
+            holder.chkBox.setTag(optionData);
+
+            return convertView;
+
+        }
+    }
+
+    private void checkButtonClick() {
+
+//        Button myButton = (Button) findViewById(R.id.findSelected);
+//        myButton.setOnClickListener(new OnClickListener() {
+//
+//            @Override
+//            public void onClick(View v) {
+//
+//                StringBuffer responseText = new StringBuffer();
+//                responseText.append("The following were selected...\n");
+//
+//                ArrayList<Country> countryList = dataAdapter.countryList;
+//                for(int i=0;i<countryList.size();i++){
+//                    Country country = countryList.get(i);
+//                    if(country.isSelected()){
+//                        responseText.append("\n" + country.getName());
+//                    }
+//                }
+//
+//                Toast.makeText(getApplicationContext(),
+//                        responseText, Toast.LENGTH_LONG).show();
+//
+//            }
+//        });
+
+    }
+
+    public static void updateOrderData(ArrayList<OrderedInfo> list) {
+
+        try {
+
+            listOrdered.clear();
+
+            listOrdered.addAll(list);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        modifyTotalOrders();
+
+        OrderFragment.isOrderChanged = false;
+
+    }
+
+    private static void modifyTotalOrders() {
+
+        int totalQuantity = 0;
+
+        for (int i = 0; i < listOrdered.size(); i++) {
+
+            totalQuantity = totalQuantity + listOrdered.get(i).quantity;
+
+        }
+
+        if (totalQuantity == 0) {
+            tvOrderBadge.setVisibility(View.GONE);
+        } else {
+            tvOrderBadge.setVisibility(View.VISIBLE);
+            tvOrderBadge.setText("" + totalQuantity);
+        }
+
     }
 
 

@@ -4,18 +4,15 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.view.LayoutInflater;
 
 import com.tapin.tapin.R;
 
 public class AlertMessages {
 
-    Activity context;
-    LayoutInflater inflater;
+    Context context;
 
-    public AlertMessages(Activity context) {
+    public AlertMessages(Context context) {
         this.context = context;
-        inflater = context.getLayoutInflater();
     }
 
     static AlertDialogCallback alertDialogCallback;
@@ -166,7 +163,7 @@ public class AlertMessages {
 
     }
 
-    public static void alert(Context context, String title, String message, final String positiveBtn, final String negativeBtn, final AlertDialogCallback alertDialogCallback) {
+    public void alert(Context context, String title, String message, final String positiveBtn, final String negativeBtn,final String neutralBtn, final AlertDialogCallback alertDialogCallback) {
 
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
 
@@ -184,14 +181,31 @@ public class AlertMessages {
             }
         });
 
-        alertDialog.setNegativeButton(negativeBtn, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
+        if (negativeBtn != null) {
 
-                dialog.dismiss();
-                alertDialogCallback.clickedButtonText(negativeBtn);
+            alertDialog.setNegativeButton(negativeBtn, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
 
-            }
-        });
+                    dialog.dismiss();
+                    alertDialogCallback.clickedButtonText(negativeBtn);
+
+                }
+            });
+
+        }
+
+        if (neutralBtn != null) {
+
+            alertDialog.setNeutralButton(neutralBtn, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+
+                    dialog.dismiss();
+                    alertDialogCallback.clickedButtonText(neutralBtn);
+
+                }
+            });
+
+        }
 
         alertDialog.show();
     }

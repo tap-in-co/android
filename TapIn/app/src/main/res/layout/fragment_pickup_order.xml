@@ -2,67 +2,65 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/light_gray"
+    android:background="@color/white"
     android:orientation="vertical">
 
     <include layout="@layout/toolbar" />
 
-    <ScrollView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scrollbars="none">
+        android:orientation="vertical"
+        android:padding="10dp">
+
+        <TextView
+            android:id="@+id/tvHotelName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="5dp"
+            android:text="Hotel Name"
+            android:textColor="@color/colorPrimary"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:padding="10dp"
+            android:text="We are bringing your food to your table"
+            android:textStyle="bold" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/gray" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="8dp"
+            android:paddingTop="8dp"
+            android:text="Choose your pickup type" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="10dp">
+            android:orientation="horizontal"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp">
 
-            <TextView
-                android:id="@+id/tvHotelName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:padding="5dp"
-                android:textStyle="bold"
-                android:text="Hotel Name"
-                android:textColor="@color/colorPrimary"
-                android:textSize="18sp" />
-
-            <TextView
-                android:id="@+id/tvMessage"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/white"
-                android:elevation="5dp"
-                android:padding="10dp"
-                android:text="We are bringing your food to your table"
-                android:textStyle="bold" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/gray" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="8dp"
-                android:paddingTop="8dp"
-                android:text="Choose your pickup type" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingBottom="10dp"
-                android:paddingTop="10dp">
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1">
 
                 <LinearLayout
                     android:id="@+id/llCounter"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_weight="1"
                     android:gravity="center_horizontal"
                     android:orientation="vertical">
 
@@ -81,11 +79,24 @@
                         android:textStyle="bold" />
                 </LinearLayout>
 
+                <ImageView
+                    android:id="@+id/ivCounterDisable"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@color/trans_white"
+                    android:visibility="gone" />
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1">
+
                 <LinearLayout
                     android:id="@+id/llTable"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_weight="1"
                     android:gravity="center_horizontal"
                     android:orientation="vertical">
 
@@ -104,11 +115,24 @@
                         android:textStyle="bold" />
                 </LinearLayout>
 
+                <ImageView
+                    android:id="@+id/ivTableDisable"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@color/trans_white"
+                    android:visibility="gone" />
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1">
+
                 <LinearLayout
                     android:id="@+id/llLocation"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_weight="1"
                     android:gravity="center_horizontal"
                     android:orientation="vertical">
 
@@ -127,11 +151,24 @@
                         android:textStyle="bold" />
                 </LinearLayout>
 
+                <ImageView
+                    android:id="@+id/ivLocationDisable"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@color/trans_white"
+                    android:visibility="gone" />
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1">
+
                 <LinearLayout
                     android:id="@+id/llParking"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_weight="1"
                     android:gravity="center_horizontal"
                     android:orientation="vertical">
 
@@ -149,223 +186,211 @@
                         android:textColor="@color/black"
                         android:textStyle="bold" />
                 </LinearLayout>
-            </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/ivParkingDisable"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@color/trans_white"
+                    android:visibility="gone" />
+
+            </FrameLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="@color/white"
+            android:orientation="horizontal"
+            android:padding="8dp">
 
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/white"
+                android:id="@+id/llCounterPick"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
                 android:orientation="horizontal"
-                android:padding="8dp">
+                android:visibility="visible">
 
-                <LinearLayout
-                    android:id="@+id/llCounterPick"
+                <TextView
                     android:layout_width="0dp"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:orientation="horizontal"
-                    android:visibility="visible">
+                    android:text="Pickup Time: " />
 
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Pickup Time: " />
-
-                    <TextView
-                        android:id="@+id/tvCounterTime"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="5dp"
-                        android:layout_weight="1.5"
-                        android:background="@drawable/bg_trans_border_gray"
-                        android:gravity="center"
-                        android:padding="10dp"
-                        android:text="Pick Time"
-                        android:textColor="@color/black"
-                        android:textStyle="bold" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/llTablePick"
+                <TextView
+                    android:id="@+id/tvCounterTime"
                     android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:orientation="horizontal"
-                    android:visibility="visible">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Table No.: " />
-
-                    <Spinner
-                        android:id="@+id/spinnerTable"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1.5"
-                        android:background="@drawable/bg_trans_border_gray"
-                        android:gravity="center"
-                        android:padding="10dp"
-                        android:spinnerMode="dialog"
-                        android:text="Pick Table"
-                        android:textColor="@color/black"
-                        android:textStyle="bold" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/llLocationPick"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:visibility="visible">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="horizontal"
-                        android:visibility="visible">
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="Location: " />
-
-                        <Spinner
-                            android:id="@+id/spinnerLocation"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1.5"
-                            android:background="@drawable/bg_trans_border_gray"
-                            android:gravity="center"
-                            android:padding="10dp"
-                            android:text="Pick Location"
-                            android:textColor="@color/black"
-                            android:textStyle="bold" />
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:layout_weight="1"
-                        android:orientation="horizontal"
-                        android:visibility="visible">
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="Pickup Time: " />
-
-                        <TextView
-                            android:id="@+id/tvLocationTime"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginLeft="5dp"
-                            android:layout_weight="1.5"
-                            android:background="@drawable/bg_trans_border_gray"
-                            android:gravity="center"
-                            android:padding="10dp"
-                            android:text="Pick Time"
-                            android:textColor="@color/black"
-                            android:textStyle="bold" />
-
-                    </LinearLayout>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/llParkingPick"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:orientation="horizontal"
-                    android:visibility="visible">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Pickup Time: " />
-
-                    <TextView
-                        android:id="@+id/tvParkingTime"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="5dp"
-                        android:layout_weight="1.5"
-                        android:background="@drawable/bg_trans_border_gray"
-                        android:gravity="center"
-                        android:padding="10dp"
-                        android:text="Pick Time"
-                        android:textColor="@color/black"
-                        android:textStyle="bold" />
-
-                </LinearLayout>
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:layout_weight="1.5"
+                    android:background="@drawable/bg_trans_border_gray"
+                    android:gravity="center"
+                    android:padding="10dp"
+                    android:text="Pick Time"
+                    android:textColor="@color/black"
+                    android:textStyle="bold" />
 
             </LinearLayout>
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="10dp"
-                android:paddingTop="10dp"
-                android:text="Instructions:"
-                android:textStyle="bold" />
+            <LinearLayout
+                android:id="@+id/llTablePick"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:visibility="visible">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Table No.: " />
+
+                <Spinner
+                    android:id="@+id/spinnerTable"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1.5"
+                    android:background="@drawable/bg_trans_border_gray"
+                    android:gravity="center"
+                    android:padding="10dp"
+                    android:spinnerMode="dialog"
+                    android:text="Pick Table"
+                    android:textColor="@color/black"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
 
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/white"
-                android:focusable="true"
-                android:focusableInTouchMode="true">
+                android:id="@+id/llLocationPick"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:visibility="visible">
 
-                <EditText
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@null"
-                    android:gravity="start"
-                    android:maxLines="3"
-                    android:minLines="3"
-                    android:padding="5dp"
-                    android:text="notes..."
-                    android:textColor="@color/black" />
+                    android:orientation="horizontal"
+                    android:visibility="visible">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Location: " />
+
+                    <Spinner
+                        android:id="@+id/spinnerLocation"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1.5"
+                        android:background="@drawable/bg_trans_border_gray"
+                        android:gravity="center"
+                        android:padding="10dp"
+                        android:text="Pick Location"
+                        android:textColor="@color/black"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_weight="1"
+                    android:orientation="horizontal"
+                    android:visibility="visible">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Pickup Time: " />
+
+                    <TextView
+                        android:id="@+id/tvLocationTime"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:layout_weight="1.5"
+                        android:background="@drawable/bg_trans_border_gray"
+                        android:gravity="center"
+                        android:padding="10dp"
+                        android:text="Pick Time"
+                        android:textColor="@color/black"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
 
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
+                android:id="@+id/llParkingPick"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
                 android:orientation="horizontal"
-                android:padding="8dp">
+                android:visibility="visible">
 
-                <Button
-                    android:id="@+id/btnCancel"
-                    android:layout_width="wrap_content"
+                <TextView
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
-                    android:background="@drawable/btn_cancel" />
+                    android:layout_weight="1"
+                    android:text="Pickup Time: " />
 
-                <Button
-                    android:id="@+id/btnOk"
-                    android:layout_width="wrap_content"
+                <TextView
+                    android:id="@+id/tvParkingTime"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
-                    android:background="@drawable/btn_ok" />
+                    android:layout_marginLeft="5dp"
+                    android:layout_weight="1.5"
+                    android:background="@drawable/bg_trans_border_gray"
+                    android:gravity="center"
+                    android:padding="10dp"
+                    android:text="Pick Time"
+                    android:textColor="@color/black"
+                    android:textStyle="bold" />
 
             </LinearLayout>
 
         </LinearLayout>
 
-    </ScrollView>
+        <EditText
+            android:id="@+id/etNote"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:hint="Notes..."
+            android:padding="10dp"
+            android:textColor="@color/black"
+            android:textSize="18sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnCancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:background="@drawable/btn_cancel_orange" />
+
+            <Button
+                android:id="@+id/btnOk"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:background="@drawable/btn_ok" />
+
+        </LinearLayout>
+
+    </LinearLayout>
 
 </LinearLayout>

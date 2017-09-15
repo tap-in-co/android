@@ -19,26 +19,58 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.tapin.tapin.R;
+import com.tapin.tapin.fragment.CardDetailFragment;
 import com.tapin.tapin.fragment.HomeFragment;
+import com.tapin.tapin.fragment.MenuFoodListFragment;
 import com.tapin.tapin.fragment.NotificationsFragment;
+import com.tapin.tapin.fragment.OrderFragment;
+import com.tapin.tapin.fragment.OrderSummaryFragment;
 import com.tapin.tapin.fragment.PointsFragment;
 import com.tapin.tapin.fragment.ProfileFragment;
 import com.tapin.tapin.utils.BottomNavigationViewHelper;
+import com.tapin.tapin.utils.Constant;
 import com.tapin.tapin.utils.Debug;
+import com.tapin.tapin.utils.Utils;
 
+import org.w3c.dom.Text;
+
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class HomeActivity extends BaseActivity {
 
-    private Toolbar toolbar;
+    public static final String CURRENT_TAG = HomeFragment.class.getSimpleName();
 
-    BottomNavigationView bottomNavigationView;
+    FrameLayout frame_home;
+    FrameLayout frame_profile;
+    FrameLayout frame_notifications;
+    FrameLayout frame_points;
+
+    LinearLayout llHome;
+    ImageView ivHome;
+    TextView tvHome;
+    LinearLayout llProfile;
+    ImageView ivProfile;
+    TextView tvProfile;
+    LinearLayout llNotifications;
+    ImageView ivNotifications;
+    TextView tvNotifications;
+    LinearLayout llPoints;
+    ImageView ivPoints;
+    TextView tvPoints;
+
+    boolean isHome;
+    boolean isProfile;
+    boolean isNotifications;
+    boolean isPoints;
 
     private static final String SELECTED_ITEM = "SELECTED_ITEM";
 
@@ -53,17 +85,10 @@ public class HomeActivity extends BaseActivity {
         setContentView(R.layout.activity_home);
 
         String refreshedToken = FirebaseInstanceId.getInstance().getToken();
-        Log.d("HomeActivity", "Refreshed token: " + refreshedToken);
 
-        initBottomNavigationMenu();
+        initViews();
 
-        if (savedInstanceState != null) {
-            selectedItem = savedInstanceState.getInt(SELECTED_ITEM, 0);
-            selectedMenuItem = bottomNavigationView.getMenu().findItem(selectedItem);
-        } else {
-            selectedMenuItem = bottomNavigationView.getMenu().getItem(0);
-        }
-        selectFragment(selectedMenuItem);
+        llHome.performClick();
 
     }
 
@@ -72,55 +97,100 @@ public class HomeActivity extends BaseActivity {
         super.onResume();
     }
 
-    private void initBottomNavigationMenu() {
+    private void initViews() {
 
-        bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
-        BottomNavigationViewHelper.disableShiftMode(bottomNavigationView);
+        frame_home = (FrameLayout) findViewById(R.id.frame_home);
+        frame_profile = (FrameLayout) findViewById(R.id.frame_profile);
+        frame_notifications = (FrameLayout) findViewById(R.id.frame_notifications);
+        frame_points = (FrameLayout) findViewById(R.id.frame_points);
 
-        bottomNavigationView.setOnNavigationItemSelectedListener
-                (new BottomNavigationView.OnNavigationItemSelectedListener() {
-                    @Override
-                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        llHome = (LinearLayout) findViewById(R.id.llHome);
+        ivHome = (ImageView) findViewById(R.id.ivHome);
+        tvHome = (TextView) findViewById(R.id.tvHome);
+        llProfile = (LinearLayout) findViewById(R.id.llProfile);
+        ivProfile = (ImageView) findViewById(R.id.ivProfile);
+        tvProfile = (TextView) findViewById(R.id.tvProfile);
+        llNotifications = (LinearLayout) findViewById(R.id.llNotifications);
+        ivNotifications = (ImageView) findViewById(R.id.ivNotifications);
+        tvNotifications = (TextView) findViewById(R.id.tvNotifications);
+        llPoints = (LinearLayout) findViewById(R.id.llPoints);
+        ivPoints = (ImageView) findViewById(R.id.ivPoints);
+        tvPoints = (TextView) findViewById(R.id.tvPoints);
 
-                        selectFragment(item);
+        llHome.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
-                        return true;
-                    }
-                });
-    }
+                selectBottomMenu(frame_home, ivHome, R.drawable.tab_home_activated, tvHome);
 
-    private void selectFragment(MenuItem item) {
-        Fragment selectedFragment = null;
-        // init corresponding fragment
-        switch (item.getItemId()) {
-            case R.id.action_home:
-                selectedFragment = HomeFragment.newInstance("", "");
-                break;
-            case R.id.action_profile:
-                selectedFragment = ProfileFragment.newInstance("", "");
-                break;
-            case R.id.action_notifications:
-                selectedFragment = NotificationsFragment.newInstance("", "");
-                break;
-            case R.id.action_points:
-                selectedFragment = PointsFragment.newInstance("", "");
-                break;
-        }
+                if (!isHome) {
+                    isHome = true;
+                    Fragment homeFragment = HomeFragment.newInstance("", "");
+                    FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                    ft.add(R.id.frame_home, homeFragment);
+                    ft.commit();
+                }
+            }
+        });
 
-        // update selected item
-        selectedItem = item.getItemId();
+        llProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
-        if (selectedFragment != null) {
-            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.replace(R.id.frame, selectedFragment, selectedFragment.getTag());
-            ft.commit();
-        }
+                selectBottomMenu(frame_profile, ivProfile, R.drawable.tab_profile_activated, tvProfile);
+
+                if (!isProfile) {
+                    isProfile = true;
+                    Fragment profileFragment = ProfileFragment.newInstance("", "");
+//                    Fragment profileFragment = new CardDetailFragment();
+                    FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                    ft.add(R.id.frame_profile, profileFragment);
+                    ft.commit();
+                }
+
+            }
+        });
+
+        llNotifications.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                selectBottomMenu(frame_notifications, ivNotifications, R.drawable.tab_notification_activated, tvNotifications);
+
+                if (!isNotifications) {
+                    isNotifications = true;
+                    Fragment notificationsFragment = NotificationsFragment.newInstance("", "");
+                    FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                    ft.add(R.id.frame_notifications, notificationsFragment);
+                    ft.commit();
+                }
+
+            }
+        });
+
+        llPoints.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                selectBottomMenu(frame_points, ivPoints, R.drawable.tab_points_activated, tvPoints);
+
+                if (!isPoints) {
+                    isPoints = true;
+                    Fragment pointsFragment = PointsFragment.newInstance("", "");
+                    FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                    ft.add(R.id.frame_points, pointsFragment);
+                    ft.commit();
+                }
+
+            }
+        });
+
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        
+
         if (requestCode == PERMISSION_FINE_LOCATION) {
 
             int permissionCheck = ContextCompat.checkSelfPermission(HomeActivity.this,
@@ -141,22 +211,66 @@ public class HomeActivity extends BaseActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
 
-        Fragment fragment = getCurrentFragment();
+        if (frame_home.getVisibility() == View.VISIBLE) {
 
-        Debug.e("onBackPressed ", "fragment=" + fragment);
+            try {
+                if (OrderFragment.isOrderChanged) {
+
+                    MenuFoodListFragment.updateOrderData(Constant.listOrdered);
+
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+
+            super.onBackPressed();
+
+        } else {
+            super.onBackPressed();
+        }
+
+//        Fragment fragment = getCurrentFragment();
+//        Log.e("onBackPressed ", "fragment=" + fragment);
 
     }
 
-    public void addFragment(Fragment fragment) {
+    private void selectBottomMenu(FrameLayout selectedMenuFrame, ImageView iv, int imageId, TextView tv) {
 
-        Debug.e("addFragment", "fragment=" + fragment.toString());
+        frame_home.setVisibility(View.GONE);
+        frame_profile.setVisibility(View.GONE);
+        frame_notifications.setVisibility(View.GONE);
+        frame_points.setVisibility(View.GONE);
+
+        selectedMenuFrame.setVisibility(View.VISIBLE);
+
+        ivHome.setImageResource(R.drawable.tab_home_deactivated);
+        ivProfile.setImageResource(R.drawable.tab_profile_deactivated);
+        ivNotifications.setImageResource(R.drawable.tab_notification_deactivated);
+        ivPoints.setImageResource(R.drawable.tab_points_deactivated);
+
+        iv.setImageResource(imageId);
+
+        tvHome.setTextColor(ContextCompat.getColor(this, R.color.gray));
+        tvProfile.setTextColor(ContextCompat.getColor(this, R.color.gray));
+        tvNotifications.setTextColor(ContextCompat.getColor(this, R.color.gray));
+        tvPoints.setTextColor(ContextCompat.getColor(this, R.color.gray));
+
+        tv.setTextColor(ContextCompat.getColor(this, R.color.colorPrimary));
+
+    }
+
+    public void addFragment(Fragment fragment, int frameId) {
+
+        Log.e("ADD_FRAGMENT", "Fragment :-" + fragment.toString());
+
         FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
-        trans.replace(R.id.home_content, fragment);
+        trans.add(frameId, fragment);
         trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-        trans.addToBackStack(fragment.toString());
+        trans.addToBackStack(null);
         trans.commit();
+
     }
 
     private Fragment getCurrentFragment() {
@@ -166,6 +280,7 @@ public class HomeActivity extends BaseActivity {
         if (fragmentManager.getFragments() != null)
             return fragmentManager.getFragments().get(stackCount > 0 ? stackCount - 1 : stackCount);
         else return null;
+
     }
 
 }

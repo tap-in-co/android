@@ -17,6 +17,7 @@ import android.os.Environment;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Display;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -47,16 +48,16 @@ public class Utils {
     }
 
     public static boolean isValidMobile(String phone) {
-        boolean check=false;
-        if(!Pattern.matches("[a-zA-Z]+", phone)) {
-            if(phone.length() < 6 || phone.length() > 13) {
+        boolean check = false;
+        if (!Pattern.matches("[a-zA-Z]+", phone)) {
+            if (phone.length() < 6 || phone.length() > 13) {
                 // if(phone.length() != 10) {
                 check = false;
             } else {
                 check = true;
             }
         } else {
-            check=false;
+            check = false;
         }
         return check;
     }
@@ -419,22 +420,6 @@ public class Utils {
         return !isEmpty(str);
     }
 
-    public static int getScreenWidth(Activity mActivity) {
-        Display display = mActivity.getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        int width = size.x;
-        return width;
-    }
-
-    public static int getScreenHeight(Activity mActivity) {
-        Display display = mActivity.getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        int height = size.y;
-        return height;
-    }
-
     public static String getFullname(String fullname) {
         String str = fullname;
         String[] splitStr = fullname.split("\\s+");
@@ -539,6 +524,7 @@ public class Utils {
         String hex = String.format("#%02x%02x%02x", Integer.parseInt(rgb_list[0]), Integer.parseInt(rgb_list[1]), Integer.parseInt(rgb_list[2]));
         return (hex);
     }
+
     public static void disableEditText(EditText editText) {
         editText.setFocusable(false);
 //        editText.setEnabled(false);
@@ -551,5 +537,62 @@ public class Utils {
         String android_id = Settings.Secure.getString(activity.getContentResolver(),
                 Settings.Secure.ANDROID_ID);
         return android_id;
+    }
+
+    public static String convertTime(String inputPattern,String outputPattern, String time){
+
+        SimpleDateFormat inputFormat = new SimpleDateFormat(inputPattern);
+        SimpleDateFormat outputFormat = new SimpleDateFormat(outputPattern);
+
+        Date date = null;
+        String str = null;
+
+        try {
+            date = inputFormat.parse(time);
+            str = outputFormat.format(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return str;
+
+    }
+
+
+    public static boolean isTimeBetweenTwoTime(String initialTime, String finalTime, String currentTime) throws ParseException {
+
+        String reg = "^([0-1][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])$";
+
+        if (initialTime.matches(reg) && finalTime.matches(reg) && currentTime.matches(reg)) {
+            boolean valid = false;
+            //Start Time
+            java.util.Date inTime = new SimpleDateFormat("HH:mm:ss").parse(initialTime);
+            Calendar calendar1 = Calendar.getInstance();
+            calendar1.setTime(inTime);
+
+            //Current Time
+            java.util.Date checkTime = new SimpleDateFormat("HH:mm:ss").parse(currentTime);
+            Calendar calendar3 = Calendar.getInstance();
+            calendar3.setTime(checkTime);
+
+            //End Time
+            java.util.Date finTime = new SimpleDateFormat("HH:mm:ss").parse(finalTime);
+            Calendar calendar2 = Calendar.getInstance();
+            calendar2.setTime(finTime);
+
+            if (finalTime.compareTo(initialTime) < 0) {
+                calendar2.add(Calendar.DATE, 1);
+                calendar3.add(Calendar.DATE, 1);
+            }
+
+            java.util.Date actualTime = calendar3.getTime();
+            if ((actualTime.after(calendar1.getTime()) || actualTime.compareTo(calendar1.getTime()) == 0)
+                    && actualTime.before(calendar2.getTime())) {
+                valid = true;
+            }
+            return valid;
+        } else {
+            throw new IllegalArgumentException("Not a valid time, expecting HH:MM:SS format");
+        }
+
     }
 }

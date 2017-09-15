@@ -3,6 +3,7 @@ package com.tapin.tapin.fragment;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -12,6 +13,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.gson.Gson;
@@ -176,6 +178,20 @@ public class ProfileFragment extends Fragment {
 
                             UserInfo userInfo = new Gson().fromJson(content, UserInfo.class);
                             PreferenceManager.setUserData(userInfo);
+
+                            PreferenceManager.putEmail(etEmail.getText().toString());
+
+                            PreferenceManager.putPhone(etSMSNumber.getText().toString());
+
+                            PreferenceManager.putZipcode(etZipcode.getText().toString());
+
+                            Toast.makeText(getActivity(), "Profile Saved Successfully", Toast.LENGTH_SHORT).show();
+
+                            Fragment cardDetailFragment = new CardDetailFragment();
+                            FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
+                            ft.add(R.id.frame_profile, cardDetailFragment);
+                            ft.addToBackStack(null);
+                            ft.commit();
 
                         } catch (UnsupportedEncodingException e) {
                             e.printStackTrace();

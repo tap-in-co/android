@@ -26,36 +26,72 @@ import com.tapin.tapin.utils.AlertMessages;
 import com.tapin.tapin.utils.Constant;
 import com.tapin.tapin.utils.Debug;
 import com.tapin.tapin.utils.PreferenceManager;
+import com.tapin.tapin.utils.ProgressHUD;
 import com.tapin.tapin.utils.URLs;
 
 import java.io.UnsupportedEncodingException;
 
 import cz.msebera.android.httpclient.Header;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-    private Toolbar toolbar;
+public class MainActivity extends BaseActivity {
+
     private LinearLayout llBusinessContainer;
     private LinearLayout llCheckOrder;
     private EditText etBusinessName;
-    private AlertMessages messages;
     private Button btnSubmit;
+    private Button btnCheckOrder;
+
+    ProgressHUD progressHUD;
+    AlertMessages messages;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        setSupportActionBar(toolbar);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
         messages = new AlertMessages(this);
+
+        initViews();
+
+    }
+
+    private void initViews() {
+
         etBusinessName = (EditText) findViewById(R.id.edbusinessName);
         llBusinessContainer = (LinearLayout) findViewById(R.id.llBusinessContainer);
-        btnSubmit= (Button) findViewById(R.id.btnSubmit);
+        btnSubmit = (Button) findViewById(R.id.btnSubmit);
         llCheckOrder = (LinearLayout) findViewById(R.id.llCheckOrder);
-        findViewById(R.id.btnCheckOrder).setOnClickListener(this);
-        btnSubmit.setOnClickListener(this);
+
+        btnCheckOrder = (Button) findViewById(R.id.btnCheckOrder);
+
+        btnCheckOrder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                String url = PreferenceManager.getNotificationLink();
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse(url));
+                startActivity(i);
+
+            }
+        });
+
+        btnSubmit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                addRestaurant();
+            }
+        });
+
+        btnCheckOrder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                addRestaurant();
+            }
+        });
 
         PreferenceManager.putIsSubmitRestaurent(false);
+
         if (PreferenceManager.getIsSubmitRestaurent()) {
             llCheckOrder.setVisibility(View.VISIBLE);
             llBusinessContainer.setVisibility(View.GONE);
@@ -81,41 +117,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
         });
-
     }
-
-
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.btnSubmit:
-                //TODO implement
-                addRestaurant();
-                break;
-            case R.id.btnCheckOrder:
-                //TODO implement
-
-                String url = PreferenceManager.getNotificationLink();
-                Intent i = new Intent(Intent.ACTION_VIEW);
-                i.setData(Uri.parse(url));
-                startActivity(i);
-                break;
-        }
-    }
-
-
-    ProgressDialog progressDialog;
 
     private void addRestaurant() {
 
-
-        if(etBusinessName.getText().toString().length()==0)
-        {
+        if (etBusinessName.getText().toString().length() == 0) {
             etBusinessName.setError("Please enter business name");
             return;
         }
-        progressDialog = ProgressDialog.show(MainActivity.this, "", "Loading...");
-        progressDialog.show();
+
+        progressHUD = ProgressHUD.show(MainActivity.this, getString(R.string.please_wait), true, false);
+
         String refreshedToken = FirebaseInstanceId.getInstance().getToken();
         RequestParams params = new RequestParams();
         params.put("cmd", "set_device_token_for_business");
@@ -132,8 +144,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
 
                 try {
+
                     String content = new String(responseBody, "UTF-8");
-                    Debug.e("send request succ", content + "-");
+                    Log.e("RESP_SUCC_SEND_REQ", "-" + content);
 
                     AddBusinessResp addBusinessResp = new Gson().fromJson(content, AddBusinessResp.class);
                     if (addBusinessResp.status > -1) {
@@ -151,14 +164,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                Debug.e("send request fail", responseBody + "-");
-                error.printStackTrace();
+
+                try {
+
+                    String content = new String(responseBody, "UTF-8");
+                    Log.e("RESP_FAIL_SEND_REQ", "-" + content);
+
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
             }
 
             @Override
             public void onFinish() {
                 super.onFinish();
-                progressDialog.dismiss();
+                if (progressHUD != null && progressHUD.isShowing()) {
+                    progressHUD.dismiss();
+                    progressHUD = null;
+                }
             }
         });
 

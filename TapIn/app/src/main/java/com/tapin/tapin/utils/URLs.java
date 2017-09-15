@@ -2,7 +2,6 @@ package com.tapin.tapin.utils;
 
 public class URLs {
 
-
     public static String BASE_URL = "https://tapforall.com/staging/tap-in/businessinfo/";
     public static String SERVER_URL = "https://tapforall.com/staging/tap-in/";    // Home
     public static String HOME = SERVER_URL + "businessinfo/index.php?businessID=0";
@@ -23,5 +22,9 @@ public class URLs {
     public static final String BUSINESS_MENU = MAIN_URL + "include/model.php?";
 
     public static final String BUSINESS_DELIVERY_INFO = MAIN_URL + "include/model.php?";
+
+    public static final String GET_CARDS_INFO = MAIN_URL + "include/model.php?";
+
+    public static final String MAIN_BASE_URL = MAIN_URL + "include/model.php?";
 
 }

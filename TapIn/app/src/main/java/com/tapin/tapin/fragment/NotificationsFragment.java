@@ -113,7 +113,7 @@ public class NotificationsFragment extends Fragment {
 
         RequestParams params = new RequestParams();
 
-//        params.put("businessID", businessInfo.businessID);
+//        params.put("businessID", business.businessID);
         params.put("cmd", "get_all_notifications_for_consume");
         params.put("consumer_id", PreferenceManager.getUserId()/*"1234570319"*/);
 
@@ -150,7 +150,7 @@ public class NotificationsFragment extends Fragment {
 
     private void saveNotifications() {
         RequestParams params = new RequestParams();
-//        params.put("businessID", businessInfo.businessID);
+//        params.put("businessID", business.businessID);
         params.put("cmd", "save_all_notifications_for_consumer");
         params.put("consumer_id", PreferenceManager.getUserId()/*"1234570319"*/);
 

@@ -13,10 +13,13 @@ import com.tapin.tapin.R;
 import com.tapin.tapin.model.GetPointsResp;
 import com.tapin.tapin.model.UserInfo;
 
+import org.json.JSONObject;
+
 import java.lang.reflect.Type;
 
 
 public class PreferenceManager extends Application {
+
     public static SharedPreferences preferences;
     public static SharedPreferences.Editor prefEditor;
 
@@ -396,19 +399,31 @@ public class PreferenceManager extends Application {
         if (Utils.isNotEmpty(userInfo.sms_no))
             putPhone(userInfo.sms_no);
 
-
         if (Utils.isNotEmpty(userInfo.zipcode))
             putZipcode(userInfo.zipcode);
 
         prefEditor.putString("userInfo", new Gson().toJson(userInfo).toString());
 
         prefEditor.commit();
+
     }
 
+    public static void saveCardData(String json) {
+
+        prefEditor.putString("CARD_DATA", json);
+        prefEditor.commit();
+
+    }
+
+    public static String getCardData() {
+
+        return preferences.getString("CARD_DATA", null);
+
+    }
 
     public static UserInfo getUserInfo() {
         UserInfo userInfo = null;
-        String content = preferences.getString("userInfo", "");
+        String content = preferences.getString("userInfo", null);
         if (Utils.isEmpty(content))
             return userInfo;
         try {
@@ -436,6 +451,7 @@ public class PreferenceManager extends Application {
     }
 
     public static GetPointsResp getPointsData() {
+
         GetPointsResp userInfo = null;
         String content = preferences.getString("PointsData", "");
         if (Utils.isEmpty(content))
@@ -449,6 +465,7 @@ public class PreferenceManager extends Application {
             e.printStackTrace();
         }
         return userInfo;
+
     }
 
 

@@ -6,17 +6,21 @@
 
     <color name="bg_window">#FBFBFB</color>
 
-    <color name="gray">#B8B8B8</color>
+    <color name="white">#FFFFFF</color>
+    <color name="trans_white">#80FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="gray">#AAAAAA</color>
     <color name="orange">#FB6209</color>
 
     <color name="colorText">#202020</color>
+
     <color name="colorTextLight">#808080</color>
-    <color name="colorDivider">#DEDEDE</color>
+    <color name="colorTextDarkGray">#555555</color>
+
+    <color name="colorDivider">#808080</color>
     <color name="colorHighlight">#9933ff</color>
-    <color name="white">#FFFFFF</color>
     <color name="light_gray">#FBFBFB</color>
     <color name="yellow">#FFBA4D</color>
-    <color name="black">#000000</color>
     <color name="yellow_dark">#FB6209</color>
     <color name="dim_green">#BCD4D4</color>
     <color name="green">#469EA0</color>

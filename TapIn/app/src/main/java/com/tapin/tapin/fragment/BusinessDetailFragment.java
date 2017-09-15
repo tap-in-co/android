@@ -9,6 +9,8 @@ import android.provider.Telephony;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +23,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.util.Util;
 import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -29,17 +32,24 @@ import com.tapin.tapin.activity.HomeActivity;
 import com.tapin.tapin.R;
 import com.tapin.tapin.adapter.BusinessDetailAdapter;
 import com.tapin.tapin.adapter.SlidingImage_Adapter;
-import com.tapin.tapin.model.BusinessInfo;
+import com.tapin.tapin.model.Business;
 import com.tapin.tapin.model.GetPointsResp;
+import com.tapin.tapin.model.GetPreviousOrderInfo;
+import com.tapin.tapin.model.Options;
+import com.tapin.tapin.model.OrderedInfo;
+import com.tapin.tapin.utils.AlertMessages;
 import com.tapin.tapin.utils.Constant;
 import com.tapin.tapin.utils.Debug;
 import com.tapin.tapin.utils.PreferenceManager;
+import com.tapin.tapin.utils.ProgressHUD;
 import com.tapin.tapin.utils.URLs;
 import com.tapin.tapin.utils.Utils;
 
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -107,10 +117,14 @@ public class BusinessDetailFragment extends Fragment {
     Timer timer;
 
     Calendar calendar;
-    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
 
-    BusinessInfo businessInfo;
+    Business business;
     BusinessDetailAdapter adapter;
+
+    ArrayList<OrderedInfo> listOrdered = new ArrayList<>();
+
+    ProgressHUD pd;
+    AlertMessages messages;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -118,25 +132,22 @@ public class BusinessDetailFragment extends Fragment {
 
         view = inflater.inflate(R.layout.fragment_business_detail, container, false);
 
-        return view;
+        calendar = Calendar.getInstance();
 
-    }
-
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        this.view = view;
-
-        businessInfo = (BusinessInfo) getArguments().getSerializable("BUSINESS_INFO");
+        business = Constant.business;
 
         initHeader();
 
         initViews();
 
-        setBusinessData(businessInfo);
+        setBusinessData(business);
 
-        getAllPoints();
+        if (Utils.isInternetConnected(getActivity())) {
+
+            pd = ProgressHUD.show(getActivity(), getString(R.string.please_wait), true, false);
+            getPreviousOrders();
+            getAllPoints();
+        }
 
         lvFoodDetail.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -145,10 +156,10 @@ public class BusinessDetailFragment extends Fragment {
                 if (adapter.getItem(i).display_name.equalsIgnoreCase("Catering")) {
 
                     CateringFragment businessDetailFragment = new CateringFragment();
-                    Bundle bundle = new Bundle();
-                    bundle.putSerializable("businessInfo", businessInfo);
-                    businessDetailFragment.setArguments(bundle);
-                    ((HomeActivity) getActivity()).addFragment(businessDetailFragment);
+//                    Bundle bundle = new Bundle();
+//                    bundle.putSerializable("business", business);
+//                    businessDetailFragment.setArguments(bundle);
+                    ((HomeActivity) getActivity()).addFragment(businessDetailFragment, R.id.frame_home);
 
                 } else if (adapter.getItem(i).display_name.contains("Text")) {
 
@@ -157,10 +168,10 @@ public class BusinessDetailFragment extends Fragment {
                 } else if (adapter.getItem(i).display_name.contains("Order Food")) {
 
                     MenuFoodListFragment businessDetailFragment = new MenuFoodListFragment();
-                    Bundle bundle = new Bundle();
-                    bundle.putSerializable("BUSINESS_INFO", businessInfo);
-                    businessDetailFragment.setArguments(bundle);
-                    ((HomeActivity) getActivity()).addFragment(businessDetailFragment);
+//                    Bundle bundle = new Bundle();
+//                    bundle.putSerializable("BUSINESS_INFO", business);
+//                    businessDetailFragment.setArguments(bundle);
+                    ((HomeActivity) getActivity()).addFragment(businessDetailFragment, R.id.frame_home);
 
                 }
 
@@ -170,19 +181,127 @@ public class BusinessDetailFragment extends Fragment {
         tvWebsite.setOnClickListener(onClickListenerWebsite);
         tvAddress.setOnClickListener(onClickListenerAddress);
 
+        return view;
+
     }
 
-    private void setBusinessData(BusinessInfo businessInfo) {
+    private void getPreviousOrders() {
 
-        // image slider
+        RequestParams params = new RequestParams();
+        params.put("business_id", business.businessID);
+        params.put("cmd", "previous_order");
+        params.put("consumer_id", PreferenceManager.getUserId());
 
-        if (businessInfo.pictures.endsWith(",")) {
-            businessInfo.pictures = businessInfo.pictures.substring(0, businessInfo.pictures.length() - 1);
+        AsyncHttpClient client = new AsyncHttpClient();
+        client.setTimeout(Constant.TIMEOUT);
+        client.get(URLs.MAIN_BASE_URL, params, new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+
+                try {
+
+                    if (pd != null && pd.isShowing()) {
+                        pd.dismiss();
+                        pd = null;
+                    }
+
+                    String content = new String(responseBody, "UTF-8");
+
+                    GetPreviousOrderInfo getPreviousOrderInfo = new Gson().fromJson(content, GetPreviousOrderInfo.class);
+
+                    listOrdered = new ArrayList<OrderedInfo>();
+
+                    int totalQuanity = 0;
+
+                    for (int i = 0; i < getPreviousOrderInfo.listPreviousOrder.size(); i++) {
+
+                        totalQuanity = totalQuanity + Integer.parseInt(getPreviousOrderInfo.listPreviousOrder.get(i).quantity);
+
+                    }
+
+                    adapter.setPreviousOrderCount(totalQuanity);
+
+                    for (int i = 0; i < getPreviousOrderInfo.listPreviousOrder.size(); i++) {
+
+                        GetPreviousOrderInfo.PreviousOrder previousOrder = getPreviousOrderInfo.listPreviousOrder.get(i);
+
+                        OrderedInfo orderedInfo = new OrderedInfo();
+
+                        orderedInfo.businessID = business.businessID;
+                        orderedInfo.item_note = previousOrder.note;
+                        orderedInfo.product_id = previousOrder.product_id;
+                        orderedInfo.product_description = previousOrder.product_short_description;
+                        orderedInfo.product_imageurl = "";
+                        orderedInfo.product_name = previousOrder.product_name;
+                        orderedInfo.price = Double.parseDouble(previousOrder.price);
+                        orderedInfo.quantity = Integer.parseInt(previousOrder.quantity);
+                        ArrayList<String> product_option = new ArrayList<String>();
+                        ArrayList<String> selected_ProductID_array = new ArrayList<String>();
+                        ArrayList<String> selectedOptionData = new ArrayList<>();
+
+                        for (int j = 0; j < previousOrder.listOptions.size(); j++) {
+
+                            Options.OptionData optionData = previousOrder.listOptions.get(i);
+
+                            selected_ProductID_array.add(optionData.option_id);
+                            product_option.add(optionData.name + "(" + optionData.price + ")");
+                            selectedOptionData.add(optionData.option_id);
+
+                        }
+
+                        orderedInfo.product_option = TextUtils.join(",", product_option);
+                        Log.e("PRODUCT_OPTION", "" + orderedInfo.product_option);
+                        orderedInfo.selected_ProductID_array = TextUtils.join(",", selected_ProductID_array);
+                        Log.e("PRODUCT_OPTION_ARRAY", "" + orderedInfo.selected_ProductID_array);
+                        Log.e("PRODUCT_OPTION_PRICE", "" + orderedInfo.price);
+                        orderedInfo.listOptions = selectedOptionData;
+                        orderedInfo.points = Math.round(orderedInfo.price);
+
+                        listOrdered.add(orderedInfo);
+
+                    }
+
+                    if (getActivity() != null)
+//                        ((HomeActivity) getActivity()).refreshPointsFragment();
+                        Debug.e("getAllPoint", content + "-");
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+
+                try{
+                    if (pd != null && pd.isShowing()) {
+                        pd.dismiss();
+                        pd = null;
+                    }
+
+                    Log.e("getAllPoint fail", responseBody + "-");
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+
+            }
+
+            @Override
+            public void onFinish() {
+                super.onFinish();
+            }
+        });
+    }
+
+
+    private void setBusinessData(Business business) {
+
+        if (business.pictures.endsWith(",")) {
+            business.pictures = business.pictures.substring(0, business.pictures.length() - 1);
         }
 
-        final List<String> image_list = Arrays.asList((businessInfo.pictures.split("\\s*,\\s*")));
+        final List<String> image_list = Arrays.asList((business.pictures.split("\\s*,\\s*")));
         Debug.e("Arraylist", image_list + "-");
-        mPager.setAdapter(new SlidingImage_Adapter(getActivity(), businessInfo.businessID, image_list));
+        mPager.setAdapter(new SlidingImage_Adapter(getActivity(), business.businessID, image_list));
         TimerTask timerTask = new TimerTask() {
             @Override
             public void run() {
@@ -198,46 +317,31 @@ public class BusinessDetailFragment extends Fragment {
         timer = new Timer();
         timer.schedule(timerTask, 3000, 3000);
 
+        tvAddress.setText(Utils.isNotEmpty(business.address) ? business.address : "");
+        tvWebsite.setText(Utils.isNotEmpty(business.website) ? business.website : "");
+        textViewBusinessType.setText(Utils.isNotEmpty(business.customerProfileName) ? business.customerProfileName : "");
+        tvPaymentEmail.setText(Utils.isNotEmpty(business.neighborhood) ? business.neighborhood : "");
+        tvTime.setText(Utils.getOpenTime(business.opening_time, business.closing_time));
+        ratingBar.setRating((float) business.rating);
+        // tvRateCount.setText(Utils.isNotEmpty(business.ti_rating) ? "("+business.ti_rating +")": "");
+        // tvPrice.setText(Utils.isNotEmpty(business.website)?business.website:"");
 
-        //  views
-        tvAddress.setText(Utils.isNotEmpty(businessInfo.address) ? businessInfo.address : "");
-        tvWebsite.setText(Utils.isNotEmpty(businessInfo.website) ? businessInfo.website : "");
-        textViewBusinessType.setText(Utils.isNotEmpty(businessInfo.customerProfileName) ? businessInfo.customerProfileName : "");
-        tvPaymentEmail.setText(Utils.isNotEmpty(businessInfo.neighborhood) ? businessInfo.neighborhood : "");
-        tvTime.setText(Utils.getOpenTime(businessInfo.opening_time, businessInfo.closing_time));
-        ratingBar.setRating((float) businessInfo.rating);
-        // tvRateCount.setText(Utils.isNotEmpty(businessInfo.ti_rating) ? "("+businessInfo.ti_rating +")": "");
-        // tvPrice.setText(Utils.isNotEmpty(businessInfo.website)?businessInfo.website:"");
-
-
-        // open - close now
         try {
-            Date dateOpening = simpleDateFormat.parse(businessInfo.opening_time);
-            Date dateClosing = simpleDateFormat.parse(businessInfo.closing_time);
 
-            Calendar calendarOpening = Calendar.getInstance();
-            calendarOpening.setTimeInMillis(dateOpening.getTime());
+            SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
+            String currentTime = df.format(calendar.getTime());
 
-            Calendar calendarClosing = Calendar.getInstance();
-            calendarClosing.setTimeInMillis(dateClosing.getTime());
-            calendar = Calendar.getInstance();
-            if (calendar.getTimeInMillis() > calendarOpening.getTimeInMillis()
-                    && calendar.getTimeInMillis() < calendarClosing.getTimeInMillis()) {
-                textViewOpenClosed.setText("OPEN NOW");
-                textViewOpenClosed.setTextColor(ContextCompat.getColor(getActivity(), R.color.yellow));
-            } else {
+            if (!Utils.isTimeBetweenTwoTime(business.opening_time, business.closing_time, currentTime)) {
                 textViewOpenClosed.setText("NOW CLOSED");
                 textViewOpenClosed.setTextColor(ContextCompat.getColor(getActivity(), R.color.gray));
-
+            } else {
+                textViewOpenClosed.setText("OPEN NOW");
+                textViewOpenClosed.setTextColor(ContextCompat.getColor(getActivity(), R.color.colorPrimary));
             }
 
         } catch (ParseException e) {
             e.printStackTrace();
         }
-
-
-        //Glide.with(getActivity()).load(URLs.IMAGE_URL + "" + businessInfo.icon).into(ivFood);
-
 
     }
 
@@ -257,7 +361,7 @@ public class BusinessDetailFragment extends Fragment {
             }
         });
 
-        tvToolbarTitle.setText(businessInfo.short_name + "");
+        tvToolbarTitle.setText(business.short_name + "");
 
         tvToolbarLeft.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -283,8 +387,33 @@ public class BusinessDetailFragment extends Fragment {
 
         mPager = (ViewPager) view.findViewById(R.id.pager);
         lvFoodDetail = (ListView) view.findViewById(R.id.lvFoodDetail);
-        adapter = new BusinessDetailAdapter(getActivity(), Utils.getColor(businessInfo.bg_color), Utils.getColor(businessInfo.text_color));
-        adapter.addAll(Constant.getBusinessList(businessInfo.customerProfileName));
+        adapter = new BusinessDetailAdapter(getActivity(), Utils.getColor(business.bg_color), Utils.getColor(business.text_color), new BusinessDetailAdapter.PreviousOrderClickListener() {
+            @Override
+            public void clicked(String s) {
+
+                if (s.equalsIgnoreCase("My Order")) {
+                    OrderFragment orderFragment = new OrderFragment();
+                    Constant.listOrdered = listOrdered;
+                    Bundle bundle = new Bundle();
+//                bundle.putSerializable("BUSINESS_INFO", business);
+                    bundle.putSerializable("ORDERED_LIST", (Serializable) listOrdered);
+                    orderFragment.setArguments(bundle);
+                    ((HomeActivity) getActivity()).addFragment(orderFragment, R.id.frame_home);
+
+                } else if (s.equalsIgnoreCase("Menu")) {
+
+                    MenuFoodListFragment menuFoodListFragment = new MenuFoodListFragment();
+                    Bundle bundle = new Bundle();
+//                bundle.putSerializable("BUSINESS_INFO", business);
+                    bundle.putSerializable("ORDERED_LIST", (Serializable) listOrdered);
+                    menuFoodListFragment.setArguments(bundle);
+                    ((HomeActivity) getActivity()).addFragment(menuFoodListFragment, R.id.frame_home);
+                }
+
+
+            }
+        });
+        adapter.addAll(Constant.getBusinessList(business.customerProfileName));
         lvFoodDetail.setAdapter(adapter);
 
     }
@@ -343,7 +472,7 @@ public class BusinessDetailFragment extends Fragment {
 
     private void sendSMS() {
 
-        String messageBody = businessInfo.name + "\n" + businessInfo.address + "\n" + businessInfo.city + "\n" + businessInfo.state + "-" + businessInfo.zipcode;
+        String messageBody = business.name + "\n" + business.address + "\n" + business.city + "\n" + business.state + "-" + business.zipcode;
 
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) // At least KitKat
@@ -352,7 +481,7 @@ public class BusinessDetailFragment extends Fragment {
 
             Intent sendIntent = new Intent(Intent.ACTION_SEND);
             sendIntent.setType("text/plain");
-            sendIntent.putExtra("address", businessInfo.phone);
+            sendIntent.putExtra("address", business.phone);
             sendIntent.putExtra(Intent.EXTRA_TEXT, messageBody);
 
             if (defaultSmsPackageName != null)// Can be null in case that there is no default, then the user would be able to choose
@@ -366,7 +495,7 @@ public class BusinessDetailFragment extends Fragment {
         {
             Intent smsIntent = new Intent(android.content.Intent.ACTION_VIEW);
             smsIntent.setType("vnd.android-dir/mms-sms");
-            smsIntent.putExtra("address", "" + businessInfo.phone);
+            smsIntent.putExtra("address", "" + business.phone);
             smsIntent.putExtra("sms_body", "" + messageBody);
             startActivity(smsIntent);
         }
@@ -375,7 +504,7 @@ public class BusinessDetailFragment extends Fragment {
     private void getAllPoints() {
 
         RequestParams params = new RequestParams();
-        params.put("businessID", businessInfo.businessID);
+        params.put("businessID", business.businessID);
         params.put("cmd", "get_all_points");
         params.put("consumerID", PreferenceManager.getUserId());
 
@@ -392,7 +521,7 @@ public class BusinessDetailFragment extends Fragment {
                     PreferenceManager.putPointsData(userInfo);
                     if (getActivity() != null)
 //                        ((HomeActivity) getActivity()).refreshPointsFragment();
-                    Debug.e("getAllPoint", content + "-");
+                        Debug.e("getAllPoint", content + "-");
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                 }

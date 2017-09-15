@@ -2,8 +2,11 @@ package com.tapin.tapin.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -15,16 +18,21 @@ import android.widget.TextView;
 
 import com.tapin.tapin.R;
 import com.tapin.tapin.activity.HomeActivity;
-import com.tapin.tapin.model.BusinessInfo;
+import com.tapin.tapin.model.Business;
 import com.tapin.tapin.model.OrderInfo;
+import com.tapin.tapin.model.OrderedInfo;
 import com.tapin.tapin.utils.AlertMessages;
+import com.tapin.tapin.utils.Constant;
+import com.tapin.tapin.utils.PreferenceManager;
 import com.tapin.tapin.utils.ProgressHUD;
 import com.tapin.tapin.utils.Utils;
 
-import org.w3c.dom.Text;
-
 import java.io.Serializable;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Created by Narendra on 4/25/17.
@@ -82,13 +90,17 @@ public class OrderFragment extends Fragment {
     TextView tvPoints;
     Button btnContinue;
 
-    ArrayList<OrderInfo> listOrdered = new ArrayList<>();
+    ArrayList<OrderedInfo> listOrdered = new ArrayList<>();
     OrderAdapter orderAdapter;
 
-    BusinessInfo businessInfo;
+    Business business;
 
     ProgressHUD pd;
     AlertMessages messages;
+
+    public static boolean isOrderChanged = false;
+
+    String currentTime;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -100,22 +112,51 @@ public class OrderFragment extends Fragment {
 
         orderAdapter = new OrderAdapter(getActivity());
 
-        businessInfo = (BusinessInfo) getArguments().getSerializable("BUSINESS_INFO");
+//        business = (Business) getArguments().getSerializable("BUSINESS_INFO");
 
-        listOrdered = (ArrayList<OrderInfo>) getArguments().getSerializable("ORDERED_LIST");
+        business = Constant.business;
+
+        listOrdered = (ArrayList<OrderedInfo>) getArguments().getSerializable("ORDERED_LIST");
 
         initHeader();
 
         initViews();
 
-        tvHotelName.setText("" + businessInfo.name);
+        tvHotelName.setText("" + business.name);
 
         orderAdapter.addAll(listOrdered);
 
-        if (Utils.isInternetConnected(getActivity())) {
-//            getMenuOfFoods();
-        } else {
-            messages.showErrorInConnection();
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
+        currentTime = df.format(cal.getTime());
+
+        Log.e("CURRENT_TIME", "" + currentTime);
+
+        try {
+            if (!Utils.isTimeBetweenTwoTime(business.opening_time, business.closing_time, currentTime)) {
+
+                try {
+
+                    SimpleDateFormat dFormat = new SimpleDateFormat("hh:mm a");
+                    Date date = new SimpleDateFormat("HH:mm:ss").parse(business.opening_time);
+                    String openingTime = dFormat.format(date);
+
+                    String title = business.name + " is closed now!";
+
+                    String message1 = "You may add items to your cart.\nBut if you pay, your order will be ready after the opening time (" + openingTime + ").";
+
+                    String message2 = "Average wait time: 10 min after opening";
+
+                    messages.showCustomMessage(title, message1 + "\n\n" + message2);
+
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
         }
 
         return view;
@@ -133,14 +174,28 @@ public class OrderFragment extends Fragment {
             public void onClick(View view) {
 
                 if (orderAdapter.listOrders.size() == 0) {
+
                     messages.showCustomMessage("Please select menu item to place an order.");
+
+                } else if (PreferenceManager.getUserInfo() == null) {
+
+                    String positiveButton = "OK";
+                    messages.alert(getActivity(), "", "We are taking you to the profile page.\nPlease update your profile info then come back to this page.", positiveButton, null, null, new AlertMessages.AlertDialogCallback() {
+                        @Override
+                        public void clickedButtonText(String s) {
+
+//                            ((BottomNavigationView) getActivity().findViewById(R.id.bottom_navigation)).getMenu().performIdentifierAction(R.id.action_profile,0);
+                            ((LinearLayout) getActivity().findViewById(R.id.llProfile)).performClick();
+
+                        }
+                    });
+
                 } else {
                     PickupOrderFragment pickupOrderFragment = new PickupOrderFragment();
                     Bundle bundle = new Bundle();
-                    bundle.putSerializable("BUSINESS_INFO", businessInfo);
                     bundle.putSerializable("ORDERED_LIST", (Serializable) listOrdered);
                     pickupOrderFragment.setArguments(bundle);
-                    ((HomeActivity) getActivity()).addFragment(pickupOrderFragment);
+                    ((HomeActivity) getActivity()).addFragment(pickupOrderFragment, R.id.frame_home);
                 }
             }
         });
@@ -171,17 +226,17 @@ public class OrderFragment extends Fragment {
 
     }
 
-    private void setTotal(ArrayList<OrderInfo> list) {
+    private void setTotal(ArrayList<OrderedInfo> list) {
 
         double totalValue = 0;
 
         for (int i = 0; i < list.size(); i++) {
 
-            totalValue = totalValue + (list.get(i).quantity * Double.parseDouble(list.get(i).price));
+            totalValue = totalValue + (list.get(i).quantity * list.get(i).price);
 
         }
 
-        tvItemPriceTotal.setText("$ " + totalValue);
+        tvItemPriceTotal.setText("$ " + String.format("%.2f", totalValue));
 
         tvPoints.setText("Earn " + Math.round(totalValue) + " Pts");
 
@@ -189,7 +244,7 @@ public class OrderFragment extends Fragment {
 
     public class OrderAdapter extends BaseAdapter {
 
-        private ArrayList<OrderInfo> listOrders = new ArrayList<OrderInfo>();
+        private ArrayList<OrderedInfo> listOrders = new ArrayList<OrderedInfo>();
 
         private LayoutInflater mInflater;
 
@@ -204,7 +259,7 @@ public class OrderFragment extends Fragment {
         }
 
         @Override
-        public OrderInfo getItem(int position) {
+        public OrderedInfo getItem(int position) {
             return listOrders.get(position);
         }
 
@@ -231,6 +286,8 @@ public class OrderFragment extends Fragment {
 
                 holder.tvItemName = (TextView) convertView.findViewById(R.id.tvItemName);
 
+                holder.tvExtraItem = (TextView) convertView.findViewById(R.id.tvExtraItem);
+
                 holder.tvItemPriceTotal = (TextView) convertView.findViewById(R.id.tvItemPriceTotal);
 
                 convertView.setTag(holder);
@@ -243,13 +300,15 @@ public class OrderFragment extends Fragment {
 
             try {
 
-                final OrderInfo order = listOrders.get(position);
+                final OrderedInfo order = listOrders.get(position);
 
                 holder.ivIncreaseItem.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
 
                         ++order.quantity;
+
+                        isOrderChanged = true;
                         notifyDataSetChanged();
 
                     }
@@ -264,6 +323,8 @@ public class OrderFragment extends Fragment {
                             if (order.quantity == 0) {
                                 listOrders.remove(position);
                             }
+
+                            isOrderChanged = true;
                             notifyDataSetChanged();
                         }
 
@@ -272,13 +333,21 @@ public class OrderFragment extends Fragment {
 
                 holder.tvItemCount.setText("" + order.quantity);
 
-                holder.tvItemName.setText("" + order.name);
+                holder.tvItemName.setText("" + order.product_name);
 
-                holder.tvItemPriceTotal.setText("$ " + (order.quantity * Double.parseDouble(order.price)));
+                holder.tvExtraItem.setText("" + order.product_option);
+
+                holder.tvItemPriceTotal.setText("$ " + String.format("%.2f", (order.quantity * order.price)));
 
                 if (position == getCount() - 1) {
 
                     setTotal(listOrdered);
+
+                    if (isOrderChanged) {
+
+                        Constant.listOrdered = listOrders;
+
+                    }
 
                 }
 
@@ -299,11 +368,13 @@ public class OrderFragment extends Fragment {
 
             TextView tvItemName;
 
+            TextView tvExtraItem;
+
             TextView tvItemPriceTotal;
 
         }
 
-        public void addAll(ArrayList<OrderInfo> list) {
+        public void addAll(ArrayList<OrderedInfo> list) {
 
             try {
 

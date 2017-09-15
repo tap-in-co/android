@@ -79,7 +79,6 @@ public class PointsFragment extends Fragment {
         lvPoints = (ListView) view.findViewById(R.id.lvPoints);
         lvPoints.setAdapter(pointsAdapter);
 
-
         refreshData();
 
         return view;

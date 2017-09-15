@@ -1,8 +1,10 @@
 package com.tapin.tapin.utils;
 
 
+import com.tapin.tapin.model.Business;
 import com.tapin.tapin.model.BusinessType;
 import com.tapin.tapin.model.BusinessTypeList;
+import com.tapin.tapin.model.OrderedInfo;
 
 import java.util.ArrayList;
 
@@ -11,6 +13,10 @@ public class Constant {
     public static int TIMEOUT = 60 * 1000;
     public static int PAGE_LIMIT = 20;
     public static String SERVER_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+
+    public static ArrayList<OrderedInfo> listOrdered = new ArrayList<>();
+
+    public static Business business = null;
 
     public static ArrayList<BusinessTypeList> listBusinessTypeLists = new ArrayList<>();
 

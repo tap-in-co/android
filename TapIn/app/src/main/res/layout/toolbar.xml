@@ -47,10 +47,10 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:maxLines="1"
-            android:maxWidth="@dimen/_100sdp"
-            android:text="@string/app_name"
+            android:text="@string/order_summary"
             android:textColor="@color/white"
-            android:textSize="@dimen/_18sdp" />
+            android:textSize="@dimen/_18sdp"
+            android:textStyle="bold" />
 
         <ImageView
             android:id="@+id/ivTitleDropDown"

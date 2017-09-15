@@ -9,12 +9,13 @@
     <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:scrollbars="none">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical"
             android:padding="@dimen/_10sdp">
 
@@ -31,7 +32,6 @@
                 android:id="@+id/etEmail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bg_rounded_corner_gray"
                 android:hint="@string/email"
                 android:inputType="textEmailAddress"
                 android:maxLines="1"
@@ -50,7 +50,6 @@
                 android:id="@+id/etZipcode"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bg_rounded_corner_gray"
                 android:hint="@string/zip_code"
                 android:inputType="number"
                 android:maxLines="1"
@@ -69,7 +68,6 @@
                 android:id="@+id/etNickname"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bg_rounded_corner_gray"
                 android:hint="@string/nick_name"
                 android:inputType="text"
                 android:maxLines="1"
@@ -88,9 +86,9 @@
                 android:id="@+id/etSMSNumber"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bg_rounded_corner_gray"
                 android:hint="@string/sms_number"
                 android:inputType="phone"
+                android:maxLength="10"
                 android:maxLines="1"
                 android:padding="@dimen/_6sdp" />
 
@@ -130,6 +128,6 @@
 
         </LinearLayout>
 
-
     </ScrollView>
+
 </LinearLayout>

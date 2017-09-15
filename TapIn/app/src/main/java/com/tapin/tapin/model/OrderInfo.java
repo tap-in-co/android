@@ -92,6 +92,8 @@ public class OrderInfo implements Serializable, Cloneable {
     @SerializedName("options")
     public List<Options> listOptions;
 
+    public boolean isLiked;
+
     public int quantity = 1;
 
 }

@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -18,7 +19,9 @@ import com.tapin.tapin.activity.HomeActivity;
 import com.tapin.tapin.R;
 import com.tapin.tapin.common.GPSTracker;
 import com.tapin.tapin.fragment.BusinessDetailFragment;
-import com.tapin.tapin.model.BusinessInfo;
+import com.tapin.tapin.model.Business;
+import com.tapin.tapin.model.OrderedInfo;
+import com.tapin.tapin.utils.Constant;
 import com.tapin.tapin.utils.URLs;
 import com.tapin.tapin.utils.Utils;
 
@@ -30,11 +33,12 @@ import java.util.Collection;
 import java.util.Date;
 
 /**
- * Created by abcd on 2/7/2017.
+ * Created by Narendra on 2/7/2017.
  */
 public class BusinessAdpater extends RecyclerView.Adapter<BusinessAdpater.ViewHolder> {
-    private ArrayList<BusinessInfo> mData = new ArrayList<>();
-    private ArrayList<BusinessInfo> mDataOriginal = new ArrayList<>();
+
+    private ArrayList<Business> mData = new ArrayList<>();
+    private ArrayList<Business> mDataOriginal = new ArrayList<>();
     private View mSelectedView;
 
     String time;
@@ -45,11 +49,9 @@ public class BusinessAdpater extends RecyclerView.Adapter<BusinessAdpater.ViewHo
 
     GPSTracker gps;
 
-    public BusinessAdpater(FragmentActivity activity, ArrayList<BusinessInfo> data, String time) {
-//        mData = data;
+    public BusinessAdpater(FragmentActivity activity, ArrayList<Business> data, String time) {
 
-//        mDataOriginal.addAll((Collection<? extends BusinessInfo>) mData.clone());
-        mData.addAll((Collection<? extends BusinessInfo>) data.clone());
+        mData.addAll((Collection<? extends Business>) data.clone());
         for (int i = 0; i < mData.size(); i++) {
             mDataOriginal.add(mData.get(i));
         }
@@ -59,17 +61,13 @@ public class BusinessAdpater extends RecyclerView.Adapter<BusinessAdpater.ViewHo
 
         gps = new GPSTracker(activity);
 
-        try {
-            Date date = simpleDateFormat.parse(time);
-            calendar = Calendar.getInstance();
-            calendar.setTimeInMillis(date.getTime());
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        calendar = Calendar.getInstance();
+
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+
         final ViewHolder viewHolder;
         View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.listitem_business, viewGroup, false);
         viewHolder = new ViewHolder(v);
@@ -85,16 +83,17 @@ public class BusinessAdpater extends RecyclerView.Adapter<BusinessAdpater.ViewHo
                                                    }
                                                }
         );
-
         return viewHolder;
+
     }
 
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, final int position) {
-        viewHolder.textViewName.setText(mData.get(position).name + "");
-        viewHolder.textViewDescription.setText(Utils.isNotEmpty(mData.get(position).keywords) ? mData.get(position).keywords : "");
-        viewHolder.textViewBusinessType.setText(Utils.isNotEmpty(mData.get(position).type) ? mData.get(position).type : "");
-        viewHolder.textViewCity.setText(mData.get(position).city + "");
+
+        viewHolder.tvBusinessName.setText("" + mData.get(position).name);
+        viewHolder.tvDescription.setText("" + mData.get(position).marketing_statement);
+        viewHolder.tvBusinessType.setText("" + mData.get(position).businessTypes);
+        viewHolder.tvNeighbourhood.setText("" + mData.get(position).neighborhood);
 
         if (gps.canGetLocation()) {
 
@@ -106,37 +105,32 @@ public class BusinessAdpater extends RecyclerView.Adapter<BusinessAdpater.ViewHo
             newLocation.setLatitude(mData.get(position).lat);
             newLocation.setLongitude(mData.get(position).lng);
 
-            viewHolder.textViewLocation.setText(String.format("%.2f mi", (crntLocation.distanceTo(newLocation) / 1609.344)));
+            viewHolder.tvDistance.setText(String.format("%.2f mi", (crntLocation.distanceTo(newLocation) / 1609.344)));
 
         }
 
-        Glide.with(activity).load(URLs.IMAGE_URL + mData.get(position).icon).into(viewHolder.imageViewIcon);
+        if (mData.get(position).icon != null) {
+            Glide.with(activity).load(URLs.IMAGE_URL + mData.get(position).icon).into(viewHolder.ivBusinessIcon);
+        }
 
         try {
-            Date dateOpening = simpleDateFormat.parse(mData.get(position).opening_time);
-            Date dateClosing = simpleDateFormat.parse(mData.get(position).closing_time);
 
-            Calendar calendarOpening = Calendar.getInstance();
-            calendarOpening.setTimeInMillis(dateOpening.getTime());
+            SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
+            String currentTime = df.format(calendar.getTime());
 
-            Calendar calendarClosing = Calendar.getInstance();
-            calendarClosing.setTimeInMillis(dateClosing.getTime());
-
-
-            if (calendar.getTimeInMillis() > calendarOpening.getTimeInMillis()
-                    && calendar.getTimeInMillis() < calendarClosing.getTimeInMillis()) {
-                viewHolder.textViewOpenClosed.setText("OPEN NOW");
-                viewHolder.textViewOpenClosed.setTextColor(ContextCompat.getColor(activity, R.color.yellow));
+            if (!Utils.isTimeBetweenTwoTime(mData.get(position).opening_time, mData.get(position).closing_time, currentTime)) {
+                viewHolder.tvOpenStatus.setText("NOW CLOSED");
+                viewHolder.tvOpenStatus.setTextColor(ContextCompat.getColor(activity, R.color.gray));
+                viewHolder.tvOpeningTime.setText("");
             } else {
-                viewHolder.textViewOpenClosed.setText("NOW CLOSED");
-                viewHolder.textViewOpenClosed.setTextColor(ContextCompat.getColor(activity, R.color.gray));
-
+                viewHolder.tvOpenStatus.setText("OPEN NOW");
+                viewHolder.tvOpenStatus.setTextColor(ContextCompat.getColor(activity, R.color.colorPrimary));
+                viewHolder.tvOpeningTime.setText("" + Utils.getOpenTime(mData.get(position).opening_time, mData.get(position).closing_time));
             }
 
         } catch (ParseException e) {
             e.printStackTrace();
         }
-
 
         viewHolder.ratingBar.setRating((float) mData.get(position).rating);
 
@@ -146,9 +140,10 @@ public class BusinessAdpater extends RecyclerView.Adapter<BusinessAdpater.ViewHo
 
                 BusinessDetailFragment businessDetailFragment = new BusinessDetailFragment();
                 Bundle bundle = new Bundle();
-                bundle.putSerializable("BUSINESS_INFO", mData.get(position));
+                Constant.listOrdered.clear();
+                Constant.business = mData.get(position);
                 businessDetailFragment.setArguments(bundle);
-                ((HomeActivity) activity).addFragment(businessDetailFragment);
+                ((HomeActivity) activity).addFragment(businessDetailFragment, R.id.frame_home);
             }
         });
     }
@@ -159,42 +154,55 @@ public class BusinessAdpater extends RecyclerView.Adapter<BusinessAdpater.ViewHo
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView textViewName, textViewDescription, textViewBusinessType, textViewCity, textViewLocation, textViewOpenClosed;
+
+        TextView tvBusinessName;
+        TextView tvDescription;
+        TextView tvBusinessType;
+        TextView tvNeighbourhood;
+        TextView tvDistance;
         RatingBar ratingBar;
-        ImageView imageViewIcon;
-        RelativeLayout card_view;
+        ImageView ivBusinessIcon;
+        LinearLayout card_view;
+        TextView tvOpenStatus;
+        TextView tvOpeningTime;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            textViewName = (TextView) itemView.findViewById(R.id.textViewName);
-            textViewDescription = (TextView) itemView.findViewById(R.id.textViewDescription);
-            textViewBusinessType = (TextView) itemView.findViewById(R.id.textViewBusinessType);
-            textViewCity = (TextView) itemView.findViewById(R.id.textViewCity);
-            textViewLocation = (TextView) itemView.findViewById(R.id.textViewLocation);
+
+            tvBusinessName = (TextView) itemView.findViewById(R.id.tvBusinessName);
+            tvDescription = (TextView) itemView.findViewById(R.id.tvDescription);
+            tvBusinessType = (TextView) itemView.findViewById(R.id.tvBusinessType);
+            tvNeighbourhood = (TextView) itemView.findViewById(R.id.tvNeighbourhood);
+            tvDistance = (TextView) itemView.findViewById(R.id.tvDistance);
             ratingBar = (RatingBar) itemView.findViewById(R.id.ratingBar);
-            textViewOpenClosed = (TextView) itemView.findViewById(R.id.textViewOpenClosed);
-            imageViewIcon = (ImageView) itemView.findViewById(R.id.imageViewIcon);
-            card_view = (RelativeLayout) itemView.findViewById(R.id.card_view);
+            ivBusinessIcon = (ImageView) itemView.findViewById(R.id.ivBusinessIcon);
+            card_view = (LinearLayout) itemView.findViewById(R.id.card_view);
+            tvOpenStatus = (TextView) itemView.findViewById(R.id.tvOpenStatus);
+            tvOpeningTime = (TextView) itemView.findViewById(R.id.tvOpeningTime);
+
         }
     }
 
     public void filter(String search) {
+
         mData.clear();
 
         if (search.length() == 0) {
+
             mData.addAll(mDataOriginal);
             notifyDataSetChanged();
             return;
+
         }
 
         for (int i = 0; i < mDataOriginal.size(); i++) {
 
-            if (mDataOriginal.get(i).keywords!=null && mDataOriginal.get(i).keywords.contains(search.toLowerCase())) {
+            if (mDataOriginal.get(i).keywords != null && mDataOriginal.get(i).keywords.contains(search.toLowerCase())) {
                 mData.add(mDataOriginal.get(i));
             }
         }
-        notifyDataSetChanged();
 
+        notifyDataSetChanged();
 
     }
 }

@@ -3,8 +3,6 @@ package com.tapin.tapin.fragment;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
-import android.media.Image;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
@@ -23,7 +21,6 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
@@ -31,19 +28,13 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.tapin.tapin.R;
 import com.tapin.tapin.adapter.BusinessAdpater;
-import com.tapin.tapin.common.NetworkStatus;
-import com.tapin.tapin.common.StaticData;
+import com.tapin.tapin.model.Business;
 import com.tapin.tapin.model.BusinessInfo;
-import com.tapin.tapin.model.BusinessResp;
 import com.tapin.tapin.utils.AlertMessages;
 import com.tapin.tapin.utils.Constant;
-import com.tapin.tapin.utils.Debug;
 import com.tapin.tapin.utils.ProgressHUD;
 import com.tapin.tapin.utils.URLs;
 import com.tapin.tapin.utils.Utils;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -96,8 +87,10 @@ public class HomeFragment extends Fragment {
 
     Context context;
 
-    ArrayList<BusinessInfo> businesses = new ArrayList<>();
+    BusinessInfo businessInfo;
+    ArrayList<Business> businesses = new ArrayList<>();
     BusinessAdpater businessAdpater;
+
     RecyclerView recyclerViewBusiness;
     LinearLayoutManager mLayoutManager;
     LocationManager mLocationManager;
@@ -188,6 +181,7 @@ public class HomeFragment extends Fragment {
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
         if (requestCode == 1001) {
             int permissionCheck = ContextCompat.checkSelfPermission(context,
                     android.Manifest.permission.ACCESS_FINE_LOCATION);
@@ -221,9 +215,9 @@ public class HomeFragment extends Fragment {
                     String content = new String(responseBody, "UTF-8");
                     Log.e("RES_ALL_HOTEL", "" + content);
 
-                    BusinessResp businessResp = new Gson().fromJson(content, BusinessResp.class);
+                    businessInfo = new Gson().fromJson(content, BusinessInfo.class);
 
-                    businessAdpater = new BusinessAdpater(getActivity(), (ArrayList<BusinessInfo>) businessResp.listBusinessInfos, simpleDateFormat.format(calendar.getTime()));
+                    businessAdpater = new BusinessAdpater(getActivity(), (ArrayList<Business>) businessInfo.listBusinesses, simpleDateFormat.format(calendar.getTime()));
                     recyclerViewBusiness.setAdapter(businessAdpater);
 
                 } catch (Exception e) {

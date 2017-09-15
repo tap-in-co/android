@@ -58,11 +58,11 @@ public class OrderStickyListViewAdapter extends BaseAdapter implements StickyLis
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         LayoutInflater inflater = LayoutInflater.from(context);
-        ViewHolder holder;
+        final ViewHolder holder;
 
         if (convertView == null) {
 
-            convertView = inflater.inflate(R.layout.list_item_child, parent, false);
+            convertView = inflater.inflate(R.layout.list_item_food, parent, false);
             holder = new ViewHolder(convertView);
             convertView.setTag(holder);
 
@@ -76,7 +76,7 @@ public class OrderStickyListViewAdapter extends BaseAdapter implements StickyLis
 
         holder.tvFoodTitle.setText(orderInfo.name);
         holder.tvFoodDescription.setText(orderInfo.short_description);
-        holder.tvPrice.setText(orderInfo.price);
+        holder.tvPrice.setText("$ " + orderInfo.price);
 
         float earnPoints = Float.parseFloat(orderInfo.price);
 
@@ -91,9 +91,34 @@ public class OrderStickyListViewAdapter extends BaseAdapter implements StickyLis
             }
         });
 
-        String imageUrl = URLs.IMAGE_URL1 + orderInfo.businessID + "/products/" + orderInfo.pictures;
+        if (orderInfo.pictures != null && orderInfo.pictures.length() > 0) {
+            holder.ivFood.setVisibility(View.VISIBLE);
+            String imageUrl = URLs.IMAGE_URL1 + orderInfo.businessID + "/products/" + orderInfo.pictures;
+            Glide.with(context).load(imageUrl).centerCrop().placeholder(R.color.gray).into(holder.ivFood);
+        } else {
+            holder.ivFood.setVisibility(View.GONE);
+        }
 
-        Glide.with(context).load(imageUrl).centerCrop().placeholder(R.color.gray).into(holder.ivFood);
+        if (orderInfo.isLiked) {
+            holder.ivHeart.setImageResource(R.drawable.ic_heart_like);
+        } else {
+            holder.ivHeart.setImageResource(R.drawable.ic_heart_unlike);
+        }
+
+        holder.ivHeart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if (orderInfo.isLiked) {
+                    holder.ivHeart.setImageResource(R.drawable.ic_heart_unlike);
+                    orderInfo.isLiked = false;
+                } else {
+                    holder.ivHeart.setImageResource(R.drawable.ic_heart_like);
+                    orderInfo.isLiked = true;
+                }
+
+            }
+        });
 
         return convertView;
     }
@@ -149,11 +174,11 @@ public class OrderStickyListViewAdapter extends BaseAdapter implements StickyLis
             llHeaderView = (LinearLayout) view.findViewById(R.id.llHeaderView);
             tvHeader = (TextView) view.findViewById(R.id.tvHeader);
         }
-
     }
 
     class ViewHolder {
         private ImageView ivFood;
+        private ImageView ivIcon;
         private TextView tvFoodTitle;
         private ImageView ivHeart;
         private TextView tvFoodDescription;
@@ -162,13 +187,16 @@ public class OrderStickyListViewAdapter extends BaseAdapter implements StickyLis
         private ImageView ivAdd;
 
         public ViewHolder(View view) {
+
             ivFood = (ImageView) view.findViewById(R.id.ivFood);
+            ivIcon = (ImageView) view.findViewById(R.id.ivIcon);
             tvFoodTitle = (TextView) view.findViewById(R.id.tvFoodTitle);
             ivHeart = (ImageView) view.findViewById(R.id.ivHeart);
             tvFoodDescription = (TextView) view.findViewById(R.id.tvFoodDescription);
             tvPrice = (TextView) view.findViewById(R.id.tvPrice);
             tvEarnPoint = (TextView) view.findViewById(R.id.tvEarnPoint);
             ivAdd = (ImageView) view.findViewById(R.id.ivAdd);
+
         }
     }
 

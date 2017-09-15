@@ -1,55 +1,62 @@
 package com.tapin.tapin.fragment;
 
-import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
+import com.bumptech.glide.util.Util;
 import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.tapin.tapin.R;
+import com.tapin.tapin.activity.HomeActivity;
 import com.tapin.tapin.model.BusinessDeliveryInfo;
-import com.tapin.tapin.model.BusinessInfo;
-import com.tapin.tapin.model.GetPointsResp;
+import com.tapin.tapin.model.Business;
+import com.tapin.tapin.model.LocationInfo;
 import com.tapin.tapin.model.OrderInfo;
+import com.tapin.tapin.model.OrderSummaryInfo;
+import com.tapin.tapin.model.OrderedInfo;
+import com.tapin.tapin.model.TableInfo;
 import com.tapin.tapin.utils.AlertMessages;
 import com.tapin.tapin.utils.Constant;
 import com.tapin.tapin.utils.Debug;
 import com.tapin.tapin.utils.PreferenceManager;
 import com.tapin.tapin.utils.ProgressHUD;
+import com.tapin.tapin.utils.RangeTimePickerDialog;
 import com.tapin.tapin.utils.URLs;
 import com.tapin.tapin.utils.Utils;
 
-import org.w3c.dom.Text;
+import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
-import java.net.URL;
 import java.sql.Time;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
+import cz.msebera.android.httpclient.entity.StringEntity;
 
 /**
  * Created by Narendra on 4/26/17.
@@ -105,35 +112,36 @@ public class PickupOrderFragment extends Fragment {
 
     LinearLayout llCounter;
     ImageView ivCounter;
+    ImageView ivCounterDisable;
     LinearLayout llCounterPick;
     TextView tvCounterTime;
 
     LinearLayout llTable;
     ImageView ivTable;
+    ImageView ivTableDisable;
     LinearLayout llTablePick;
     Spinner spinnerTable;
 
     LinearLayout llLocation;
     ImageView ivLocation;
+    ImageView ivLocationDisable;
     LinearLayout llLocationPick;
     Spinner spinnerLocation;
     TextView tvLocationTime;
 
     LinearLayout llParking;
     ImageView ivParking;
+    ImageView ivParkingDisable;
     LinearLayout llParkingPick;
     TextView tvParkingTime;
+
+    EditText etNote;
 
     Button btnCancel;
     Button btnOk;
 
     ProgressHUD progressHUD;
     AlertMessages messages;
-
-    boolean isCounterSelected;
-    boolean isTableSelected;
-    boolean isLocationSelected;
-    boolean isParkingSelected;
 
     Time timeValue;
     SimpleDateFormat format;
@@ -149,7 +157,7 @@ public class PickupOrderFragment extends Fragment {
 
     BusinessDeliveryInfo businessDeliveryInfo;
 
-    ArrayList<OrderInfo> listOrdered = new ArrayList<>();
+    ArrayList<OrderedInfo> listOrdered = new ArrayList<>();
 
     ArrayList<String> listTables = new ArrayList<>();
     ArrayAdapter<String> tableAdapter;
@@ -157,7 +165,18 @@ public class PickupOrderFragment extends Fragment {
     ArrayList<String> listLocations = new ArrayList<>();
     ArrayAdapter<String> locationAdapter;
 
-    BusinessInfo businessInfo;
+    Business business;
+
+    boolean isOpened = true;
+    String pickUpTime;
+    String selectedTable;
+    String selectedLocation;
+
+    String currentTime;
+
+    SimpleDateFormat dateFormat;
+
+    String selectedOption = "";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -168,6 +187,8 @@ public class PickupOrderFragment extends Fragment {
         messages = new AlertMessages(getActivity());
 
         calendar = Calendar.getInstance();
+
+        dateFormat = new SimpleDateFormat("HH:mm:ss");
 
         tableAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, listTables);
         tableAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -182,9 +203,9 @@ public class PickupOrderFragment extends Fragment {
         counterHour = parkingHour = locationHour = calendar.get(Calendar.HOUR);
         counterMin = parkingMin = locationMin = calendar.get(Calendar.MINUTE);
 
-        businessInfo = (BusinessInfo) getArguments().getSerializable("BUSINESS_INFO");
+        business = Constant.business;
 
-        listOrdered = (ArrayList<OrderInfo>) getArguments().getSerializable("ORDERED_LIST");
+        listOrdered = (ArrayList<OrderedInfo>) getArguments().getSerializable("ORDERED_LIST");
 
         initHeader();
 
@@ -202,31 +223,115 @@ public class PickupOrderFragment extends Fragment {
 
     }
 
+    private void setTime() {
+
+        Calendar cal = Calendar.getInstance();
+
+        currentTime = dateFormat.format(cal.getTime());
+
+        Log.e("CURRENT_TIME", "" + currentTime);
+
+        try {
+
+            SimpleDateFormat dFormat = new SimpleDateFormat("hh:mm a");
+
+            if (!Utils.isTimeBetweenTwoTime(business.opening_time, business.closing_time, currentTime)) {
+
+                isOpened = false;
+
+                Date inTime = new SimpleDateFormat("HH:mm:ss").parse(business.opening_time);
+                Calendar calendar1 = Calendar.getInstance();
+                calendar1.setTime(inTime);
+
+                //Current Time
+                Date checkTime = new SimpleDateFormat("HH:mm:ss").parse(currentTime);
+                Calendar calendar3 = Calendar.getInstance();
+                calendar3.setTime(checkTime);
+                Date actualTime = calendar3.getTime();
+
+                //End Time
+                Date finTime = new SimpleDateFormat("HH:mm:ss").parse(business.closing_time);
+                Calendar calendar2 = Calendar.getInstance();
+                calendar2.setTime(finTime);
+
+//                if (actualTime.after(calendar2.getTime())) {
+//
+//                    llCounter.setEnabled(false);
+//                    ivCounterDisable.setVisibility(View.VISIBLE);
+//
+//                    llTable.performClick();
+//
+//                }
+
+                try {
+
+                    Date date = new SimpleDateFormat("HH:mm:ss").parse(business.opening_time);
+
+//                    long t = date.getTime();
+//                    Date afterAddingMins = new Date(t + (60000 * Integer.parseInt(businessDeliveryInfo.locationInfo.delivery_time_interval_in_minutes)));
+
+                    pickUpTime = dFormat.format(date);
+
+                    tvCounterTime.setText("" + pickUpTime);
+                    tvLocationTime.setText("" + pickUpTime);
+                    tvParkingTime.setText("" + pickUpTime);
+
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            } else {
+
+                isOpened = true;
+
+                long t = cal.getTimeInMillis();
+
+                Date afterAddingMins = new Date(t + (60000 * Integer.parseInt(businessDeliveryInfo.locationInfo.delivery_time_interval_in_minutes)));
+
+                pickUpTime = dFormat.format(afterAddingMins);
+
+                tvCounterTime.setText("" + pickUpTime);
+                tvLocationTime.setText("" + pickUpTime);
+                tvParkingTime.setText("" + pickUpTime);
+
+            }
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void setData() {
 
-        tvHotelName.setText("" + businessInfo.name);
+        tvHotelName.setText("" + business.name);
 
-        if (businessInfo.pickup_counter_charge.equalsIgnoreCase("-1")) {
+        if (business.pickup_counter_charge.equalsIgnoreCase("-1")) {
             llCounter.setEnabled(false);
+            ivCounterDisable.setVisibility(View.VISIBLE);
         }
-        if (businessInfo.pickup_location_charge.equalsIgnoreCase("-1")) {
+        if (business.pickup_location_charge.equalsIgnoreCase("-1")) {
             llLocation.setEnabled(false);
+            ivLocationDisable.setVisibility(View.VISIBLE);
         }
-        if (businessInfo.delivery_table_charge.equalsIgnoreCase("-1")) {
+        if (business.delivery_table_charge.equalsIgnoreCase("-1")) {
             llTable.setEnabled(false);
+            ivTableDisable.setVisibility(View.VISIBLE);
         }
-        if (businessInfo.delivery_location_charge.equalsIgnoreCase("-1")) {
+        if (business.delivery_location_charge.equalsIgnoreCase("-1")) {
             llParking.setEnabled(false);
+            ivParkingDisable.setVisibility(View.VISIBLE);
         }
 
-        if (!businessInfo.pickup_counter_charge.equalsIgnoreCase("-1")) {
-            selectPickLayout(ivCounter, R.drawable.ic_counter_active, llCounterPick);
-        } else if (!businessInfo.pickup_location_charge.equalsIgnoreCase("-1")) {
-            selectPickLayout(ivCounter, R.drawable.ic_designated_location_active, llLocationPick);
-        } else if (!businessInfo.delivery_table_charge.equalsIgnoreCase("-1")) {
-            selectPickLayout(ivCounter, R.drawable.ic_table_active, llTablePick);
-        } else if (!businessInfo.delivery_location_charge.equalsIgnoreCase("-1")) {
-            selectPickLayout(ivCounter, R.drawable.ic_parking_active, llParkingPick);
+        if (!business.pickup_counter_charge.equalsIgnoreCase("-1")) {
+            selectPickLayout(ivCounter, R.drawable.ic_counter_active, llCounterPick, "COUNTER");
+        } else if (!business.pickup_location_charge.equalsIgnoreCase("-1")) {
+            selectPickLayout(ivCounter, R.drawable.ic_designated_location_active, llLocationPick, "LOCATION");
+        } else if (!business.delivery_table_charge.equalsIgnoreCase("-1")) {
+            selectPickLayout(ivCounter, R.drawable.ic_table_active, llTablePick, "TABLE");
+        } else if (!business.delivery_location_charge.equalsIgnoreCase("-1")) {
+            selectPickLayout(ivCounter, R.drawable.ic_parking_active, llParkingPick, "PARKING");
         }
 
     }
@@ -237,12 +342,12 @@ public class PickupOrderFragment extends Fragment {
 
         RequestParams params = new RequestParams();
         params.put("cmd", "get_business_delivery_info");
-        params.put("business_id", businessInfo.businessID);
+        params.put("business_id", business.businessID);
 
         AsyncHttpClient client = new AsyncHttpClient();
         client.setTimeout(Constant.TIMEOUT);
 
-        String URL = URLs.BUSINESS_DELIVERY_INFO + "?cmd=get_business_delivery_info&business_id=" + businessInfo.businessID;
+        String URL = URLs.BUSINESS_DELIVERY_INFO + "cmd=get_business_delivery_info&business_id=" + business.businessID;
 
         Log.e("URL", "" + URL);
 
@@ -261,11 +366,13 @@ public class PickupOrderFragment extends Fragment {
 
                     if (businessDeliveryInfo.tableInfo != null) {
 
-                        tvMessage.setText("" + businessDeliveryInfo.tableInfo.message_to_consumers);
+                        TableInfo tableInfo = businessDeliveryInfo.tableInfo;
+
+                        tvMessage.setText("" + tableInfo.message_to_consumers);
 
                         listTables = new ArrayList<String>();
 
-                        for (int i = Integer.parseInt(businessDeliveryInfo.tableInfo.table_no_min); i <= Integer.parseInt(businessDeliveryInfo.tableInfo.table_no_max); i++) {
+                        for (int i = Integer.parseInt(tableInfo.table_no_min); i <= Integer.parseInt(tableInfo.table_no_max); i++) {
 
                             listTables.add("" + i);
 
@@ -277,16 +384,35 @@ public class PickupOrderFragment extends Fragment {
                         spinnerTable.setAdapter(tableAdapter);
                         spinnerTable.setSelection(0);
 
+                        Calendar cal = Calendar.getInstance();
+
+                        currentTime = dateFormat.format(cal.getTime());
+
+                        Log.e("CURRENT_TIME", "" + currentTime);
+
+                        try {
+                            if (!Utils.isTimeBetweenTwoTime(tableInfo.delivery_start_time, tableInfo.delivery_end_time, currentTime)) {
+
+                                llTable.setEnabled(false);
+                                ivTableDisable.setVisibility(View.VISIBLE);
+
+                            }
+
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
 
                     }
 
                     if (businessDeliveryInfo.locationInfo != null) {
 
+                        LocationInfo location = businessDeliveryInfo.locationInfo;
+
                         listLocations = new ArrayList<String>();
 
-                        for (int i = 0; i < businessDeliveryInfo.locationInfo.listLocation.size(); i++) {
+                        for (int i = 0; i < location.listLocation.size(); i++) {
 
-                            listLocations.add(businessDeliveryInfo.locationInfo.listLocation.get(i).location_name);
+                            listLocations.add(location.listLocation.get(i).location_name);
 
                         }
                         locationAdapter.clear();
@@ -294,6 +420,12 @@ public class PickupOrderFragment extends Fragment {
 
                         spinnerLocation.setAdapter(locationAdapter);
                         spinnerLocation.setSelection(0);
+
+                        Calendar cal = Calendar.getInstance();
+
+                        currentTime = dateFormat.format(cal.getTime());
+
+                        Log.e("CURRENT_TIME", "" + currentTime);
 
                     }
 
@@ -304,6 +436,8 @@ public class PickupOrderFragment extends Fragment {
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                 }
+
+                setTime();
             }
 
             @Override
@@ -334,28 +468,63 @@ public class PickupOrderFragment extends Fragment {
 
         llCounter = (LinearLayout) view.findViewById(R.id.llCounter);
         ivCounter = (ImageView) view.findViewById(R.id.ivCounter);
+        ivCounterDisable = (ImageView) view.findViewById(R.id.ivCounterDisable);
         llCounterPick = (LinearLayout) view.findViewById(R.id.llCounterPick);
         tvCounterTime = (TextView) view.findViewById(R.id.tvCounterTime);
 
         llTable = (LinearLayout) view.findViewById(R.id.llTable);
         ivTable = (ImageView) view.findViewById(R.id.ivTable);
+        ivTableDisable = (ImageView) view.findViewById(R.id.ivTableDisable);
         llTablePick = (LinearLayout) view.findViewById(R.id.llTablePick);
         spinnerTable = (Spinner) view.findViewById(R.id.spinnerTable);
 
         spinnerTable.setAdapter(tableAdapter);
 
+        spinnerTable.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
+
+                selectedTable = listTables.get(position);
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+
         llLocation = (LinearLayout) view.findViewById(R.id.llLocation);
         ivLocation = (ImageView) view.findViewById(R.id.ivLocation);
+        ivLocationDisable = (ImageView) view.findViewById(R.id.ivLocationDisable);
         llLocationPick = (LinearLayout) view.findViewById(R.id.llLocationPick);
         spinnerLocation = (Spinner) view.findViewById(R.id.spinnerLocation);
         tvLocationTime = (TextView) view.findViewById(R.id.tvLocationTime);
 
         spinnerLocation.setAdapter(locationAdapter);
 
+        spinnerLocation.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
+
+                selectedLocation = listLocations.get(position);
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
         llParking = (LinearLayout) view.findViewById(R.id.llParking);
         ivParking = (ImageView) view.findViewById(R.id.ivParking);
+        ivParkingDisable = (ImageView) view.findViewById(R.id.ivParkingDisable);
         llParkingPick = (LinearLayout) view.findViewById(R.id.llParkingPick);
-        tvParkingTime = (TextView)view.findViewById(R.id.tvParkingTime);
+        tvParkingTime = (TextView) view.findViewById(R.id.tvParkingTime);
+
+        etNote = (EditText) view.findViewById(R.id.etNote);
 
         btnCancel = (Button) view.findViewById(R.id.btnCancel);
         btnOk = (Button) view.findViewById(R.id.btnOk);
@@ -378,93 +547,83 @@ public class PickupOrderFragment extends Fragment {
             }
         });
 
-//        tvCounterDate.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//
-//                DatePickerDialog dd = new DatePickerDialog(getActivity(),
-//                        new DatePickerDialog.OnDateSetListener() {
-//
-//                            @Override
-//                            public void onDateSet(DatePicker view, int year,
-//                                                  int monthOfYear, int dayOfMonth) {
-//
-//                                try {
-//
-//                                    SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-//
-//                                    String dateInString = dayOfMonth + "/" + (monthOfYear + 1) + "/" + year;
-//
-//                                    Date date = formatter.parse(dateInString);
-//
-//                                    tvCounterDate.setText(formatter.format(date).toString());
-//
-//                                } catch (Exception ex) {
-//                                    ex.printStackTrace();
-//                                }
-//                            }
-//                        }, counterYear, counterMonth, counterDay);
-//                dd.show();
-//            }
-//        });
-
         tvCounterTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                TimePickerDialog td = new TimePickerDialog(getActivity(),
-                        new TimePickerDialog.OnTimeSetListener() {
-                            @Override
-                            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                                try {
-                                    String dtStart = String.valueOf(hourOfDay) + ":" + String.valueOf(minute);
 
-                                    format = new SimpleDateFormat("HH:mm");
+                if (!isOpened) {
+                    messages.showCustomMessage("Sorry!", "We are not able to deliever today.");
+                } else {
+                    Calendar c = Calendar.getInstance();
+                    RangeTimePickerDialog td = new RangeTimePickerDialog(getActivity(),
+                            new TimePickerDialog.OnTimeSetListener() {
 
-                                    timeValue = new Time(format.parse(dtStart).getTime());
+                                @Override
+                                public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                                    try {
+                                        String dtStart = String.valueOf(hourOfDay) + ":" + String.valueOf(minute);
 
-                                    tvCounterTime.setText(String.valueOf(timeValue));
+                                        format = new SimpleDateFormat("HH:mm");
 
-                                    String amPm = hourOfDay % 12 + ":" + minute + " " + ((hourOfDay >= 12) ? "PM" : "AM");
+                                        timeValue = new Time(format.parse(dtStart).getTime());
 
-                                    tvCounterTime.setText(amPm);
+                                        tvCounterTime.setText(String.valueOf(timeValue));
 
-                                } catch (Exception ex) {
-                                    ex.printStackTrace();
+                                        String amPm = hourOfDay % 12 + ":" + minute + " " + ((hourOfDay >= 12) ? "PM" : "AM");
+
+                                        tvCounterTime.setText(amPm);
+
+                                    } catch (Exception ex) {
+                                        ex.printStackTrace();
+                                    }
                                 }
-                            }
-                        },
-                        counterHour, counterMin, DateFormat.is24HourFormat(getActivity()));
-                td.show();
+                            },
+                            c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE) + 5, true);
+
+                    td.show();
+
+                    td.setMin(Integer.parseInt(business.opening_time.split(":")[0]), Integer.parseInt(business.opening_time.split(":")[1]));
+                    td.setMax(Integer.parseInt(business.closing_time.split(":")[0]), Integer.parseInt(business.closing_time.split(":")[1]));
+
+                }
             }
         });
 
         tvLocationTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                TimePickerDialog td = new TimePickerDialog(getActivity(),
-                        new TimePickerDialog.OnTimeSetListener() {
-                            @Override
-                            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                                try {
-                                    String dtStart = String.valueOf(hourOfDay) + ":" + String.valueOf(minute);
+                if (!isOpened) {
+                    messages.showCustomMessage("Sorry!", "We are not able to deliever today.");
+                } else {
+                    Calendar c = Calendar.getInstance();
 
-                                    format = new SimpleDateFormat("HH:mm");
+                    RangeTimePickerDialog td = new RangeTimePickerDialog(getActivity(),
+                            new TimePickerDialog.OnTimeSetListener() {
+                                @Override
+                                public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                                    try {
+                                        String dtStart = String.valueOf(hourOfDay) + ":" + String.valueOf(minute);
 
-                                    timeValue = new Time(format.parse(dtStart).getTime());
+                                        format = new SimpleDateFormat("HH:mm");
 
-                                    tvLocationTime.setText(String.valueOf(timeValue));
+                                        timeValue = new Time(format.parse(dtStart).getTime());
 
-                                    String amPm = hourOfDay % 12 + ":" + minute + " " + ((hourOfDay >= 12) ? "PM" : "AM");
+                                        tvLocationTime.setText(String.valueOf(timeValue));
 
-                                    tvLocationTime.setText(amPm);
+                                        String amPm = hourOfDay % 12 + ":" + minute + " " + ((hourOfDay >= 12) ? "PM" : "AM");
 
-                                } catch (Exception ex) {
-                                    ex.printStackTrace();
+                                        tvLocationTime.setText(amPm);
+
+                                    } catch (Exception ex) {
+                                        ex.printStackTrace();
+                                    }
                                 }
-                            }
-                        },
-                        locationHour, locationMin, DateFormat.is24HourFormat(getActivity()));
-                td.show();
+                            },
+                            locationHour, locationMin, DateFormat.is24HourFormat(getActivity()));
+                    td.show();
+                    td.setMin(Integer.parseInt(business.opening_time.split(":")[0]), Integer.parseInt(business.opening_time.split(":")[1]));
+                    td.setMax(Integer.parseInt(business.closing_time.split(":")[0]), Integer.parseInt(business.closing_time.split(":")[1]));
+                }
             }
         });
 
@@ -472,30 +631,37 @@ public class PickupOrderFragment extends Fragment {
             @Override
             public void onClick(View view) {
 
-                TimePickerDialog td = new TimePickerDialog(getActivity(),
-                        new TimePickerDialog.OnTimeSetListener() {
-                            @Override
-                            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                                try {
-                                    String dtStart = String.valueOf(hourOfDay) + ":" + String.valueOf(minute);
+                if (!isOpened) {
+                    messages.showCustomMessage("Sorry!", "We are not able to deliever today.");
+                } else {
+                    RangeTimePickerDialog td = new RangeTimePickerDialog(getActivity(),
+                            new TimePickerDialog.OnTimeSetListener() {
 
-                                    format = new SimpleDateFormat("HH:mm");
+                                @Override
+                                public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                                    try {
+                                        String dtStart = String.valueOf(hourOfDay) + ":" + String.valueOf(minute);
 
-                                    timeValue = new Time(format.parse(dtStart).getTime());
+                                        format = new SimpleDateFormat("HH:mm");
 
-                                    tvParkingTime.setText(String.valueOf(timeValue));
+                                        timeValue = new Time(format.parse(dtStart).getTime());
 
-                                    String amPm = hourOfDay % 12 + ":" + minute + " " + ((hourOfDay >= 12) ? "PM" : "AM");
+                                        tvParkingTime.setText(String.valueOf(timeValue));
 
-                                    tvParkingTime.setText(amPm);
+                                        String amPm = hourOfDay % 12 + ":" + minute + " " + ((hourOfDay >= 12) ? "PM" : "AM");
 
-                                } catch (Exception ex) {
-                                    ex.printStackTrace();
+                                        tvParkingTime.setText(amPm);
+
+                                    } catch (Exception ex) {
+                                        ex.printStackTrace();
+                                    }
                                 }
-                            }
-                        },
-                        parkingHour, parkingMin, DateFormat.is24HourFormat(getActivity()));
-                td.show();
+                            },
+                            parkingHour, parkingMin, DateFormat.is24HourFormat(getActivity()));
+                    td.show();
+                    td.setMin(Integer.parseInt(business.opening_time.split(":")[0]), Integer.parseInt(business.opening_time.split(":")[1]));
+                    td.setMax(Integer.parseInt(business.closing_time.split(":")[0]), Integer.parseInt(business.closing_time.split(":")[1]));
+                }
             }
         });
 
@@ -503,13 +669,7 @@ public class PickupOrderFragment extends Fragment {
             @Override
             public void onClick(View view) {
 
-//                if (isCounterSelected) {
-//                    ivCounter.setImageResource(R.drawable.ic_counter);
-//                } else {
-//                    ivCounter.setImageResource(R.drawable.ic_counter_active);
-//                }
-//                isCounterSelected = !isCounterSelected;
-                selectPickLayout(ivCounter, R.drawable.ic_counter_active, llCounterPick);
+                selectPickLayout(ivCounter, R.drawable.ic_counter_active, llCounterPick, "COUNTER");
 
             }
         });
@@ -517,13 +677,7 @@ public class PickupOrderFragment extends Fragment {
             @Override
             public void onClick(View view) {
 
-//                if (isTableSelected) {
-//                    ivTable.setImageResource(R.drawable.ic_table);
-//                } else {
-//                    ivTable.setImageResource(R.drawable.ic_table_active);
-//                }
-//                isTableSelected = !isTableSelected;
-                selectPickLayout(ivTable, R.drawable.ic_table_active, llTablePick);
+                selectPickLayout(ivTable, R.drawable.ic_table_active, llTablePick, "TABLE");
 
             }
         });
@@ -531,13 +685,7 @@ public class PickupOrderFragment extends Fragment {
             @Override
             public void onClick(View view) {
 
-//                if (isLocationSelected) {
-//                    ivLocation.setImageResource(R.drawable.ic_designated_location);
-//                } else {
-//                    ivLocation.setImageResource(R.drawable.ic_designated_location_active);
-//                }
-//                isLocationSelected = !isLocationSelected;
-                selectPickLayout(ivLocation, R.drawable.ic_designated_location_active, llLocationPick);
+                selectPickLayout(ivLocation, R.drawable.ic_designated_location_active, llLocationPick, "LOCATION");
 
             }
         });
@@ -545,20 +693,14 @@ public class PickupOrderFragment extends Fragment {
             @Override
             public void onClick(View view) {
 
-//                if (isParkingSelected) {
-//                    ivParking.setImageResource(R.drawable.ic_parking);
-//                } else {
-//                    ivParking.setImageResource(R.drawable.ic_parking_active);
-//                }
-//                isParkingSelected = !isParkingSelected;
-                selectPickLayout(ivParking, R.drawable.ic_parking_active, llParkingPick);
+                selectPickLayout(ivParking, R.drawable.ic_parking_active, llParkingPick, "PARKING");
 
             }
         });
 
     }
 
-    private void selectPickLayout(ImageView iv, int image, LinearLayout llPick) {
+    private void selectPickLayout(ImageView iv, int image, LinearLayout llPick, String selected) {
 
         ivCounter.setImageResource(R.drawable.ic_counter);
         ivTable.setImageResource(R.drawable.ic_table);
@@ -573,6 +715,8 @@ public class PickupOrderFragment extends Fragment {
         llParkingPick.setVisibility(View.GONE);
 
         llPick.setVisibility(View.VISIBLE);
+
+        selectedOption = selected;
     }
 
     private void showConfirmationDialog() {
@@ -585,23 +729,187 @@ public class PickupOrderFragment extends Fragment {
 
         TextView tvMessage = (TextView) dialogView.findViewById(R.id.tvMessage);
 
-        tvMessage.setText("Your Pick up time is " + tvCounterTime.getText().toString());
+        String message = "";
+
+        final OrderSummaryInfo orderSummaryInfo = new OrderSummaryInfo();
+
+        orderSummaryInfo.listOrdered = listOrdered;
+
+        if (selectedOption.equalsIgnoreCase("COUNTER")) {
+
+            String counterTime = tvCounterTime.getText().toString();
+
+            orderSummaryInfo.counterPickupTime = counterTime;
+
+            orderSummaryInfo.pd_mode = "1";
+
+            Log.e("COUNTER_TIME", "" + counterTime);
+
+            orderSummaryInfo.pd_time = Utils.convertTime("hh:mm a", "HH:mm:ss", counterTime);
+
+            Log.e("COUNTER_CONVERTED_TIME", "" + orderSummaryInfo.pd_time);
+
+            String pickupTime = "Your Pickup time is " + counterTime;
+
+            message = pickupTime;
+
+        } else if (selectedOption.equalsIgnoreCase("TABLE")) {
+
+            orderSummaryInfo.tableNumber = selectedTable;
+
+            orderSummaryInfo.pd_mode = "4";
+
+            orderSummaryInfo.pd_locations_id = selectedTable;
+
+            orderSummaryInfo.pd_time = Utils.convertTime("hh:mm a", "HH:mm:ss", tvParkingTime.getText().toString());
+
+            String tableNo = "Your Table Number is " + selectedTable;
+            message = tableNo;
+
+        } else if (selectedOption.equalsIgnoreCase("LOCATION")) {
+
+            String locationDeliveryTime = tvLocationTime.getText().toString();
+
+            orderSummaryInfo.deliveryLocation = selectedLocation;
+            orderSummaryInfo.locationDeliveryTime = locationDeliveryTime;
+
+            orderSummaryInfo.pd_mode = "8";
+            orderSummaryInfo.pd_time = Utils.convertTime("hh:mm a", "HH:mm:ss", locationDeliveryTime);
+
+            String location = "Your Delivery location is " + selectedLocation + "\n\n";
+            String orderTime = "Your Order time is " + locationDeliveryTime;
+            message = location + orderTime;
+
+        } else {
+
+            String parkingTime = tvParkingTime.getText().toString();
+
+            orderSummaryInfo.pd_mode = "2";
+            orderSummaryInfo.pd_time = Utils.convertTime("hh:mm a", "HH:mm:ss", parkingTime);
+            orderSummaryInfo.parkingPickupTime = parkingTime;
+
+            String pickupTime = "Your Pickup time is " + parkingTime;
+            message = pickupTime;
+
+        }
+
+        tvMessage.setText("" + message);
 
         final AlertDialog alertDialog = dialogBuilder.create();
         alertDialog.show();
 
-        ((Button) dialogView.findViewById(R.id.btnNegative)).setOnClickListener(new View.OnClickListener() {
+        ((Button) dialogView.findViewById(R.id.btnConfirm)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 alertDialog.dismiss();
+
+                if (selectedOption.equalsIgnoreCase("LOCATION")) {
+
+                    saveDeliveryInfo(orderSummaryInfo);
+
+                } else {
+                    OrderSummaryFragment fragment = new OrderSummaryFragment();
+                    Bundle bundle = new Bundle();
+                    bundle.putString("SELECTED_OPTION", selectedOption);
+                    bundle.putSerializable("ORDER_SUMMARY", orderSummaryInfo);
+                    fragment.setArguments(bundle);
+                    ((HomeActivity) getActivity()).addFragment(fragment, R.id.frame_home);
+                }
+
             }
         });
 
-        ((Button) dialogView.findViewById(R.id.btnPositive)).setOnClickListener(new View.OnClickListener() {
+        ((Button) dialogView.findViewById(R.id.btnCancel)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 alertDialog.dismiss();
             }
         });
+    }
+
+
+    public void saveDeliveryInfo(final OrderSummaryInfo orderSummaryInfo) {
+
+        try {
+
+            progressHUD = ProgressHUD.show(getActivity(), getString(R.string.please_wait), true, false);
+
+            AsyncHttpClient client = new AsyncHttpClient();
+            client.setTimeout(Constant.TIMEOUT);
+
+            String URL = URLs.MAIN_BASE_URL;
+
+            final JSONObject json = new JSONObject();
+
+            json.put("cmd", "save_consumer_delivery");
+            json.put("consumer_id", PreferenceManager.getUserInfo().uid);
+            json.put("delivery_address_name", selectedLocation);
+            json.put("delivery_instruction", etNote.getText().toString());
+            json.put("delivery_time", Utils.convertTime("hh:mm a", "HH:mm:ss", tvLocationTime.getText().toString()));
+
+            StringEntity entity = new StringEntity(json.toString());
+
+            Log.e("SAVE_DELIVERY_INFO", "" + json.toString());
+
+            client.post(getActivity(), URL, entity, "application/json", new AsyncHttpResponseHandler() {
+
+                        @Override
+                        public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+
+                            if (progressHUD != null && progressHUD.isShowing()) {
+                                progressHUD.dismiss();
+                                progressHUD = null;
+                            }
+
+                            try {
+
+                                String content = new String(responseBody, "UTF-8");
+
+                                Log.e("RES_SAVE_DELIVERY_INFO", "-" + content);
+
+                                JSONObject jsonObject = new JSONObject(content);
+
+                                int status = jsonObject.getInt("status");
+
+                                if (status == 1) {
+
+                                    int consumer_delivery_id = jsonObject.getInt("consumer_delivery_id");
+
+                                    orderSummaryInfo.consumerDeliveryId = "" + consumer_delivery_id;
+                                    orderSummaryInfo.note = etNote.getText().toString();
+
+                                    OrderSummaryFragment fragment = new OrderSummaryFragment();
+                                    Bundle bundle = new Bundle();
+                                    bundle.putString("SELECTED_OPTION", selectedOption);
+                                    bundle.putSerializable("ORDER_SUMMARY", orderSummaryInfo);
+                                    fragment.setArguments(bundle);
+                                    ((HomeActivity) getActivity()).addFragment(fragment, R.id.frame_home);
+
+                                }
+
+                            } catch (Exception e) {
+
+                                e.printStackTrace();
+                            }
+
+                        }
+
+                        @Override
+                        public void onFailure(int statusCode, Header[] headers,
+                                              byte[] responseBody, Throwable error) {
+
+                            if (progressHUD != null && progressHUD.isShowing()) {
+                                progressHUD.dismiss();
+                                progressHUD = null;
+                            }
+
+                        }
+                    }
+
+            );
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

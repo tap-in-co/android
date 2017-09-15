@@ -37,5 +37,7 @@ public class Options implements Serializable, Cloneable {
         @SerializedName("availability_status")
         public String availability_status;
 
+        public boolean isSelected;
+
     }
 }

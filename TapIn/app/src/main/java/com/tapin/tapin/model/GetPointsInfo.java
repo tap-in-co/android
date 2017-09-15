@@ -20,7 +20,6 @@ public class GetPointsInfo implements Cloneable, Serializable {
     @SerializedName("total_available_points")
     public int total_available_points;
 
-
     @SerializedName("points")
     public List<PointInfo> listPointInfos;
 

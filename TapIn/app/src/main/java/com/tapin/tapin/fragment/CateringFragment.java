@@ -24,7 +24,7 @@ import android.widget.Toast;
 
 import com.tapin.tapin.R;
 import com.tapin.tapin.adapter.SlidingImage_Adapter;
-import com.tapin.tapin.model.BusinessInfo;
+import com.tapin.tapin.model.Business;
 import com.tapin.tapin.utils.AlertMessages;
 import com.tapin.tapin.utils.Debug;
 import com.tapin.tapin.utils.Utils;
@@ -50,7 +50,7 @@ public class CateringFragment extends Fragment {
     private TextView tvRateCount;
     private TextView textViewOpenClosed;
     private ViewPager mPager;
-    BusinessInfo businessInfo;
+    Business business;
     Calendar calendar;
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
 
@@ -103,9 +103,9 @@ public class CateringFragment extends Fragment {
         Utils.disableEditText(etDate);
         Utils.disableEditText(etTime);
 
-        businessInfo = (BusinessInfo) getArguments().getSerializable("businessInfo");
+        business = (Business) getArguments().getSerializable("business");
         mPager = (ViewPager) view.findViewById(R.id.pager);
-        setBusinessData(businessInfo);
+        setBusinessData(business);
 
         initHeader();
 
@@ -121,17 +121,17 @@ public class CateringFragment extends Fragment {
 
     Timer timer;
 
-    private void setBusinessData(BusinessInfo businessInfo) {
+    private void setBusinessData(Business business) {
 
         // image slider
 
-        if (businessInfo.pictures.endsWith(",")) {
-            businessInfo.pictures = businessInfo.pictures.substring(0, businessInfo.pictures.length() - 1);
+        if (business.pictures.endsWith(",")) {
+            business.pictures = business.pictures.substring(0, business.pictures.length() - 1);
         }
 
-        final List<String> image_list = Arrays.asList((businessInfo.pictures.split("\\s*,\\s*")));
+        final List<String> image_list = Arrays.asList((business.pictures.split("\\s*,\\s*")));
         Debug.e("Arraylist", image_list + "-");
-        mPager.setAdapter(new SlidingImage_Adapter(getActivity(), businessInfo.businessID, image_list));
+        mPager.setAdapter(new SlidingImage_Adapter(getActivity(), business.businessID, image_list));
         TimerTask timerTask = new TimerTask() {
             @Override
             public void run() {
@@ -149,20 +149,20 @@ public class CateringFragment extends Fragment {
 
 
         //  views
-        tvAddress.setText(Utils.isNotEmpty(businessInfo.address) ? businessInfo.address : "");
-        tvWebsite.setText(Utils.isNotEmpty(businessInfo.website) ? businessInfo.website : "");
-        textViewBusinessType.setText(Utils.isNotEmpty(businessInfo.customerProfileName) ? businessInfo.customerProfileName : "");
-        tvPaymentEmail.setText(Utils.isNotEmpty(businessInfo.neighborhood) ? businessInfo.neighborhood : "");
-        tvTime.setText(Utils.getOpenTime(businessInfo.opening_time, businessInfo.closing_time));
-        ratingBar.setRating((float) businessInfo.rating);
-        // tvRateCount.setText(Utils.isNotEmpty(businessInfo.ti_rating) ? "("+businessInfo.ti_rating +")": "");
-        // tvPrice.setText(Utils.isNotEmpty(businessInfo.website)?businessInfo.website:"");
+        tvAddress.setText(Utils.isNotEmpty(business.address) ? business.address : "");
+        tvWebsite.setText(Utils.isNotEmpty(business.website) ? business.website : "");
+        textViewBusinessType.setText(Utils.isNotEmpty(business.customerProfileName) ? business.customerProfileName : "");
+        tvPaymentEmail.setText(Utils.isNotEmpty(business.neighborhood) ? business.neighborhood : "");
+        tvTime.setText(Utils.getOpenTime(business.opening_time, business.closing_time));
+        ratingBar.setRating((float) business.rating);
+        // tvRateCount.setText(Utils.isNotEmpty(business.ti_rating) ? "("+business.ti_rating +")": "");
+        // tvPrice.setText(Utils.isNotEmpty(business.website)?business.website:"");
 
 
         // open - close now
         try {
-            Date dateOpening = simpleDateFormat.parse(businessInfo.opening_time);
-            Date dateClosing = simpleDateFormat.parse(businessInfo.closing_time);
+            Date dateOpening = simpleDateFormat.parse(business.opening_time);
+            Date dateClosing = simpleDateFormat.parse(business.closing_time);
 
             Calendar calendarOpening = Calendar.getInstance();
             calendarOpening.setTimeInMillis(dateOpening.getTime());
@@ -185,7 +185,7 @@ public class CateringFragment extends Fragment {
         }
 
 
-        //Glide.with(getActivity()).load(URLs.IMAGE_URL + "" + businessInfo.icon).into(ivFood);
+        //Glide.with(getActivity()).load(URLs.IMAGE_URL + "" + business.icon).into(ivFood);
 
 
     }
@@ -202,7 +202,7 @@ public class CateringFragment extends Fragment {
         tvHeaderRight.setVisibility(View.GONE);
 
 
-        tvHeaderTitle.setText(businessInfo.name + "");
+        tvHeaderTitle.setText(business.name + "");
 
         tvHeaderLeft.setOnClickListener(new View.OnClickListener() {
             @Override
