@@ -3,7 +3,6 @@ package com.tapin.tapin.fragment;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.text.format.DateFormat;
 import android.util.Log;
@@ -19,19 +18,16 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.Toast;
 
-import com.bumptech.glide.util.Util;
 import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.tapin.tapin.R;
 import com.tapin.tapin.activity.HomeActivity;
-import com.tapin.tapin.model.BusinessDeliveryInfo;
 import com.tapin.tapin.model.Business;
+import com.tapin.tapin.model.BusinessDeliveryInfo;
 import com.tapin.tapin.model.LocationInfo;
-import com.tapin.tapin.model.OrderInfo;
 import com.tapin.tapin.model.OrderSummaryInfo;
 import com.tapin.tapin.model.OrderedInfo;
 import com.tapin.tapin.model.TableInfo;
@@ -46,7 +42,6 @@ import com.tapin.tapin.utils.Utils;
 
 import org.json.JSONObject;
 
-import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.sql.Time;
 import java.text.ParseException;
@@ -288,7 +283,12 @@ public class PickupOrderFragment extends Fragment {
 
                 long t = cal.getTimeInMillis();
 
-                Date afterAddingMins = new Date(t + (60000 * Integer.parseInt(businessDeliveryInfo.locationInfo.delivery_time_interval_in_minutes)));
+                Date afterAddingMins;
+                if (businessDeliveryInfo != null && businessDeliveryInfo.locationInfo != null && businessDeliveryInfo.locationInfo.delivery_time_interval_in_minutes != null) {
+                    afterAddingMins = new Date(t + (60000 * Integer.parseInt(businessDeliveryInfo.locationInfo.delivery_time_interval_in_minutes)));
+                } else {
+                    afterAddingMins = new Date(t + (60000 * 15));
+                }
 
                 pickUpTime = dFormat.format(afterAddingMins);
 
@@ -552,7 +552,7 @@ public class PickupOrderFragment extends Fragment {
             public void onClick(View view) {
 
                 if (!isOpened) {
-                    messages.showCustomMessage("Sorry!", "We are not able to deliever today.");
+                    messages.showCustomMessage("Sorry!", "We are not able to deliver now,\nplease Order at " + Utils.convertTime("HH:mm:ss", "hh:mm a", business.opening_time));
                 } else {
                     Calendar c = Calendar.getInstance();
                     RangeTimePickerDialog td = new RangeTimePickerDialog(getActivity(),
@@ -593,7 +593,7 @@ public class PickupOrderFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 if (!isOpened) {
-                    messages.showCustomMessage("Sorry!", "We are not able to deliever today.");
+                    messages.showCustomMessage("Sorry!", "We are not able to deliver now,\nplease Order at " + Utils.convertTime("HH:mm:ss", "hh:mm a", business.opening_time));
                 } else {
                     Calendar c = Calendar.getInstance();
 
@@ -632,7 +632,7 @@ public class PickupOrderFragment extends Fragment {
             public void onClick(View view) {
 
                 if (!isOpened) {
-                    messages.showCustomMessage("Sorry!", "We are not able to deliever today.");
+                    messages.showCustomMessage("Sorry!", "We are not able to deliver now,\nplease Order at " + Utils.convertTime("HH:mm:ss", "hh:mm a", business.opening_time));
                 } else {
                     RangeTimePickerDialog td = new RangeTimePickerDialog(getActivity(),
                             new TimePickerDialog.OnTimeSetListener() {

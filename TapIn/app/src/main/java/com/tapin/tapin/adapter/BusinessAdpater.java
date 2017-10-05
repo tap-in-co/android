@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by Narendra on 2/7/2017.
@@ -47,19 +49,14 @@ public class BusinessAdpater extends RecyclerView.Adapter<BusinessAdpater.ViewHo
     Calendar calendar;
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
 
-    GPSTracker gps;
+    boolean isLatLngAvailable;
+    double currentLat;
+    double currentLng;
 
-    public BusinessAdpater(FragmentActivity activity, ArrayList<Business> data, String time) {
-
-        mData.addAll((Collection<? extends Business>) data.clone());
-        for (int i = 0; i < mData.size(); i++) {
-            mDataOriginal.add(mData.get(i));
-        }
+    public BusinessAdpater(FragmentActivity activity, String time) {
 
         this.activity = activity;
         this.time = time;
-
-        gps = new GPSTracker(activity);
 
         calendar = Calendar.getInstance();
 
@@ -90,16 +87,20 @@ public class BusinessAdpater extends RecyclerView.Adapter<BusinessAdpater.ViewHo
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, final int position) {
 
-        viewHolder.tvBusinessName.setText("" + mData.get(position).name);
-        viewHolder.tvDescription.setText("" + mData.get(position).marketing_statement);
-        viewHolder.tvBusinessType.setText("" + mData.get(position).businessTypes);
-        viewHolder.tvNeighbourhood.setText("" + mData.get(position).neighborhood);
+        Business business = mData.get(position);
 
-        if (gps.canGetLocation()) {
+        viewHolder.tvBusinessName.setText("" + business.name);
+        viewHolder.tvDescription.setText("" + business.marketing_statement);
+        if (business.businessTypes != null && business.businessTypes.length() > 0 && !business.businessTypes.equals("null")) {
+            viewHolder.tvBusinessType.setText("" + business.businessTypes);
+        }
+        viewHolder.tvNeighbourhood.setText("" + business.neighborhood);
+
+        if (isLatLngAvailable) {
 
             Location crntLocation = new Location("crntlocation");
-            crntLocation.setLatitude(gps.getLatitude());
-            crntLocation.setLongitude(gps.getLongitude());
+            crntLocation.setLatitude(currentLat);
+            crntLocation.setLongitude(currentLng);
 
             Location newLocation = new Location("newlocation");
             newLocation.setLatitude(mData.get(position).lat);
@@ -110,7 +111,8 @@ public class BusinessAdpater extends RecyclerView.Adapter<BusinessAdpater.ViewHo
         }
 
         if (mData.get(position).icon != null) {
-            Glide.with(activity).load(URLs.IMAGE_URL + mData.get(position).icon).into(viewHolder.ivBusinessIcon);
+            Log.e("IMAGE_URL", "" + URLs.IMAGE_URL + business.icon);
+            Glide.with(activity).load(URLs.IMAGE_URL + business.icon).into(viewHolder.ivBusinessIcon);
         }
 
         try {
@@ -204,5 +206,32 @@ public class BusinessAdpater extends RecyclerView.Adapter<BusinessAdpater.ViewHo
 
         notifyDataSetChanged();
 
+    }
+
+    public void addAllBusiness(List<Business> data) {
+
+        try {
+
+            mData.clear();
+            mDataOriginal.clear();
+
+            mData.addAll(data);
+            mDataOriginal.addAll(data);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        notifyDataSetChanged();
+    }
+
+    public void setCurrentLatLng(double lat, double lng) {
+
+        isLatLngAvailable = true;
+
+        currentLat = lat;
+        currentLng = lng;
+
+        notifyDataSetChanged();
     }
 }

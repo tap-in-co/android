@@ -387,7 +387,8 @@ public class BusinessDetailFragment extends Fragment {
 
         mPager = (ViewPager) view.findViewById(R.id.pager);
         lvFoodDetail = (ListView) view.findViewById(R.id.lvFoodDetail);
-        adapter = new BusinessDetailAdapter(getActivity(), Utils.getColor(business.bg_color), Utils.getColor(business.text_color), new BusinessDetailAdapter.PreviousOrderClickListener() {
+
+        adapter = new BusinessDetailAdapter(getActivity(), business.bg_color, business.text_color, new BusinessDetailAdapter.PreviousOrderClickListener() {
             @Override
             public void clicked(String s) {
 

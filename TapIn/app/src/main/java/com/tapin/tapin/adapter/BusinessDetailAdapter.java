@@ -19,6 +19,7 @@ import com.tapin.tapin.fragment.MenuFoodListFragment;
 import com.tapin.tapin.model.BusinessType;
 import com.tapin.tapin.utils.AlertMessages;
 import com.tapin.tapin.utils.Debug;
+import com.tapin.tapin.utils.Utils;
 
 import java.util.ArrayList;
 
@@ -114,8 +115,14 @@ public class BusinessDetailAdapter extends BaseAdapter {
         holder.ivCategory.setImageResource(getIcon(businessType.icon));
 //        holder.llDetailContainer.setBackgroundColor(ContextCompat.getColor(context, bg_color));
         Debug.e("Colorm at " + i, bg_color + " : " + text_color);
-        holder.llDetailContainer.setBackgroundColor(Color.parseColor(bg_color));
-        holder.tvBusinessType.setTextColor(Color.parseColor(text_color));
+
+        if (text_color != null && text_color.length() > 0) {
+            holder.tvBusinessType.setTextColor(Color.parseColor(Utils.getColor(text_color)));
+        }
+
+        if (bg_color != null && bg_color.length() > 0) {
+            holder.llDetailContainer.setBackgroundColor(Color.parseColor(Utils.getColor(bg_color)));
+        }
 
         holder.llPreviousOrder.setOnClickListener(new View.OnClickListener() {
             @Override

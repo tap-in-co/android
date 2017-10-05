@@ -26,6 +26,7 @@ import com.tapin.tapin.R;
 import com.tapin.tapin.adapter.SlidingImage_Adapter;
 import com.tapin.tapin.model.Business;
 import com.tapin.tapin.utils.AlertMessages;
+import com.tapin.tapin.utils.Constant;
 import com.tapin.tapin.utils.Debug;
 import com.tapin.tapin.utils.Utils;
 
@@ -103,7 +104,9 @@ public class CateringFragment extends Fragment {
         Utils.disableEditText(etDate);
         Utils.disableEditText(etTime);
 
-        business = (Business) getArguments().getSerializable("business");
+//        business = (Business) getArguments().getSerializable("business");
+        business = Constant.business;
+
         mPager = (ViewPager) view.findViewById(R.id.pager);
         setBusinessData(business);
 

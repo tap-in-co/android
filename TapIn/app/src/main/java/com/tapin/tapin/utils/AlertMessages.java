@@ -163,11 +163,11 @@ public class AlertMessages {
 
     }
 
-    public void alert(Context context, String title, String message, final String positiveBtn, final String negativeBtn,final String neutralBtn, final AlertDialogCallback alertDialogCallback) {
+    public void alert(Context context, String title, String message, final String positiveBtn, final String negativeBtn, final String neutralBtn, final AlertDialogCallback alertDialogCallback) {
 
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
 
-        if (title.length() > 0) {
+        if (title != null && title.length() > 0) {
             alertDialog.setTitle(title);
         }
         alertDialog.setMessage(message);

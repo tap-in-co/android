@@ -141,7 +141,7 @@ public class HomeActivity extends BaseActivity {
 
                 if (!isProfile) {
                     isProfile = true;
-                    Fragment profileFragment = ProfileFragment.newInstance("", "");
+                    Fragment profileFragment = ProfileFragment.newInstance("DASHBOARD", "");
 //                    Fragment profileFragment = new CardDetailFragment();
                     FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
                     ft.add(R.id.frame_profile, profileFragment);

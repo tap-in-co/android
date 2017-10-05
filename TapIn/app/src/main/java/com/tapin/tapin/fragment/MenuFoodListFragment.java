@@ -1,6 +1,7 @@
 package com.tapin.tapin.fragment;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -51,7 +52,9 @@ import org.json.JSONObject;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -127,6 +130,10 @@ public class MenuFoodListFragment extends Fragment {
 
     static ArrayList<OrderedInfo> listOrdered = new ArrayList<>();
 
+    SimpleDateFormat dateFormat;
+
+    boolean isOpened;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -135,8 +142,12 @@ public class MenuFoodListFragment extends Fragment {
 
         messages = new AlertMessages(getActivity());
 
+        dateFormat = new SimpleDateFormat("HH:mm:ss");
+
 //        business = (Business) getArguments().getSerializable("BUSINESS_INFO");
         business = Constant.business;
+
+        checkIsOpened();
 
         menuAdapter = new MenuAdapter(getActivity(), Utils.getColor(business.bg_color), Utils.getColor(business.text_color));
 
@@ -171,6 +182,25 @@ public class MenuFoodListFragment extends Fragment {
         }
 
         return view;
+    }
+
+    private void checkIsOpened() {
+
+        Calendar cal = Calendar.getInstance();
+
+        String currentTime = dateFormat.format(cal.getTime());
+
+        try {
+
+            if (!Utils.isTimeBetweenTwoTime(business.opening_time, business.closing_time, currentTime)) {
+                isOpened = false;
+            } else {
+                isOpened = true;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void getMenuOfFoods() {
@@ -328,17 +358,31 @@ public class MenuFoodListFragment extends Fragment {
         tvToolbarRight.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (isOpened) {
+                    OrderFragment orderFragment = new OrderFragment();
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("ORDERED_LIST", (Serializable) listOrdered);
+                    orderFragment.setArguments(bundle);
+                    ((HomeActivity) getActivity()).addFragment(orderFragment, R.id.frame_home);
+                } else {
 
-                OrderFragment orderFragment = new OrderFragment();
-                Bundle bundle = new Bundle();
-//                bundle.putSerializable("BUSINESS_INFO", business);
-                bundle.putSerializable("ORDERED_LIST", (Serializable) listOrdered);
-                orderFragment.setArguments(bundle);
-                ((HomeActivity) getActivity()).addFragment(orderFragment, R.id.frame_home);
+                    android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(getActivity());
 
+                    builder.setTitle("Sorry!");
+                    builder.setMessage("We are not able to deliver now,\nplease Order at " + Utils.convertTime("HH:mm:ss", "hh:mm a", business.opening_time)).setCancelable(false)
+                            .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+
+                                }
+                            });
+
+                    android.app.AlertDialog alert = builder.create();
+                    alert.setCancelable(false);
+                    alert.show();
+
+                }
             }
         });
-
     }
 
     private void initViews() {
@@ -486,6 +530,32 @@ public class MenuFoodListFragment extends Fragment {
             tvOption3.setEnabled(true);
         } else {
             tvOption3.setEnabled(false);
+        }
+
+        if (optionDataAdapter1.getCount() > 0) {
+            tvOption1.setBackgroundColor(Color.parseColor(Utils.getColor(business.bg_color)));
+            tvOption2.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.gray));
+            tvOption3.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.gray));
+
+            lvOption1.setVisibility(View.VISIBLE);
+            lvOption2.setVisibility(View.GONE);
+            lvOption3.setVisibility(View.GONE);
+        } else if (optionDataAdapter2.getCount() > 0) {
+            tvOption1.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.gray));
+            tvOption2.setBackgroundColor(Color.parseColor(Utils.getColor(business.bg_color)));
+            tvOption3.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.gray));
+
+            lvOption1.setVisibility(View.GONE);
+            lvOption2.setVisibility(View.VISIBLE);
+            lvOption3.setVisibility(View.GONE);
+        } else if (optionDataAdapter3.getCount() > 0) {
+            tvOption1.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.gray));
+            tvOption2.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.gray));
+            tvOption3.setBackgroundColor(Color.parseColor(Utils.getColor(business.bg_color)));
+
+            lvOption1.setVisibility(View.GONE);
+            lvOption2.setVisibility(View.GONE);
+            lvOption3.setVisibility(View.VISIBLE);
         }
 
         tvOption1.setOnClickListener(new View.OnClickListener() {

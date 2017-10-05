@@ -1,7 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="d3131a0e-9cfc-458d-b7b7-864107a8ad1a" name="Default" comment="" />
+    <list default="true" id="d3131a0e-9cfc-458d-b7b7-864107a8ad1a" name="Default" comment="">
+      <change type="DELETED" beforePath="$PROJECT_DIR$/TapIn/device-2017-03-24-233256.png" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TapIn/.idea/misc.xml" afterPath="$PROJECT_DIR$/TapIn/.idea/misc.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TapIn/app/build.gradle" afterPath="$PROJECT_DIR$/TapIn/app/build.gradle" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TapIn/app/src/main/AndroidManifest.xml" afterPath="$PROJECT_DIR$/TapIn/app/src/main/AndroidManifest.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TapIn/app/src/main/java/com/tapin/tapin/activity/HomeActivity.java" afterPath="$PROJECT_DIR$/TapIn/app/src/main/java/com/tapin/tapin/activity/HomeActivity.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TapIn/app/src/main/java/com/tapin/tapin/adapter/BusinessAdpater.java" afterPath="$PROJECT_DIR$/TapIn/app/src/main/java/com/tapin/tapin/adapter/BusinessAdpater.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TapIn/app/src/main/java/com/tapin/tapin/adapter/BusinessDetailAdapter.java" afterPath="$PROJECT_DIR$/TapIn/app/src/main/java/com/tapin/tapin/adapter/BusinessDetailAdapter.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TapIn/app/src/main/java/com/tapin/tapin/fragment/BusinessDetailFragment.java" afterPath="$PROJECT_DIR$/TapIn/app/src/main/java/com/tapin/tapin/fragment/BusinessDetailFragment.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TapIn/app/src/main/java/com/tapin/tapin/fragment/CateringFragment.java" afterPath="$PROJECT_DIR$/TapIn/app/src/main/java/com/tapin/tapin/fragment/CateringFragment.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TapIn/app/src/main/java/com/tapin/tapin/fragment/HomeFragment.java" afterPath="$PROJECT_DIR$/TapIn/app/src/main/java/com/tapin/tapin/fragment/HomeFragment.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TapIn/app/src/main/java/com/tapin/tapin/fragment/MenuFoodListFragment.java" afterPath="$PROJECT_DIR$/TapIn/app/src/main/java/com/tapin/tapin/fragment/MenuFoodListFragment.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TapIn/app/src/main/java/com/tapin/tapin/fragment/PickupOrderFragment.java" afterPath="$PROJECT_DIR$/TapIn/app/src/main/java/com/tapin/tapin/fragment/PickupOrderFragment.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TapIn/app/src/main/java/com/tapin/tapin/fragment/ProfileFragment.java" afterPath="$PROJECT_DIR$/TapIn/app/src/main/java/com/tapin/tapin/fragment/ProfileFragment.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TapIn/app/src/main/java/com/tapin/tapin/utils/AlertMessages.java" afterPath="$PROJECT_DIR$/TapIn/app/src/main/java/com/tapin/tapin/utils/AlertMessages.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TapIn/app/src/main/java/com/tapin/tapin/utils/URLs.java" afterPath="$PROJECT_DIR$/TapIn/app/src/main/java/com/tapin/tapin/utils/URLs.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TapIn/app/src/main/res/layout/fragment_home.xml" afterPath="$PROJECT_DIR$/TapIn/app/src/main/res/layout/fragment_home.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TapIn/app/src/main/res/layout/fragment_menu_food_list.xml" afterPath="$PROJECT_DIR$/TapIn/app/src/main/res/layout/fragment_menu_food_list.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TapIn/app/src/main/res/layout/list_item_business_detail.xml" afterPath="$PROJECT_DIR$/TapIn/app/src/main/res/layout/list_item_business_detail.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TapIn/app/src/main/res/layout/listitem_business.xml" afterPath="$PROJECT_DIR$/TapIn/app/src/main/res/layout/listitem_business.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TapIn/build.gradle" afterPath="$PROJECT_DIR$/TapIn/build.gradle" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TapIn/gradle/wrapper/gradle-wrapper.properties" afterPath="$PROJECT_DIR$/TapIn/gradle/wrapper/gradle-wrapper.properties" />
+    </list>
     <ignored path="android.iws" />
     <ignored path=".idea/workspace.xml" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -17,6 +40,9 @@
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FavoritesManager">
     <favorites_list name="android" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="GradleLocalSettings">
     <option name="externalProjectsViewState">
@@ -53,6 +79,37 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope">
+        <subPane subId="Project Files">
+          <PATH>
+            <PATH_ELEMENT USER_OBJECT="Root">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT USER_OBJECT="android">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT USER_OBJECT="Root">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT USER_OBJECT="android">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT USER_OBJECT="TapIn">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
+      <pane id="PackagesPane" />
+      <pane id="ProjectPane" />
+      <pane id="Scratches" />
       <pane id="AndroidView">
         <subPane>
           <PATH>
@@ -67,209 +124,6 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
-      <pane id="Scope">
-        <subPane subId="Project Files">
-          <PATH>
-            <PATH_ELEMENT USER_OBJECT="Root">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT USER_OBJECT="android">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT USER_OBJECT="TapIn">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT USER_OBJECT="Root">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT USER_OBJECT="android">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT USER_OBJECT="TapIn">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT USER_OBJECT="gradle/wrapper">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT USER_OBJECT="Root">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT USER_OBJECT="android">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT USER_OBJECT="TapIn">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT USER_OBJECT="build">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT USER_OBJECT="intermediates/dex-cache">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT USER_OBJECT="Root">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT USER_OBJECT="android">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT USER_OBJECT="TapIn">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT USER_OBJECT="build">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT USER_OBJECT="generated">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT USER_OBJECT="Root">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT USER_OBJECT="android">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT USER_OBJECT="TapIn">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT USER_OBJECT="app">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT USER_OBJECT="Root">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT USER_OBJECT="android">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT USER_OBJECT="TapIn">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT USER_OBJECT=".gradle">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT USER_OBJECT="buildOutputCleanup">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT USER_OBJECT="Root">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT USER_OBJECT="android">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT USER_OBJECT="TapIn">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT USER_OBJECT=".gradle">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT USER_OBJECT="3.4.1">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT USER_OBJECT="Root">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT USER_OBJECT="android">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT USER_OBJECT="TapIn">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT USER_OBJECT=".gradle">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT USER_OBJECT="3.3">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT USER_OBJECT="Root">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT USER_OBJECT="android">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT USER_OBJECT="TapIn">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT USER_OBJECT=".gradle">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT USER_OBJECT="2.14.1">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT USER_OBJECT="Root">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT USER_OBJECT="android">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT USER_OBJECT=".idea">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-          </PATH>
-        </subPane>
-      </pane>
-      <pane id="Scratches" />
-      <pane id="ProjectPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -363,7 +217,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="22" width="1280" height="774" extended-state="6" />
+    <frame x="0" y="22" width="1280" height="774" extended-state="0" />
     <editor active="false" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />

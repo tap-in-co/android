@@ -137,6 +137,8 @@
             android:layout_height="match_parent"
             android:divider="@color/white"
             android:dividerHeight="1dp"
+            android:clickable="true"
+            android:background="@color/trans_white"
             android:visibility="gone" />
 
     </FrameLayout>

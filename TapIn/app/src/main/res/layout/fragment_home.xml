@@ -28,7 +28,9 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/bg_white_rounded"
                 android:hint="Search"
+                android:maxLines="1"
                 android:padding="7dp"
+                android:singleLine="true"
                 android:textColor="@color/colorText" />
 
         </LinearLayout>

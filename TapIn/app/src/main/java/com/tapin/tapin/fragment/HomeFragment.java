@@ -1,13 +1,18 @@
 package com.tapin.tapin.fragment;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -28,6 +33,7 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.tapin.tapin.R;
 import com.tapin.tapin.adapter.BusinessAdpater;
+import com.tapin.tapin.common.GPSTracker;
 import com.tapin.tapin.model.Business;
 import com.tapin.tapin.model.BusinessInfo;
 import com.tapin.tapin.utils.AlertMessages;
@@ -41,6 +47,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 import cz.msebera.android.httpclient.Header;
+
+import static android.content.Context.LOCATION_SERVICE;
 
 
 public class HomeFragment extends Fragment {
@@ -93,7 +101,6 @@ public class HomeFragment extends Fragment {
 
     RecyclerView recyclerViewBusiness;
     LinearLayoutManager mLayoutManager;
-    LocationManager mLocationManager;
     Calendar calendar;
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
 
@@ -115,35 +122,21 @@ public class HomeFragment extends Fragment {
 
         context = getActivity();
 
-        mLocationManager = (LocationManager) getActivity().getSystemService(context.LOCATION_SERVICE);
-        int permissionCheck = ContextCompat.checkSelfPermission(context,
-                android.Manifest.permission.ACCESS_FINE_LOCATION);
-        if (Build.VERSION.SDK_INT >= 23) {
-            if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(getActivity(),
-                        new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1001);
-            } else {
-//                GPSTracker gps = new GPSTracker(this);
-//                if (gps.canGetLocation()) {
-//                    gps.getLatitude(); // returns latitude
-//                    gps.getLongitude(); // returns longitude
-//
-//                    Log.w("Location", gps.getLatitude() + " " + gps.getLongitude());
-//
-//                }
-            }
-        } else {
-
-        }
-
         // list data
         calendar = Calendar.getInstance();
         recyclerViewBusiness = (RecyclerView) view.findViewById(R.id.recyclerViewBusiness);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         recyclerViewBusiness.setLayoutManager(mLayoutManager);
         recyclerViewBusiness.setItemAnimator(new DefaultItemAnimator());
-        businessAdpater = new BusinessAdpater(getActivity(), businesses, simpleDateFormat.format(calendar.getTime()));
+        businessAdpater = new BusinessAdpater(getActivity(), simpleDateFormat.format(calendar.getTime()));
         recyclerViewBusiness.setAdapter(businessAdpater);
+
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1001);
+        } else {
+            getCurrentLocation();
+        }
 
         // search filter
         etSearch = (EditText) view.findViewById(R.id.etSearch);
@@ -157,7 +150,14 @@ public class HomeFragment extends Fragment {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-                businessAdpater.filter(charSequence.toString());
+                String text = etSearch.getText().toString();
+
+                if (text.startsWith(" ")) {
+                    etSearch.setText(text.trim());
+                } else {
+                    businessAdpater.filter(charSequence.toString());
+                }
+
             }
 
             @Override
@@ -183,20 +183,81 @@ public class HomeFragment extends Fragment {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         if (requestCode == 1001) {
-            int permissionCheck = ContextCompat.checkSelfPermission(context,
-                    android.Manifest.permission.ACCESS_FINE_LOCATION);
 
-            if (Build.VERSION.SDK_INT >= 23) {
-                if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(getActivity(),
-                            new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1001);
-                } else {
-
-                }
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                getCurrentLocation();
             } else {
-
+                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1001);
             }
+
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (isGPSSetting) {
+            isGPSSetting = false;
+            getCurrentLocation();
+        }
+    }
+
+    double currentLat;
+    double currentLng;
+
+    private void getCurrentLocation() {
+
+        LocationManager locationManager = (LocationManager) getActivity().getSystemService(LOCATION_SERVICE);
+
+        if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+
+            GPSTracker gpsTracker = new GPSTracker(getActivity());
+
+            currentLat = gpsTracker.getLatitude();
+            currentLng = gpsTracker.getLongitude();
+
+            businessAdpater.setCurrentLatLng(currentLat, currentLng);
+
+        } else {
+
+            showSettingsAlert();
+
+        }
+
+    }
+
+    boolean isGPSSetting = false;
+
+    /**
+     * Function to show settings alert dialog
+     * On pressing Settings button will lauch Settings Options
+     */
+    public void showSettingsAlert() {
+
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
+
+        alertDialog.setTitle("GPS Settings");
+
+        alertDialog.setMessage("GPS is not enabled. Do you want to go to Settings menu?");
+
+        alertDialog.setPositiveButton("Settings", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                isGPSSetting = true;
+                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                getActivity().startActivity(intent);
+            }
+        });
+
+        alertDialog.setNegativeButton("Retry", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                isGPSSetting = false;
+                getCurrentLocation();
+            }
+        });
+
+        alertDialog.show();
     }
 
     private void getData() {
@@ -217,8 +278,7 @@ public class HomeFragment extends Fragment {
 
                     businessInfo = new Gson().fromJson(content, BusinessInfo.class);
 
-                    businessAdpater = new BusinessAdpater(getActivity(), (ArrayList<Business>) businessInfo.listBusinesses, simpleDateFormat.format(calendar.getTime()));
-                    recyclerViewBusiness.setAdapter(businessAdpater);
+                    businessAdpater.addAllBusiness(businessInfo.listBusinesses);
 
                 } catch (Exception e) {
                     e.printStackTrace();
