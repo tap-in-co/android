@@ -51,6 +51,7 @@
             android:layout_gravity="center"
             android:layout_marginRight="25dp"
             android:gravity="center"
+            android:visibility="gone"
             android:text="@string/cancel"
             android:textAllCaps="true"
             android:textColor="@color/black"

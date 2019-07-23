@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.tapin.tapin.R;
 import com.tapin.tapin.fragment.OrderFragment;
+import com.tapin.tapin.model.Business;
 import com.tapin.tapin.model.OrderedInfo;
 import com.tapin.tapin.utils.Constant;
 
@@ -23,11 +24,14 @@ public class FinalOrderSummaryAdapter extends BaseAdapter {
 
     private ArrayList<OrderedInfo> listOrders = new ArrayList<OrderedInfo>();
 
+    Business business;
+
     private LayoutInflater mInflater;
 
-    public FinalOrderSummaryAdapter(Context context) {
+    public FinalOrderSummaryAdapter(Context context,Business b) {
         mInflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        this.business = b;
     }
 
     @Override
@@ -81,7 +85,7 @@ public class FinalOrderSummaryAdapter extends BaseAdapter {
 
             holder.tvExtraItem.setText("" + order.product_option);
 
-            holder.tvItemPriceTotal.setText("$ " + String.format("%.2f", (order.quantity * order.price)));
+            holder.tvItemPriceTotal.setText(""+business.curr_symbol+" " + String.format("%.2f", (order.quantity * order.price)));
 
             if (position == getCount() - 1) {
 

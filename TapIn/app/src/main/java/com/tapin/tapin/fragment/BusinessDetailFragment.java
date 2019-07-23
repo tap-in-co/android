@@ -136,6 +136,8 @@ public class BusinessDetailFragment extends Fragment {
 
         business = Constant.business;
 
+        messages = new AlertMessages(getActivity());
+
         initHeader();
 
         initViews();

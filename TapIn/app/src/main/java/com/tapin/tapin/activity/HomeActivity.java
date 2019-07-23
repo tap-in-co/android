@@ -1,5 +1,6 @@
 package com.tapin.tapin.activity;
 
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -19,6 +20,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -34,6 +36,8 @@ import com.tapin.tapin.fragment.OrderFragment;
 import com.tapin.tapin.fragment.OrderSummaryFragment;
 import com.tapin.tapin.fragment.PointsFragment;
 import com.tapin.tapin.fragment.ProfileFragment;
+import com.tapin.tapin.model.OrderedInfo;
+import com.tapin.tapin.utils.AlertMessages;
 import com.tapin.tapin.utils.BottomNavigationViewHelper;
 import com.tapin.tapin.utils.Constant;
 import com.tapin.tapin.utils.Debug;
@@ -77,12 +81,16 @@ public class HomeActivity extends BaseActivity {
     private int selectedItem;
     MenuItem selectedMenuItem;
 
+    AlertMessages messages;
+
     public static final int PERMISSION_FINE_LOCATION = 1001;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        messages = new AlertMessages(this);
 
         String refreshedToken = FirebaseInstanceId.getInstance().getToken();
 
@@ -121,6 +129,31 @@ public class HomeActivity extends BaseActivity {
             @Override
             public void onClick(View view) {
 
+                if (frame_home.getVisibility() == View.VISIBLE) {
+
+                    messages.alert(HomeActivity.this, null, "Are you sure you want to cancel your current Order Process", "Yes", "No", null, new AlertMessages.AlertDialogCallback() {
+                        @Override
+                        public void clickedButtonText(String s) {
+
+                            if (s.equalsIgnoreCase("Yes")) {
+
+                                Constant.listOrdered = new ArrayList<OrderedInfo>();
+
+                                FragmentManager fm = getSupportFragmentManager();
+                                for (int i = 0; i < fm.getBackStackEntryCount(); ++i) {
+                                    fm.popBackStack();
+                                }
+                                setResult(RESULT_OK);
+                                finish();
+
+                            } else if (s.equalsIgnoreCase("No")) {
+
+                            }
+
+                        }
+                    });
+
+                }
                 selectBottomMenu(frame_home, ivHome, R.drawable.tab_home_activated, tvHome);
 
                 if (!isHome) {
@@ -224,10 +257,19 @@ public class HomeActivity extends BaseActivity {
                 e.printStackTrace();
             }
 
-
+            View view = this.getCurrentFocus();
+            if (view != null) {
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            }
             super.onBackPressed();
 
         } else {
+            View view = this.getCurrentFocus();
+            if (view != null) {
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            }
             super.onBackPressed();
         }
 

@@ -166,6 +166,12 @@ public class Business implements Cloneable, Serializable {
     @SerializedName("delivery_table_charge")
     public String delivery_table_charge;
 
+    @SerializedName("curr_code")
+    public String curr_code;
+
+    @SerializedName("curr_symbol")
+    public String curr_symbol;
+
     @SerializedName("delivery_location_charge")
     public String delivery_location_charge;
 

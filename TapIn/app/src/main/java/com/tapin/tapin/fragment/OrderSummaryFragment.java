@@ -126,9 +126,9 @@ public class OrderSummaryFragment extends Fragment {
 
         }
 
-        tvSubTotal.setText("$" + String.format("%.2f", subTotal));
+        tvSubTotal.setText(""+business.curr_symbol + String.format("%.2f", subTotal));
 
-        tvDeliveryCharge.setText("$" + String.format("%.2f", deliveryCharge));
+        tvDeliveryCharge.setText(""+business.curr_symbol + String.format("%.2f", deliveryCharge));
 
         tvTotalPoints.setText("Earn " + Math.round(subTotal) + " Pts");
 
@@ -144,7 +144,7 @@ public class OrderSummaryFragment extends Fragment {
 
             }
 
-            tvPromotionalDiscount.setText("$" + String.format("%.2f", promotionalDiscount));
+            tvPromotionalDiscount.setText(""+business.curr_symbol + String.format("%.2f", promotionalDiscount));
 
         }
 
@@ -152,14 +152,14 @@ public class OrderSummaryFragment extends Fragment {
         tip15 = subTotal * 0.15;
         tip20 = subTotal * 0.20;
 
-        tv10.setText("$" + String.format("%.2f", tip10));
-        tv15.setText("$" + String.format("%.2f", tip15));
-        tv20.setText("$" + String.format("%.2f", tip20));
+        tv10.setText(""+business.curr_symbol + String.format("%.2f", tip10));
+        tv15.setText(""+business.curr_symbol + String.format("%.2f", tip15));
+        tv20.setText(""+business.curr_symbol + String.format("%.2f", tip20));
 
         if (business.tax_rate != null && business.tax_rate.length() > 0) {
 
             tax = subTotal * Double.parseDouble(business.tax_rate) * 0.01;
-            tvTax.setText("$" + String.format("%.2f", tax));
+            tvTax.setText(""+business.curr_symbol + String.format("%.2f", tax));
 
         }
 
@@ -190,7 +190,7 @@ public class OrderSummaryFragment extends Fragment {
 
         selectedTip = tip;
 
-        tvTotal.setText("$" + String.format("%.2f", total));
+        tvTotal.setText(""+business.curr_symbol + String.format("%.2f", total));
 
     }
 

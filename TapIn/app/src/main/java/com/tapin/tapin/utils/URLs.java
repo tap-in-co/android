@@ -15,8 +15,9 @@ public class URLs {
     public static final String MAIN_URL = "https://tapforall.com/staging/tap-in/include/model.php?";
 
     public static String IMAGE_URL = "https://tapforall.com/staging/tap-in/customer_files/icons/";
-
     public static String IMAGE_URL1 = "https://tapforall.com/staging/tap-in/customer_files/";
+
+    public static String IMAGE_URL_LIVE = "https://tapforall.com/merchants/tap-in/customer_files/icons/";
 
     //    public static final String GET_HOME_DATA = "https://tapforall.com/staging/tap-in/businessinfo/index.php?cmd=getBusinessInfoWithConsumerRating&businessID=0";
     public static final String GET_HOME_DATA = MAIN_URL + "business_id=0&cmd=getBusinessInfoWithConsumerRating";

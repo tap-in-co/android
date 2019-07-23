@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.tapin.tapin.R;
+import com.tapin.tapin.model.Business;
 import com.tapin.tapin.model.BusinessMenu;
 import com.tapin.tapin.model.OrderInfo;
 import com.tapin.tapin.utils.URLs;
@@ -26,6 +27,8 @@ public class OrderStickyListViewAdapter extends BaseAdapter implements StickyLis
 
     private Activity context;
 
+    private Business business;
+
     private AddOrder addOrder;
 
     public interface AddOrder {
@@ -34,8 +37,9 @@ public class OrderStickyListViewAdapter extends BaseAdapter implements StickyLis
 
     }
 
-    public OrderStickyListViewAdapter(Activity activity, AddOrder addOrder) {
+    public OrderStickyListViewAdapter(Activity activity, Business b, AddOrder addOrder) {
         this.context = activity;
+        this.business = b;
         this.addOrder = addOrder;
 
     }
@@ -76,11 +80,23 @@ public class OrderStickyListViewAdapter extends BaseAdapter implements StickyLis
 
         holder.tvFoodTitle.setText(orderInfo.name);
         holder.tvFoodDescription.setText(orderInfo.short_description);
-        holder.tvPrice.setText("$ " + orderInfo.price);
+        holder.tvPrice.setText(business.curr_symbol + " " + orderInfo.price);
 
         float earnPoints = Float.parseFloat(orderInfo.price);
 
         holder.tvEarnPoint.setText("Earn " + Math.round(earnPoints) + " Pts");
+
+        if (orderInfo.availability_status.equalsIgnoreCase("1")) {
+
+            holder.ivAdd.setVisibility(View.VISIBLE);
+            holder.tvOut.setVisibility(View.GONE);
+
+        } else {
+
+            holder.ivAdd.setVisibility(View.GONE);
+            holder.tvOut.setVisibility(View.VISIBLE);
+
+        }
 
         holder.ivAdd.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -104,6 +120,9 @@ public class OrderStickyListViewAdapter extends BaseAdapter implements StickyLis
         } else {
             holder.ivHeart.setImageResource(R.drawable.ic_heart_unlike);
         }
+
+        String image = URLs.IMAGE_URL_LIVE + orderInfo.product_icon;
+        Glide.with(context).load(image).centerCrop().placeholder(R.mipmap.ic_launcher).into(holder.ivIcon);
 
         holder.ivHeart.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -185,6 +204,7 @@ public class OrderStickyListViewAdapter extends BaseAdapter implements StickyLis
         private TextView tvPrice;
         private TextView tvEarnPoint;
         private ImageView ivAdd;
+        private TextView tvOut;
 
         public ViewHolder(View view) {
 
@@ -196,6 +216,7 @@ public class OrderStickyListViewAdapter extends BaseAdapter implements StickyLis
             tvPrice = (TextView) view.findViewById(R.id.tvPrice);
             tvEarnPoint = (TextView) view.findViewById(R.id.tvEarnPoint);
             ivAdd = (ImageView) view.findViewById(R.id.ivAdd);
+            tvOut = (TextView) view.findViewById(R.id.tvOut);
 
         }
     }

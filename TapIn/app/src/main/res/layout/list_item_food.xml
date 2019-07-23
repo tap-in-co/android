@@ -40,7 +40,8 @@
                         android:id="@+id/ivIcon"
                         android:layout_width="50dp"
                         android:layout_height="50dp"
-                        android:visibility="gone" />
+                        android:src="@mipmap/ic_launcher"
+                        android:visibility="visible" />
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -129,7 +130,27 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_centerInParent="true"
-            android:src="@drawable/btn_add" />
+            android:src="@drawable/btn_add"
+            android:visibility="visible" />
+
+        <TextView
+            android:id="@+id/tvOut"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_centerInParent="true"
+            android:background="@drawable/bg_primary_rounded"
+            android:visibility="gone"
+            android:gravity="center"
+            android:paddingBottom="5dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="5dp"
+            android:text="Temporarily\nOut"
+            android:textColor="@android:color/white"
+            android:textSize="12sp"
+            android:textStyle="bold" />
 
     </RelativeLayout>
 

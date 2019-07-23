@@ -110,11 +110,11 @@ public class OrderFragment extends Fragment {
 
         messages = new AlertMessages(getActivity());
 
-        orderAdapter = new OrderAdapter(getActivity());
-
 //        business = (Business) getArguments().getSerializable("BUSINESS_INFO");
 
         business = Constant.business;
+
+        orderAdapter = new OrderAdapter(getActivity(), business);
 
         listOrdered = (ArrayList<OrderedInfo>) getArguments().getSerializable("ORDERED_LIST");
 
@@ -236,7 +236,7 @@ public class OrderFragment extends Fragment {
 
         }
 
-        tvItemPriceTotal.setText("$ " + String.format("%.2f", totalValue));
+        tvItemPriceTotal.setText(business.curr_symbol + " " + String.format("%.2f", totalValue));
 
         tvPoints.setText("Earn " + Math.round(totalValue) + " Pts");
 
@@ -246,11 +246,14 @@ public class OrderFragment extends Fragment {
 
         private ArrayList<OrderedInfo> listOrders = new ArrayList<OrderedInfo>();
 
+        private Business business;
+
         private LayoutInflater mInflater;
 
-        public OrderAdapter(Context context) {
+        public OrderAdapter(Context context, Business b) {
             mInflater = (LayoutInflater) context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            this.business = b;
         }
 
         @Override
@@ -337,7 +340,7 @@ public class OrderFragment extends Fragment {
 
                 holder.tvExtraItem.setText("" + order.product_option);
 
-                holder.tvItemPriceTotal.setText("$ " + String.format("%.2f", (order.quantity * order.price)));
+                holder.tvItemPriceTotal.setText(business.curr_symbol + " " + String.format("%.2f", (order.quantity * order.price)));
 
                 if (position == getCount() - 1) {
 

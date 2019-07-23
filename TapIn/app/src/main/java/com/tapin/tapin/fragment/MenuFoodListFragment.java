@@ -392,7 +392,7 @@ public class MenuFoodListFragment extends Fragment {
 
         lvOrderFood = (ExpandableStickyListHeadersListView) view.findViewById(R.id.lvOrderFood);
 
-        adapter = new OrderStickyListViewAdapter(getActivity(), new OrderStickyListViewAdapter.AddOrder() {
+        adapter = new OrderStickyListViewAdapter(getActivity(), business,new OrderStickyListViewAdapter.AddOrder() {
             @Override
             public void addOrder(OrderInfo orderInfo) {
 

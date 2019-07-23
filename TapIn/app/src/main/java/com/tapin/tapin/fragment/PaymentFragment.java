@@ -136,7 +136,7 @@ public class PaymentFragment extends Fragment {
 
         total = orderSummaryInfo.total;
 
-        tvTotal.setText("$" + String.format("%.2f", total));
+        tvTotal.setText(""+business.curr_symbol + String.format("%.2f", total));
 
         orderSummaryInfo.points_dollar_amount = "0.0000";
 
@@ -435,7 +435,7 @@ public class PaymentFragment extends Fragment {
 
                 orderSummaryInfo.points_redeemed = (int) redeemedPoints;
 
-                tvTotal.setText("$" + String.format("%.2f", orderSummaryInfo.total));
+                tvTotal.setText(""+business.curr_symbol + String.format("%.2f", orderSummaryInfo.total));
 
             }
         });

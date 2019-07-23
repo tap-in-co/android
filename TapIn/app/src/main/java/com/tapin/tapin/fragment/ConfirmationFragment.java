@@ -54,13 +54,13 @@ public class ConfirmationFragment extends Fragment {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_confirmation, container, false);
 
-        finalOrderSummaryAdapter = new FinalOrderSummaryAdapter(getActivity());
-
         initHeader();
 
         initViews();
 
         business = Constant.business;
+
+        finalOrderSummaryAdapter = new FinalOrderSummaryAdapter(getActivity(), business);
 
         if (getArguments() != null) {
 
@@ -85,7 +85,7 @@ public class ConfirmationFragment extends Fragment {
 
         tvOrder.setText("" + orderId);
 
-        tvTotal.setText("$" + String.format("%.2f", orderSummaryInfo.total));
+        tvTotal.setText("" + business.curr_symbol + String.format("%.2f", orderSummaryInfo.total));
 
         tvAverageWait.setText(orderSummaryInfo.averageWaitTime);
 

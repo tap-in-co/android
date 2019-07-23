@@ -172,17 +172,18 @@ public class AlertMessages {
         }
         alertDialog.setMessage(message);
 
-        alertDialog.setPositiveButton(positiveBtn, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
+        if (positiveBtn != null) {
+            alertDialog.setPositiveButton(positiveBtn, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
 
-                dialog.dismiss();
-                alertDialogCallback.clickedButtonText(positiveBtn);
+                    dialog.dismiss();
+                    alertDialogCallback.clickedButtonText(positiveBtn);
 
-            }
-        });
+                }
+            });
+        }
 
         if (negativeBtn != null) {
-
             alertDialog.setNegativeButton(negativeBtn, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
 
@@ -191,11 +192,9 @@ public class AlertMessages {
 
                 }
             });
-
         }
 
         if (neutralBtn != null) {
-
             alertDialog.setNeutralButton(neutralBtn, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
 
@@ -204,7 +203,6 @@ public class AlertMessages {
 
                 }
             });
-
         }
 
         alertDialog.show();
