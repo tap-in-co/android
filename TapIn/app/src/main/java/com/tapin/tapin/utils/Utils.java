@@ -8,7 +8,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.Point;
 import android.graphics.Typeface;
 import android.media.ExifInterface;
 import android.net.ConnectivityManager;
@@ -16,9 +15,6 @@ import android.net.NetworkInfo;
 import android.os.Environment;
 import android.provider.Settings;
 import android.text.TextUtils;
-import android.util.Log;
-import android.util.TypedValue;
-import android.view.Display;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -39,6 +35,9 @@ import java.util.regex.Pattern;
 
 public class Utils {
 
+    private static final String PASSWORD_PATTERN = "((?=.*[a-z])(?=.*\\d)(?=.*[A-Z]).{6,40})";
+    public static SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
     public static boolean isValidEmailAddress(String emailAddress) {
         String expression = "[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})";
         CharSequence inputStr = emailAddress;
@@ -50,12 +49,8 @@ public class Utils {
     public static boolean isValidMobile(String phone) {
         boolean check = false;
         if (!Pattern.matches("[a-zA-Z]+", phone)) {
-            if (phone.length() < 6 || phone.length() > 13) {
-                // if(phone.length() != 10) {
-                check = false;
-            } else {
-                check = true;
-            }
+            // if(phone.length() != 10) {
+            check = phone.length() >= 6 && phone.length() <= 13;
         } else {
             check = false;
         }
@@ -65,15 +60,9 @@ public class Utils {
     public final static boolean isValidOrganizationEmail(String target) {
 
         String regex = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*.edu";
-        if (!Pattern.matches(regex, target)) {
-            return false;
-        } else {
-            return true;
-        }
+        return Pattern.matches(regex, target);
 
     }
-
-    private static final String PASSWORD_PATTERN = "((?=.*[a-z])(?=.*\\d)(?=.*[A-Z]).{6,40})";
 
     public static boolean validatePassword(final String password) {
         Pattern pattern;
@@ -92,18 +81,13 @@ public class Utils {
 
         ConnectivityManager cm = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        if (activeNetwork != null) {
-            return true;
-        } else {
-            return false;
-        }
+        return activeNetwork != null;
     }
-
 
     public static void hideSoftKeyword(Activity activity) {
 
         if (activity.getCurrentFocus() != null) {
-            InputMethodManager inputMethodManager = (InputMethodManager) activity.getSystemService(activity.INPUT_METHOD_SERVICE);
+            InputMethodManager inputMethodManager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
             inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
         }
 
@@ -117,7 +101,6 @@ public class Utils {
         }
 
     }
-
 
     public static String compressImage(String filePath) {
 
@@ -280,7 +263,6 @@ public class Utils {
         return inSampleSize;
     }
 
-
     public static Typeface getTypeface1(Context activity) {
         Typeface font = Typeface.createFromAsset(activity.getAssets(),
                 "proxima-nova-light.otf");
@@ -323,7 +305,6 @@ public class Utils {
         String newDateStr = postFormater.format(dateStr);
         return newDateStr;
     }
-
 
     public static String convertLocalToGMT(String str) {
 
@@ -369,7 +350,6 @@ public class Utils {
         return result;
     }
 
-
     public static String getTimeDifference(String datestr) {
 
         String result = "";
@@ -380,7 +360,6 @@ public class Utils {
         Date startDate = null;
 
         Date endDate = getDateInUTC();
-        ;
         try {
             startDate = inputFormat.parse(datestr);
         } catch (ParseException e) {
@@ -448,7 +427,6 @@ public class Utils {
 
     }
 
-
     public static Date getDateInUTC() {
 //        Calendar cal_Two = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 
@@ -465,9 +443,6 @@ public class Utils {
         Calendar cal_Two = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         return cal_Two.getTime();
     }
-
-    public static SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
 
     public static String getDateInFormat() {
 
@@ -519,7 +494,7 @@ public class Utils {
         color = color.replace("rgb", "");
         color = color.replace("(", "");
         color = color.replace(")", "");
-        String rgb_list[] = color.split("\\s*,\\s*");
+        String[] rgb_list = color.split("\\s*,\\s*");
         //Log.e("Colors==", color + "==" + rgb_list);
         String hex = String.format("#%02x%02x%02x", Integer.parseInt(rgb_list[0]), Integer.parseInt(rgb_list[1]), Integer.parseInt(rgb_list[2]));
         return (hex);
@@ -539,7 +514,7 @@ public class Utils {
         return android_id;
     }
 
-    public static String convertTime(String inputPattern,String outputPattern, String time){
+    public static String convertTime(String inputPattern, String outputPattern, String time) {
 
         SimpleDateFormat inputFormat = new SimpleDateFormat(inputPattern);
         SimpleDateFormat outputFormat = new SimpleDateFormat(outputPattern);

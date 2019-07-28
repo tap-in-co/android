@@ -1,7 +1,6 @@
 package com.tapin.tapin.fragment;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,16 +14,19 @@ import com.tapin.tapin.model.GetPointsResp;
 import com.tapin.tapin.utils.PreferenceManager;
 
 
-public class PointsFragment extends Fragment {
+public class PointsFragment extends BaseFragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
+    ListView lvPoints;
+    PointsAdapter pointsAdapter;
+    View view;
+    TextView tvPoints;
+    TextView tvTotalPoints;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-
 
     public PointsFragment() {
         // Required empty public constructor
@@ -57,12 +59,6 @@ public class PointsFragment extends Fragment {
         }
     }
 
-    ListView lvPoints;
-    PointsAdapter pointsAdapter;
-    View view;
-    TextView tvPoints;
-    TextView tvTotalPoints;
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -71,12 +67,12 @@ public class PointsFragment extends Fragment {
 
         //initHeader();
 
-        tvTotalPoints = (TextView) view.findViewById(R.id.tvTotalPoints);
-        tvPoints = (TextView) view.findViewById(R.id.tvPoints);
+        tvTotalPoints = view.findViewById(R.id.tvTotalPoints);
+        tvPoints = view.findViewById(R.id.tvPoints);
 
 
         pointsAdapter = new PointsAdapter(getActivity());
-        lvPoints = (ListView) view.findViewById(R.id.lvPoints);
+        lvPoints = view.findViewById(R.id.lvPoints);
         lvPoints.setAdapter(pointsAdapter);
 
         refreshData();
@@ -85,10 +81,10 @@ public class PointsFragment extends Fragment {
     }
 
     public void initHeader() {
-        ImageView ivHeaderLogo = (ImageView) view.findViewById(R.id.ivHeaderLogo);
-        TextView tvHeaderTitle = (TextView) view.findViewById(R.id.tvHeaderTitle);
-        TextView tvHeaderLeft = (TextView) view.findViewById(R.id.tvHeaderLeft);
-        TextView tvHeaderRight = (TextView) view.findViewById(R.id.tvHeaderRight);
+        ImageView ivHeaderLogo = view.findViewById(R.id.ivHeaderLogo);
+        TextView tvHeaderTitle = view.findViewById(R.id.tvHeaderTitle);
+        TextView tvHeaderLeft = view.findViewById(R.id.tvHeaderLeft);
+        TextView tvHeaderRight = view.findViewById(R.id.tvHeaderRight);
 
         ivHeaderLogo.setVisibility(View.VISIBLE);
         tvHeaderTitle.setVisibility(View.GONE);

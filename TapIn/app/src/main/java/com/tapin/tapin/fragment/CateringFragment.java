@@ -6,9 +6,6 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewPager;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,9 +19,12 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import androidx.core.content.ContextCompat;
+import androidx.viewpager.widget.ViewPager;
+
 import com.tapin.tapin.R;
 import com.tapin.tapin.adapter.SlidingImage_Adapter;
-import com.tapin.tapin.model.Business;
+import com.tapin.tapin.model.resturants.Business;
 import com.tapin.tapin.utils.AlertMessages;
 import com.tapin.tapin.utils.Constant;
 import com.tapin.tapin.utils.Debug;
@@ -39,22 +39,11 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class CateringFragment extends Fragment {
+public class CateringFragment extends BaseFragment {
 
-    private TextView tvAddress;
-    private TextView tvPrice;
-    private TextView tvWebsite;
-    private TextView textViewBusinessType;
-    private TextView tvPaymentEmail;
-    private TextView tvTime;
-    private RatingBar ratingBar;
-    private TextView tvRateCount;
-    private TextView textViewOpenClosed;
-    private ViewPager mPager;
     Business business;
     Calendar calendar;
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
-
     EditText etFirstname;
     EditText etLastname;
     EditText etPhoneNumber;
@@ -67,6 +56,100 @@ public class CateringFragment extends Fragment {
     EditText etAdditionalNotes;
     Button btnSendRequest;
     View view;
+    Timer timer;
+    View.OnClickListener onClickListenerSendRequest = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+
+            sendRequest();
+        }
+    };
+    private TextView tvAddress;
+    View.OnClickListener onClickListenerAddress = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://maps.google.com/maps?daddr=" + tvAddress.getText().toString()));
+            intent.setPackage("com.google.android.apps.maps");
+            try {
+                startActivity(intent);
+            } catch (ActivityNotFoundException ex) {
+                try {
+                    Intent unrestrictedIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://maps.google.com/maps?daddr=" + tvAddress.getText().toString()));
+                    startActivity(unrestrictedIntent);
+                } catch (ActivityNotFoundException innerEx) {
+                    Toast.makeText(getActivity(), "Please install a maps application", Toast.LENGTH_LONG).show();
+                }
+            }
+        }
+    };
+    private TextView tvPrice;
+    private TextView tvWebsite;
+    View.OnClickListener onClickListenerWebsite = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+
+            String url = tvWebsite.getText().toString();
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setData(Uri.parse(url));
+            startActivity(i);
+        }
+    };
+    private TextView textViewBusinessType;
+    private TextView tvPaymentEmail;
+    private TextView tvTime;
+    private RatingBar ratingBar;
+    private TextView tvRateCount;
+    private TextView textViewOpenClosed;
+    private ViewPager mPager;
+    private int mYear, mMonth, mDay;
+    View.OnClickListener onClickListenerDate = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            // Get Current Date
+            final Calendar c = Calendar.getInstance();
+            mYear = c.get(Calendar.YEAR);
+            mMonth = c.get(Calendar.MONTH);
+            mDay = c.get(Calendar.DAY_OF_MONTH);
+
+
+            DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(), R.style.datepicker,
+                    new DatePickerDialog.OnDateSetListener() {
+
+                        @Override
+                        public void onDateSet(DatePicker view, int year,
+                                              int monthOfYear, int dayOfMonth) {
+
+                            etDate.setText(dayOfMonth + "-" + (monthOfYear + 1) + "-" + year);
+
+                        }
+                    }, mYear, mMonth, mDay);
+
+            datePickerDialog.show();
+        }
+    };
+    private int mHour, mMinute;
+    View.OnClickListener onClickListenerTime = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            // Get Current Time
+            final Calendar c = Calendar.getInstance();
+            mHour = c.get(Calendar.HOUR_OF_DAY);
+            mMinute = c.get(Calendar.MINUTE);
+
+            // Launch Time Picker Dialog
+            TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(), R.style.datepicker,
+                    new TimePickerDialog.OnTimeSetListener() {
+
+                        @Override
+                        public void onTimeSet(TimePicker view, int hourOfDay,
+                                              int minute) {
+
+                            etTime.setText(hourOfDay + ":" + minute);
+                        }
+                    }, mHour, mMinute, false);
+            timePickerDialog.show();
+        }
+    };
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -79,35 +162,35 @@ public class CateringFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        tvAddress = (TextView) view.findViewById(R.id.tvAddress);
-        tvPrice = (TextView) view.findViewById(R.id.tvPrice);
-        tvWebsite = (TextView) view.findViewById(R.id.tvWebsite);
-        textViewBusinessType = (TextView) view.findViewById(R.id.textViewBusinessType);
-        tvPaymentEmail = (TextView) view.findViewById(R.id.tvPaymentEmail);
-        tvTime = (TextView) view.findViewById(R.id.tvTime);
-        ratingBar = (RatingBar) view.findViewById(R.id.ratingBar);
-        tvRateCount = (TextView) view.findViewById(R.id.tvRateCount);
-        textViewOpenClosed = (TextView) view.findViewById(R.id.textViewOpenClosed);
-        mPager = (ViewPager) view.findViewById(R.id.pager);
+        tvAddress = view.findViewById(R.id.tvAddress);
+        tvPrice = view.findViewById(R.id.tvPrice);
+        tvWebsite = view.findViewById(R.id.tvWebsite);
+        textViewBusinessType = view.findViewById(R.id.textViewBusinessType);
+        tvPaymentEmail = view.findViewById(R.id.tvPaymentEmail);
+        tvTime = view.findViewById(R.id.tvTime);
+        ratingBar = view.findViewById(R.id.ratingBar);
+        tvRateCount = view.findViewById(R.id.tvRateCount);
+        textViewOpenClosed = view.findViewById(R.id.textViewOpenClosed);
+        mPager = view.findViewById(R.id.pager);
 
-        etFirstname = (EditText) getView().findViewById(R.id.etFirstname);
-        etLastname = (EditText) getView().findViewById(R.id.etLastname);
-        etPhoneNumber = (EditText) getView().findViewById(R.id.etPhoneNumber);
-        etEmail = (EditText) getView().findViewById(R.id.etEmail);
-        etBudget = (EditText) getView().findViewById(R.id.etBudget);
-        etDate = (EditText) getView().findViewById(R.id.etDate);
-        etTime = (EditText) getView().findViewById(R.id.etTime);
-        etAttendees = (EditText) getView().findViewById(R.id.etAttendees);
-        etLocation = (EditText) getView().findViewById(R.id.etLocation);
-        etAdditionalNotes = (EditText) getView().findViewById(R.id.etAdditionalNotes);
-        btnSendRequest = (Button) getView().findViewById(R.id.btnSendRequest);
+        etFirstname = getView().findViewById(R.id.etFirstname);
+        etLastname = getView().findViewById(R.id.etLastname);
+        etPhoneNumber = getView().findViewById(R.id.etPhoneNumber);
+        etEmail = getView().findViewById(R.id.etEmail);
+        etBudget = getView().findViewById(R.id.etBudget);
+        etDate = getView().findViewById(R.id.etDate);
+        etTime = getView().findViewById(R.id.etTime);
+        etAttendees = getView().findViewById(R.id.etAttendees);
+        etLocation = getView().findViewById(R.id.etLocation);
+        etAdditionalNotes = getView().findViewById(R.id.etAdditionalNotes);
+        btnSendRequest = getView().findViewById(R.id.btnSendRequest);
         Utils.disableEditText(etDate);
         Utils.disableEditText(etTime);
 
 //        business = (Business) getArguments().getSerializable("business");
         business = Constant.business;
 
-        mPager = (ViewPager) view.findViewById(R.id.pager);
+        mPager = view.findViewById(R.id.pager);
         setBusinessData(business);
 
         initHeader();
@@ -121,20 +204,17 @@ public class CateringFragment extends Fragment {
 
     }
 
-
-    Timer timer;
-
     private void setBusinessData(Business business) {
 
         // image slider
 
-        if (business.pictures.endsWith(",")) {
-            business.pictures = business.pictures.substring(0, business.pictures.length() - 1);
+        if (business.getPictures().endsWith(",")) {
+            business.setPictures(business.getPictures().substring(0, business.getPictures().length() - 1));
         }
 
-        final List<String> image_list = Arrays.asList((business.pictures.split("\\s*,\\s*")));
+        final List<String> image_list = Arrays.asList((business.getPictures().split("\\s*,\\s*")));
         Debug.e("Arraylist", image_list + "-");
-        mPager.setAdapter(new SlidingImage_Adapter(getActivity(), business.businessID, image_list));
+        mPager.setAdapter(new SlidingImage_Adapter(getActivity(), business.getBusinessID(), image_list));
         TimerTask timerTask = new TimerTask() {
             @Override
             public void run() {
@@ -152,20 +232,20 @@ public class CateringFragment extends Fragment {
 
 
         //  views
-        tvAddress.setText(Utils.isNotEmpty(business.address) ? business.address : "");
-        tvWebsite.setText(Utils.isNotEmpty(business.website) ? business.website : "");
-        textViewBusinessType.setText(Utils.isNotEmpty(business.customerProfileName) ? business.customerProfileName : "");
-        tvPaymentEmail.setText(Utils.isNotEmpty(business.neighborhood) ? business.neighborhood : "");
-        tvTime.setText(Utils.getOpenTime(business.opening_time, business.closing_time));
-        ratingBar.setRating((float) business.rating);
+        tvAddress.setText(Utils.isNotEmpty(business.getAddress()) ? business.getAddress() : "");
+        tvWebsite.setText(Utils.isNotEmpty(business.getWebsite()) ? business.getWebsite() : "");
+        textViewBusinessType.setText(Utils.isNotEmpty(business.getCustomerProfileName()) ? business.getCustomerProfileName() : "");
+        tvPaymentEmail.setText(Utils.isNotEmpty(business.getNeighborhood()) ? business.getNeighborhood() : "");
+        tvTime.setText(Utils.getOpenTime(business.getOpeningTime(), business.getClosingTime()));
+        ratingBar.setRating(Float.parseFloat(business.getRating()));
         // tvRateCount.setText(Utils.isNotEmpty(business.ti_rating) ? "("+business.ti_rating +")": "");
         // tvPrice.setText(Utils.isNotEmpty(business.website)?business.website:"");
 
 
         // open - close now
         try {
-            Date dateOpening = simpleDateFormat.parse(business.opening_time);
-            Date dateClosing = simpleDateFormat.parse(business.closing_time);
+            Date dateOpening = simpleDateFormat.parse(business.getOpeningTime());
+            Date dateClosing = simpleDateFormat.parse(business.getClosingTime());
 
             Calendar calendarOpening = Calendar.getInstance();
             calendarOpening.setTimeInMillis(dateOpening.getTime());
@@ -188,16 +268,16 @@ public class CateringFragment extends Fragment {
         }
 
 
-        //Glide.with(getActivity()).load(URLs.IMAGE_URL + "" + business.icon).into(ivFood);
+        //Glide.with(getActivity()).load(UrlGenerator.IMAGE_URL + "" + business.icon).into(ivFood);
 
 
     }
 
     private void initHeader() {
-        final ImageView ivHeaderLogo = (ImageView) view.findViewById(R.id.ivHeaderLogo);
-        final TextView tvHeaderTitle = (TextView) view.findViewById(R.id.tvHeaderTitle);
-        final TextView tvHeaderLeft = (TextView) view.findViewById(R.id.tvHeaderLeft);
-        final TextView tvHeaderRight = (TextView) view.findViewById(R.id.tvHeaderRight);
+        final ImageView ivHeaderLogo = view.findViewById(R.id.ivHeaderLogo);
+        final TextView tvHeaderTitle = view.findViewById(R.id.tvHeaderTitle);
+        final TextView tvHeaderLeft = view.findViewById(R.id.tvHeaderLeft);
+        final TextView tvHeaderRight = view.findViewById(R.id.tvHeaderRight);
 
         ivHeaderLogo.setVisibility(View.GONE);
         tvHeaderTitle.setVisibility(View.GONE);
@@ -205,7 +285,7 @@ public class CateringFragment extends Fragment {
         tvHeaderRight.setVisibility(View.GONE);
 
 
-        tvHeaderTitle.setText(business.name + "");
+        tvHeaderTitle.setText(business.getName() + "");
 
         tvHeaderLeft.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -241,64 +321,6 @@ public class CateringFragment extends Fragment {
             }
         });
     }
-
-
-    View.OnClickListener onClickListenerSendRequest = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-
-            sendRequest();
-        }
-    };
-    private int mYear, mMonth, mDay;
-    private int mHour, mMinute;
-    View.OnClickListener onClickListenerTime = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            // Get Current Time
-            final Calendar c = Calendar.getInstance();
-            mHour = c.get(Calendar.HOUR_OF_DAY);
-            mMinute = c.get(Calendar.MINUTE);
-
-            // Launch Time Picker Dialog
-            TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(), R.style.datepicker,
-                    new TimePickerDialog.OnTimeSetListener() {
-
-                        @Override
-                        public void onTimeSet(TimePicker view, int hourOfDay,
-                                              int minute) {
-
-                            etTime.setText(hourOfDay + ":" + minute);
-                        }
-                    }, mHour, mMinute, false);
-            timePickerDialog.show();
-        }
-    };
-    View.OnClickListener onClickListenerDate = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            // Get Current Date
-            final Calendar c = Calendar.getInstance();
-            mYear = c.get(Calendar.YEAR);
-            mMonth = c.get(Calendar.MONTH);
-            mDay = c.get(Calendar.DAY_OF_MONTH);
-
-
-            DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(), R.style.datepicker,
-                    new DatePickerDialog.OnDateSetListener() {
-
-                        @Override
-                        public void onDateSet(DatePicker view, int year,
-                                              int monthOfYear, int dayOfMonth) {
-
-                            etDate.setText(dayOfMonth + "-" + (monthOfYear + 1) + "-" + year);
-
-                        }
-                    }, mYear, mMonth, mDay);
-
-            datePickerDialog.show();
-        }
-    };
 
     private void sendRequest() {
         AlertMessages messages = new AlertMessages(getActivity());
@@ -373,7 +395,7 @@ public class CateringFragment extends Fragment {
 //
 //        AsyncHttpClient client = new AsyncHttpClient();
 //        client.setTimeout(Constant.TIMEOUT);
-//        client.put(URLs.BASE_URL, params, new AsyncHttpResponseHandler() {
+//        client.put(UrlGenerator.BASE_URL, params, new AsyncHttpResponseHandler() {
 //            @Override
 //            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
 //
@@ -394,35 +416,6 @@ public class CateringFragment extends Fragment {
 
 
     }
-
-    View.OnClickListener onClickListenerAddress = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://maps.google.com/maps?daddr=" + tvAddress.getText().toString()));
-            intent.setPackage("com.google.android.apps.maps");
-            try {
-                startActivity(intent);
-            } catch (ActivityNotFoundException ex) {
-                try {
-                    Intent unrestrictedIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://maps.google.com/maps?daddr=" + tvAddress.getText().toString()));
-                    startActivity(unrestrictedIntent);
-                } catch (ActivityNotFoundException innerEx) {
-                    Toast.makeText(getActivity(), "Please install a maps application", Toast.LENGTH_LONG).show();
-                }
-            }
-        }
-    };
-
-    View.OnClickListener onClickListenerWebsite = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-
-            String url = tvWebsite.getText().toString();
-            Intent i = new Intent(Intent.ACTION_VIEW);
-            i.setData(Uri.parse(url));
-            startActivity(i);
-        }
-    };
 
 
 }

@@ -1,21 +1,17 @@
 package com.tapin.tapin.fragment;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.bumptech.glide.util.Util;
+import androidx.annotation.Nullable;
+import androidx.viewpager.widget.ViewPager;
+
 import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -24,24 +20,24 @@ import com.tapin.tapin.R;
 import com.tapin.tapin.activity.HomeActivity;
 import com.tapin.tapin.adapter.CardPagerAdapter;
 import com.tapin.tapin.model.AllCardsInfo;
-import com.tapin.tapin.model.Business;
 import com.tapin.tapin.model.CardInfo;
 import com.tapin.tapin.model.GetPointsInfo;
 import com.tapin.tapin.model.GetPointsResp;
 import com.tapin.tapin.model.OrderSummaryInfo;
 import com.tapin.tapin.model.UserInfo;
+import com.tapin.tapin.model.resturants.Business;
 import com.tapin.tapin.utils.AlertMessages;
 import com.tapin.tapin.utils.Constant;
 import com.tapin.tapin.utils.Debug;
 import com.tapin.tapin.utils.PreferenceManager;
 import com.tapin.tapin.utils.ProgressHUD;
-import com.tapin.tapin.utils.URLs;
+import com.tapin.tapin.utils.UrlGenerator;
 import com.tapin.tapin.utils.Utils;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -54,7 +50,7 @@ import cz.msebera.android.httpclient.entity.StringEntity;
  * Created by Narendra on 6/7/17.
  */
 
-public class PaymentFragment extends Fragment {
+public class PaymentFragment extends BaseFragment {
 
     View view;
 
@@ -132,11 +128,11 @@ public class PaymentFragment extends Fragment {
 
         tvDate.setText("" + formattedDate);
 
-        tvHotelName.setText("" + business.name);
+        tvHotelName.setText("" + business.getName());
 
         total = orderSummaryInfo.total;
 
-        tvTotal.setText(""+business.curr_symbol + String.format("%.2f", total));
+        tvTotal.setText("" + business.getCurrSymbol() + String.format("%.2f", total));
 
         orderSummaryInfo.points_dollar_amount = "0.0000";
 
@@ -145,53 +141,51 @@ public class PaymentFragment extends Fragment {
     private void getAllPoints() {
 
         RequestParams params = new RequestParams();
-        params.put("businessID", business.businessID);
+        params.put("businessID", business.getBusinessID());
         params.put("cmd", "get_all_points");
         params.put("consumerID", PreferenceManager.getUserId());
 
-        Log.e("GET_POINTS_PARAMS", "" + params.toString());
+        Debug.d("Okhttp", "API: " + UrlGenerator.INSTANCE.getRewardApi() + " " + params.toString());
 
         AsyncHttpClient client = new AsyncHttpClient();
         client.setTimeout(Constant.TIMEOUT);
 
-        client.post(getActivity(), URLs.REWARD, params, new AsyncHttpResponseHandler() {
+        client.post(getActivity(), UrlGenerator.INSTANCE.getRewardApi(), params, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
 
-                try {
+                String content = new String(responseBody, StandardCharsets.UTF_8);
+                Debug.d("Okhttp", "Success Response: " + content);
 
-                    String content = new String(responseBody, "UTF-8");
+                GetPointsResp geoPointsResp = new Gson().fromJson(content, GetPointsResp.class);
 
-                    Log.e("SUCC_RESP_TOTAL_POINS", "" + content);
+                if (geoPointsResp.status == 1) {
 
-                    GetPointsResp geoPointsResp = new Gson().fromJson(content, GetPointsResp.class);
+                    GetPointsInfo getPointsInfo = geoPointsResp.getPointsInfo;
 
-                    if (geoPointsResp.status == 1) {
+                    PreferenceManager.putPointsData(geoPointsResp);
 
-                        GetPointsInfo getPointsInfo = geoPointsResp.getPointsInfo;
+                    tvTotalPoints.setText("" + getPointsInfo.total_available_points + " Points");
 
-                        PreferenceManager.putPointsData(geoPointsResp);
-
-                        tvTotalPoints.setText("" + getPointsInfo.total_available_points + " Points");
-
-                        if (getPointsInfo.total_available_points > 0) {
-                            totalAvailablePoints = getPointsInfo.total_available_points;
-                            tvPointsMessage.setText(getPointsInfo.total_available_points + " points worth 10¢ each. Redeem some?");
-                        } else {
-                            totalAvailablePoints = 0;
-                            tvPointsMessage.setText("You don't have enough points to use");
-                        }
-
+                    if (getPointsInfo.total_available_points > 0) {
+                        totalAvailablePoints = getPointsInfo.total_available_points;
+                        tvPointsMessage.setText(getPointsInfo.total_available_points + " points worth 10¢ each. Redeem some?");
+                    } else {
+                        totalAvailablePoints = 0;
+                        tvPointsMessage.setText("You don't have enough points to use");
                     }
 
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
                 }
+
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                Debug.e("getAllPoint fail", responseBody + "-");
+                try {
+                    String content = new String(responseBody, StandardCharsets.UTF_8);
+                    Debug.d("Okhttp", "Failure Response: " + content);
+                } catch (Exception e) {
+                }
                 error.printStackTrace();
             }
 
@@ -208,20 +202,20 @@ public class PaymentFragment extends Fragment {
 
         try {
 
-            String URL = URLs.MAIN_BASE_URL + "cmd=get_average_wait_time_for_business&business_id=" + business.businessID;
+            String URL = UrlGenerator.INSTANCE.getMainUrl() + "cmd=get_average_wait_time_for_business&business_id=" + business.getBusinessID();
 
             AsyncHttpClient client = new AsyncHttpClient();
             client.setTimeout(Constant.TIMEOUT);
+
+            Debug.d("Okhttp", "API: " + URL);
 
             client.get(getActivity(), URL, new AsyncHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
 
                     try {
-
-                        String content = new String(responseBody, "UTF-8");
-
-                        Log.e("RES_SUCC_AVER_TIME", "-" + content);
+                        String content = new String(responseBody, StandardCharsets.UTF_8);
+                        Debug.d("Okhttp", "Success Response: " + content);
 
                         JSONObject json = new JSONObject(content);
 
@@ -248,6 +242,12 @@ public class PaymentFragment extends Fragment {
                         pd.dismiss();
                         pd = null;
                     }
+
+                    try {
+                        String content = new String(responseBody, StandardCharsets.UTF_8);
+                        Debug.d("Okhttp", "Failure Response: " + content);
+                    } catch (Exception e) {
+                    }
                 }
 
             });
@@ -264,20 +264,20 @@ public class PaymentFragment extends Fragment {
 
             UserInfo userInfo = PreferenceManager.getUserInfo();
 
-            String URL = URLs.GET_CARDS_INFO + "cmd=get_consumer_all_cc_info&consumer_id=" + userInfo.uid;
+            String URL = UrlGenerator.INSTANCE.getMainUrl() + "cmd=get_consumer_all_cc_info&consumer_id=" + userInfo.uid;
 
             AsyncHttpClient client = new AsyncHttpClient();
             client.setTimeout(Constant.TIMEOUT);
+
+            Debug.d("Okhttp", "API: " + URL);
 
             client.get(getActivity(), URL, new AsyncHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
 
                     try {
-
-                        String content = new String(responseBody, "UTF-8");
-
-                        Log.e("RES_SUCC_CARDS_INFO", "-" + content);
+                        String content = new String(responseBody, StandardCharsets.UTF_8);
+                        Debug.d("Okhttp", "Success Response: " + content);
 
                         cardsInfo = new Gson().fromJson(content, AllCardsInfo.class);
 
@@ -313,6 +313,12 @@ public class PaymentFragment extends Fragment {
                         pd.dismiss();
                         pd = null;
                     }
+
+                    try {
+                        String content = new String(responseBody, StandardCharsets.UTF_8);
+                        Debug.d("Okhttp", "Failure Response: " + content);
+                    } catch (Exception e) {
+                    }
                 }
 
             });
@@ -327,7 +333,7 @@ public class PaymentFragment extends Fragment {
 
         ((TextView) view.findViewById(R.id.tvToolbarTitle)).setText(getString(R.string.payment));
 
-        TextView tvToolbarLeft = (TextView) view.findViewById(R.id.tvToolbarLeft);
+        TextView tvToolbarLeft = view.findViewById(R.id.tvToolbarLeft);
         tvToolbarLeft.setVisibility(View.VISIBLE);
         tvToolbarLeft.setText("Back");
         tvToolbarLeft.setOnClickListener(new View.OnClickListener() {
@@ -341,20 +347,20 @@ public class PaymentFragment extends Fragment {
 
     private void initViews() {
 
-        tvHotelName = (TextView) view.findViewById(R.id.tvHotelName);
+        tvHotelName = view.findViewById(R.id.tvHotelName);
 
-        tvDate = (TextView) view.findViewById(R.id.tvDate);
+        tvDate = view.findViewById(R.id.tvDate);
 
-        tvTotal = (TextView) view.findViewById(R.id.tvTotal);
+        tvTotal = view.findViewById(R.id.tvTotal);
 
-        tvTotalPoints = (TextView) view.findViewById(R.id.tvTotalPoints);
-        tvPointsMessage = (TextView) view.findViewById(R.id.tvPointsMessage);
-        chkRedeemPoints = (CheckBox) view.findViewById(R.id.chkRedeemPoints);
+        tvTotalPoints = view.findViewById(R.id.tvTotalPoints);
+        tvPointsMessage = view.findViewById(R.id.tvPointsMessage);
+        chkRedeemPoints = view.findViewById(R.id.chkRedeemPoints);
 
-        viewPager = (ViewPager) view.findViewById(R.id.viewPager);
+        viewPager = view.findViewById(R.id.viewPager);
         viewPager.setAdapter(cardPagerAdapter);
 
-        tvAddRemoveCard = (TextView) view.findViewById(R.id.tvAddRemoveCard);
+        tvAddRemoveCard = view.findViewById(R.id.tvAddRemoveCard);
 
         tvAddRemoveCard.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -379,7 +385,7 @@ public class PaymentFragment extends Fragment {
             }
         });
 
-        ((Button) view.findViewById(R.id.btnPayNow)).setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.btnPayNow).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
@@ -413,7 +419,7 @@ public class PaymentFragment extends Fragment {
 
                     }
 
-                    Log.e("REDEEMED_POINTS",""+redeemedPoints);
+                    Log.e("REDEEMED_POINTS", "" + redeemedPoints);
 
                     orderSummaryInfo.total = total - (redeemedPoints / 10);
 
@@ -425,7 +431,7 @@ public class PaymentFragment extends Fragment {
 
                     redeemedPoints = 0;
 
-                    Log.e("REDEEMED_POINTS",""+redeemedPoints);
+                    Log.e("REDEEMED_POINTS", "" + redeemedPoints);
 
                     orderSummaryInfo.total = total;
 
@@ -435,7 +441,7 @@ public class PaymentFragment extends Fragment {
 
                 orderSummaryInfo.points_redeemed = (int) redeemedPoints;
 
-                tvTotal.setText(""+business.curr_symbol + String.format("%.2f", orderSummaryInfo.total));
+                tvTotal.setText("" + business.getCurrSymbol() + String.format("%.2f", orderSummaryInfo.total));
 
             }
         });
@@ -470,7 +476,7 @@ public class PaymentFragment extends Fragment {
 
             json.put("promotion_code", orderSummaryInfo.promotion_code);
             json.put("total", "" + orderSummaryInfo.total);
-            json.put("business_id", business.businessID);
+            json.put("business_id", business.getBusinessID());
             json.put("pd_time", orderSummaryInfo.pd_time);
             json.put("cmd", "save_order");
             json.put("points_dollar_amount", orderSummaryInfo.points_dollar_amount);
@@ -496,16 +502,15 @@ public class PaymentFragment extends Fragment {
             AsyncHttpClient client = new AsyncHttpClient();
             client.setTimeout(Constant.TIMEOUT);
 
-            String URL = URLs.MAIN_BASE_URL;
+            String URL = UrlGenerator.INSTANCE.getMainUrl();
+            Debug.d("Okhttp", "API: " + URL);
 
             client.post(getActivity(), URL, entity, "application/json", new AsyncHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                     try {
-
-                        String content = new String(responseBody, "UTF-8");
-
-                        Log.e("RES_SUCC_INFO", "-" + content);
+                        String content = new String(responseBody, StandardCharsets.UTF_8);
+                        Debug.d("Okhttp", "Success Response: " + content);
 
                         JSONObject jsonObject = new JSONObject(content);
 
@@ -545,14 +550,9 @@ public class PaymentFragment extends Fragment {
                 @Override
                 public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
                     try {
-
-                        String content = new String(responseBody, "UTF-8");
-
-                        Log.e("RES_SUCC_INFO", "-" + content);
-
+                        String content = new String(responseBody, StandardCharsets.UTF_8);
+                        Debug.d("Okhttp", "Failure Response: " + content);
                     } catch (Exception e) {
-
-                        e.printStackTrace();
                     }
                 }
             });

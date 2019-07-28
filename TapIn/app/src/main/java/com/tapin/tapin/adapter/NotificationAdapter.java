@@ -70,11 +70,11 @@ public class NotificationAdapter extends BaseAdapter {
         private TextView tvOpenTime;
 
         public ViewHolder(View view) {
-            tvTime = (TextView) view.findViewById(R.id.tvTime);
-            ratingBar = (RatingBar) view.findViewById(R.id.ratingBar);
-            tvDesc = (TextView) view.findViewById(R.id.tvDesc);
-            textViewOpenClosed = (TextView) view.findViewById(R.id.textViewOpenClosed);
-            tvOpenTime = (TextView) view.findViewById(R.id.tvOpenTime);
+            tvTime = view.findViewById(R.id.tvTime);
+            ratingBar = view.findViewById(R.id.ratingBar);
+            tvDesc = view.findViewById(R.id.tvDesc);
+            textViewOpenClosed = view.findViewById(R.id.textViewOpenClosed);
+            tvOpenTime = view.findViewById(R.id.tvOpenTime);
         }
     }
 }

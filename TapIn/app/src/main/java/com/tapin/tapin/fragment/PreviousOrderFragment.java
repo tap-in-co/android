@@ -1,7 +1,6 @@
 package com.tapin.tapin.fragment;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +12,7 @@ import com.tapin.tapin.utils.AlertMessages;
  * Created by Narendra on 6/16/17.
  */
 
-public class PreviousOrderFragment extends Fragment {
+public class PreviousOrderFragment extends BaseFragment {
 
     View view;
 
@@ -38,11 +37,9 @@ public class PreviousOrderFragment extends Fragment {
     private void initHeader() {
 
 
-
     }
 
     private void initViews() {
-
 
 
     }

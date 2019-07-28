@@ -19,8 +19,7 @@ public class AddBusinessResp implements Cloneable, Serializable {
     @SerializedName("data")
     public BusinessData data;
 
-   public class BusinessData
-    {
+    public class BusinessData {
 
         @SerializedName("business_name")
         public String business_name;

@@ -20,7 +20,7 @@ public class GetPreviousOrderInfo implements Serializable, Cloneable {
     @SerializedName("data")
     public List<PreviousOrder> listPreviousOrder;
 
-    public class PreviousOrder implements Serializable,Cloneable{
+    public class PreviousOrder implements Serializable, Cloneable {
 
         @SerializedName("order_item_id")
         public String order_item_id;

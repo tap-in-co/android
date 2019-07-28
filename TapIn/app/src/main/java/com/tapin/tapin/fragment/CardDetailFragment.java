@@ -1,22 +1,23 @@
 package com.tapin.tapin.fragment;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.util.TypedValue;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.core.content.ContextCompat;
 
 import com.baoyz.swipemenulistview.SwipeMenu;
 import com.baoyz.swipemenulistview.SwipeMenuCreator;
@@ -25,7 +26,6 @@ import com.baoyz.swipemenulistview.SwipeMenuListView;
 import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
 import com.tapin.tapin.R;
 import com.tapin.tapin.adapter.CardAdapter;
 import com.tapin.tapin.model.AllCardsInfo;
@@ -33,9 +33,10 @@ import com.tapin.tapin.model.CardInfo;
 import com.tapin.tapin.model.UserInfo;
 import com.tapin.tapin.utils.AlertMessages;
 import com.tapin.tapin.utils.Constant;
+import com.tapin.tapin.utils.Debug;
 import com.tapin.tapin.utils.PreferenceManager;
 import com.tapin.tapin.utils.ProgressHUD;
-import com.tapin.tapin.utils.URLs;
+import com.tapin.tapin.utils.UrlGenerator;
 import com.tapin.tapin.utils.Utils;
 
 import org.json.JSONArray;
@@ -43,7 +44,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
+import java.nio.charset.StandardCharsets;
 
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.entity.StringEntity;
@@ -52,17 +53,46 @@ import cz.msebera.android.httpclient.entity.StringEntity;
  * Created by Narendra on 5/24/17.
  */
 
-public class CardDetailFragment extends Fragment {
+public class CardDetailFragment extends BaseFragment {
 
     public static UpdateCards updateCards;
-
-    public interface UpdateCards {
-
-        public void cardList();
-
-        public void selectedCardPosition(int pos);
-
-    }
+    View view;
+    EditText etCardNumber;
+    EditText etMonth;
+    EditText etYear;
+    EditText etCvv;
+    EditText etZipcode;
+    SwipeMenuListView listCards;
+    AllCardsInfo cardsInfo;
+    CardAdapter cardAdapter;
+    ProgressHUD pd;
+    AlertMessages messages;
+    String visa = "^4[0-9]{6,}$";
+    String MasterCard = "^5[1-5][0-9]{5,}$";
+    String AmericanExpress = "^3[47][0-9]{5,}$";
+    String DinersClub = "^3(?:0[0-5]|[68][0-9])[0-9]{4,}$";
+    String Discover = "^6(?:011|5[0-9]{2})[0-9]{3,}$";
+    String JCB = "^(?:2131|1800|35[0-9]{3})[0-9]{3,}$";
+    EditText.OnEditorActionListener onZipDoneClicked = new EditText.OnEditorActionListener() {
+        @Override
+        public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+            if (actionId == EditorInfo.IME_ACTION_SEARCH
+                    || actionId == EditorInfo.IME_ACTION_DONE
+                    || event.getAction() == KeyEvent.ACTION_DOWN
+                    && event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+                validateAndAddCard();
+                return true;
+            }
+            // Return true if you have consumed the action, else false.
+            return false;
+        }
+    };
+    View.OnClickListener onClickListenerbtnAdd = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            validateAndAddCard();
+        }
+    };
 
     // TODO: Rename and change types and number of parameters
     public static CardDetailFragment newInstance(UpdateCards uc) {
@@ -74,28 +104,6 @@ public class CardDetailFragment extends Fragment {
         return fragment;
 
     }
-
-    View view;
-
-    EditText etCardNumber;
-    EditText etMonth;
-    EditText etYear;
-    EditText etCvv;
-    EditText etZipcode;
-
-    SwipeMenuListView listCards;
-    AllCardsInfo cardsInfo;
-    CardAdapter cardAdapter;
-
-    ProgressHUD pd;
-    AlertMessages messages;
-
-    String visa = "^4[0-9]{6,}$";
-    String MasterCard = "^5[1-5][0-9]{5,}$";
-    String AmericanExpress = "^3[47][0-9]{5,}$";
-    String DinersClub = "^3(?:0[0-5]|[68][0-9])[0-9]{4,}$";
-    String Discover = "^6(?:011|5[0-9]{2})[0-9]{3,}$";
-    String JCB = "^(?:2131|1800|35[0-9]{3})[0-9]{3,}$";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -140,8 +148,12 @@ public class CardDetailFragment extends Fragment {
 
                 switch (index) {
                     case 0:
-
-                        deleteCard(position, cardAdapter.getItem(position));
+                        final CardInfo cardInfo = cardAdapter.getItem(position);
+                        if (cardInfo.isDefaultCard()) {
+                            showDefaultCardCanNotBeDeletedAlert();
+                        } else {
+                            deleteCard(position, cardAdapter.getItem(position));
+                        }
 
                         break;
                 }
@@ -152,14 +164,30 @@ public class CardDetailFragment extends Fragment {
         listCards.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int pos, long l) {
-
-                if (updateCards != null) {
-                    getActivity().onBackPressed();
-                    updateCards.selectedCardPosition(pos);
+                final CardInfo cardInfo = cardAdapter.getItem(pos);
+                if (cardInfo.isDefaultCard()) {
+                    // Already this is default Card
                 } else {
-                    ((LinearLayout) getActivity().findViewById(R.id.llHome)).performClick();
-                }
+                    if (getActivity() != null) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                        builder.setTitle("Mark as default Card!")
+                                .setMessage("Are you sure you want to mark this card as your default card?").setCancelable(false)
+                                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                })
+                                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        makeCardAsDefault(cardInfo.cc_no, cardInfo.expiration_date, cardInfo.cvv, cardInfo.zip_code, cardInfo.card_type, 1);
+                                    }
+                                });
 
+                        AlertDialog alert = builder.create();
+                        alert.show();
+                    }
+                }
             }
         });
 
@@ -173,61 +201,72 @@ public class CardDetailFragment extends Fragment {
 
     }
 
-    View.OnClickListener onClickListenerbtnAdd = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
+    private void validateAndAddCard() {
+        String cardNumber = etCardNumber.getText().toString();
+        String month = etMonth.getText().toString();
+        String year = etYear.getText().toString();
+        String cvv = etCvv.getText().toString();
+        String zip = etZipcode.getText().toString();
 
-            String cardNumber = etCardNumber.getText().toString();
-            String month = etMonth.getText().toString();
-            String year = etYear.getText().toString();
-            String cvv = etCvv.getText().toString();
-            String zip = etZipcode.getText().toString();
+        if (cardNumber.length() < 16) {
+            etCardNumber.setError("Card Number is not valid");
+        } else if (month.length() < 2) {
+            etMonth.setError("Please enter valid Month");
+        } else if (year.length() < 2) {
+            etYear.setError("Please enter valid Year");
+        } else if (cvv.length() < 3) {
+            etCvv.setError("Please enter valid CVV");
+        } else if (zip.length() < 5) {
+            etZipcode.setError("Please enter valid Zipcode");
+        } else {
+            if (Utils.isInternetConnected(getActivity())) {
 
-            if (cardNumber.length() < 16) {
-                etCardNumber.setError("Card Number is not valid");
-            } else if (month.length() < 2) {
-                etMonth.setError("Please enter valid Month");
-            } else if (year.length() < 2) {
-                etYear.setError("Please enter valid Year");
-            } else if (cvv.length() < 3) {
-                etCvv.setError("Please enter valid CVV");
-            } else if (zip.length() < 5) {
-                etZipcode.setError("Please enter valid Zipcode");
-            } else {
-                if (Utils.isInternetConnected(getActivity())) {
-
-                    String card_type = "Visa";
-                    if (cardNumber.matches(visa)) {
-                        card_type = "Visa";
-                    } else if (cardNumber.matches(MasterCard)) {
-                        card_type = "MasterCard";
-                    } else if (cardNumber.matches(AmericanExpress)) {
-                        card_type = "American Express";
-                    } else if (cardNumber.matches(DinersClub)) {
-                        card_type = "Diners Club";
-                    } else if (cardNumber.matches(Discover)) {
-                        card_type = "Discover";
-                    } else if (cardNumber.matches(JCB)) {
-                        card_type = "JCB";
-                    } else {
-                        card_type = "Unknown";
-                    }
-
-                    addCard(cardNumber, month, year, cvv, zip, card_type);
+                String card_type = "Visa";
+                if (cardNumber.matches(visa)) {
+                    card_type = "Visa";
+                } else if (cardNumber.matches(MasterCard)) {
+                    card_type = "MasterCard";
+                } else if (cardNumber.matches(AmericanExpress)) {
+                    card_type = "American Express";
+                } else if (cardNumber.matches(DinersClub)) {
+                    card_type = "Diners Club";
+                } else if (cardNumber.matches(Discover)) {
+                    card_type = "Discover";
+                } else if (cardNumber.matches(JCB)) {
+                    card_type = "JCB";
                 } else {
-                    messages.showErrorInConnection();
+                    card_type = "Unknown";
                 }
 
+                addCard(cardNumber, month, year, cvv, zip, card_type, cardAdapter.listCards.size() == 0 ? 1 : 0);
+            } else {
+                messages.showErrorInConnection();
             }
 
         }
-    };
+    }
+
+    private void showDefaultCardCanNotBeDeletedAlert() {
+        if (getActivity() != null) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle("This Card is your default Card!")
+                    .setMessage("Please Add or Choose another card to be your default card.").setCancelable(false)
+                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.dismiss();
+                        }
+                    });
+
+            AlertDialog alert = builder.create();
+            alert.show();
+        }
+    }
 
     private void deleteCard(final int pos, CardInfo cardInfo) {
 
         pd = ProgressHUD.show(getActivity(), getString(R.string.please_wait), true, false);
 
-        String URL = URLs.GET_CARDS_INFO;
+        String URL = UrlGenerator.INSTANCE.getMainUrl();
 
         try {
 
@@ -249,7 +288,7 @@ public class CardDetailFragment extends Fragment {
 
             StringEntity entity = new StringEntity(json.toString());
 
-            Log.e("DATA", "" + json.toString());
+            Debug.d("Okhttp", "API: " + URL + " " + json.toString());
 
             AsyncHttpClient client = new AsyncHttpClient();
             client.setTimeout(Constant.TIMEOUT);
@@ -259,9 +298,8 @@ public class CardDetailFragment extends Fragment {
                 public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
 
                     try {
-                        String content = new String(responseBody, "UTF-8");
-
-                        Log.e("RES_SUCC_DEL_CARDS", "-" + content);
+                        String content = new String(responseBody, StandardCharsets.UTF_8);
+                        Debug.d("Okhttp", "Success Response: " + content);
 
                         cardAdapter.listCards.remove(pos);
 
@@ -277,9 +315,8 @@ public class CardDetailFragment extends Fragment {
                 public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
 
                     try {
-                        String content = new String(responseBody, "UTF-8");
-
-                        Log.e("RES_FAIL_CARDS_INFO", "-" + content);
+                        String content = new String(responseBody, StandardCharsets.UTF_8);
+                        Debug.d("Okhttp", "Failure Response: " + content);
                     } catch (Exception e) {
 
                         e.printStackTrace();
@@ -308,10 +345,12 @@ public class CardDetailFragment extends Fragment {
 
             UserInfo userInfo = PreferenceManager.getUserInfo();
 
-            String URL = URLs.GET_CARDS_INFO + "cmd=get_consumer_all_cc_info&consumer_id=" + userInfo.uid;
+            String URL = UrlGenerator.INSTANCE.getMainUrl() + "cmd=get_consumer_all_cc_info&consumer_id=" + userInfo.uid;
 
             AsyncHttpClient client = new AsyncHttpClient();
             client.setTimeout(Constant.TIMEOUT);
+
+            Debug.d("Okhttp", "API: " + URL);
 
             client.get(getActivity(), URL, new AsyncHttpResponseHandler() {
                 @Override
@@ -319,9 +358,8 @@ public class CardDetailFragment extends Fragment {
 
                     try {
 
-                        String content = new String(responseBody, "UTF-8");
-
-                        Log.e("RES_SUCC_CARDS_INFO", "-" + content);
+                        String content = new String(responseBody, StandardCharsets.UTF_8);
+                        Debug.d("Okhttp", "Success Response: " + content);
 
                         cardsInfo = new Gson().fromJson(content, AllCardsInfo.class);
 
@@ -340,16 +378,27 @@ public class CardDetailFragment extends Fragment {
                         e.printStackTrace();
                     }
 
+                    if (pd != null && pd.isShowing()) {
+                        pd.dismiss();
+                        pd = null;
+                    }
                 }
 
                 @Override
                 public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                    if (pd != null && pd.isShowing()) {
+                        pd.dismiss();
+                        pd = null;
+                    }
 
+                    String content = new String(responseBody, StandardCharsets.UTF_8);
+                    Debug.d("Okhttp", "Failure Response: " + content);
                 }
 
                 @Override
                 public void onFinish() {
                     super.onFinish();
+
                     if (pd != null && pd.isShowing()) {
                         pd.dismiss();
                         pd = null;
@@ -363,7 +412,7 @@ public class CardDetailFragment extends Fragment {
         }
     }
 
-    private void addCard(String cardNo, String month, String year, String cvv, String zipcode, String card_type) {
+    private void addCard(String cardNo, String month, String year, String cvv, String zipcode, String card_type, int defaultCard) {
 
         pd = ProgressHUD.show(getActivity(), getString(R.string.please_wait), true, false);
 
@@ -377,7 +426,7 @@ public class CardDetailFragment extends Fragment {
             json.put("expiration_date", year + "-" + month + "-01");
             json.put("cvv", cvv);
             json.put("zip_code", zipcode);
-            json.put("default", 1);
+            json.put("default", defaultCard);
             json.put("card_type", card_type);
 
             StringEntity entity = new StringEntity(json.toString());
@@ -385,7 +434,8 @@ public class CardDetailFragment extends Fragment {
             AsyncHttpClient client = new AsyncHttpClient();
             client.setTimeout(Constant.TIMEOUT);
 
-            String URL = URLs.BUSINESS_DELIVERY_INFO;
+            String URL = UrlGenerator.INSTANCE.getMainUrl();
+            Debug.d("Okhttp", "API: " + URL + " " + json.toString());
 
             client.post(getActivity(), URL, entity, "application/json", new AsyncHttpResponseHandler() {
 
@@ -399,9 +449,8 @@ public class CardDetailFragment extends Fragment {
 
                     try {
 
-                        String content = new String(responseBody, "UTF-8");
-
-                        Log.e("RES_SUCC_CARD_INFO", "-" + content);
+                        String content = new String(responseBody, StandardCharsets.UTF_8);
+                        Debug.d("Okhttp", "Success Response: " + content);
 
                         JSONObject jsonObject = new JSONObject(content);
 
@@ -417,7 +466,7 @@ public class CardDetailFragment extends Fragment {
                                 getActivity().onBackPressed();
                                 updateCards.selectedCardPosition(0);
                             } else {
-                                ((LinearLayout) getActivity().findViewById(R.id.llHome)).performClick();
+                                getActivity().findViewById(R.id.llHome).performClick();
                             }
 
                         } else {
@@ -425,6 +474,111 @@ public class CardDetailFragment extends Fragment {
                             Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
 
                         }
+
+                        clearInput();
+                        getCards();
+
+                    } catch (Exception e) {
+
+                        e.printStackTrace();
+                    }
+
+
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+
+                    if (pd != null && pd.isShowing()) {
+                        pd.dismiss();
+                        pd = null;
+                    }
+
+                    try {
+                        String content = new String(responseBody, StandardCharsets.UTF_8);
+                        Debug.d("Okhttp", "Failure Response: " + content);
+
+                    } catch (Exception e) {
+
+                        e.printStackTrace();
+                    }
+
+
+                }
+
+            });
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void makeCardAsDefault(String cardNo, String expirationDate, String cvv, String zipcode, String card_type, int defaultCard) {
+
+        pd = ProgressHUD.show(getActivity(), getString(R.string.please_wait), true, false);
+
+        try {
+
+            final JSONObject json = new JSONObject();
+
+            json.put("cmd", "save_cc_info");
+            json.put("consumer_id", PreferenceManager.getUserId());
+            json.put("cc_no", cardNo);
+            json.put("expiration_date", expirationDate);
+            json.put("cvv", cvv);
+            json.put("zip_code", zipcode);
+            json.put("default", defaultCard);
+            json.put("card_type", card_type);
+
+            StringEntity entity = new StringEntity(json.toString());
+
+            AsyncHttpClient client = new AsyncHttpClient();
+            client.setTimeout(Constant.TIMEOUT);
+
+            String URL = UrlGenerator.INSTANCE.getMainUrl();
+            Debug.d("Okhttp", "API: " + URL + " " + json.toString());
+
+            client.post(getActivity(), URL, entity, "application/json", new AsyncHttpResponseHandler() {
+
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+
+                    if (pd != null && pd.isShowing()) {
+                        pd.dismiss();
+                        pd = null;
+                    }
+
+                    try {
+
+                        String content = new String(responseBody, StandardCharsets.UTF_8);
+                        Debug.d("Okhttp", "Success Response: " + content);
+
+                        JSONObject jsonObject = new JSONObject(content);
+
+                        String message = jsonObject.getString("message");
+
+                        if (message.equalsIgnoreCase("success")) {
+
+                            Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+
+                            PreferenceManager.saveCardData(json.toString());
+
+                            if (updateCards != null) {
+                                getActivity().onBackPressed();
+                                updateCards.selectedCardPosition(0);
+                            } else {
+                                getActivity().findViewById(R.id.llHome).performClick();
+                            }
+
+                        } else {
+
+                            Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+
+                        }
+
+                        clearInput();
+                        getCards();
 
                     } catch (Exception e) {
 
@@ -444,16 +598,13 @@ public class CardDetailFragment extends Fragment {
 
                     try {
 
-                        String content = new String(responseBody, "UTF-8");
-
-                        Log.e("RES_FAIL_CARD_INFO", "-" + content);
+                        String content = new String(responseBody, StandardCharsets.UTF_8);
+                        Debug.d("Okhttp", "Failure Response: " + content);
 
                     } catch (Exception e) {
 
                         e.printStackTrace();
                     }
-
-
                 }
 
             });
@@ -472,15 +623,16 @@ public class CardDetailFragment extends Fragment {
 
     private void initViews() {
 
-        etCardNumber = (EditText) view.findViewById(R.id.etCardNumber);
-        etMonth = (EditText) view.findViewById(R.id.etMonth);
-        etYear = (EditText) view.findViewById(R.id.etYear);
-        etCvv = (EditText) view.findViewById(R.id.etCvv);
-        etZipcode = (EditText) view.findViewById(R.id.etZipcode);
+        etCardNumber = view.findViewById(R.id.etCardNumber);
+        etMonth = view.findViewById(R.id.etMonth);
+        etYear = view.findViewById(R.id.etYear);
+        etCvv = view.findViewById(R.id.etCvv);
+        etZipcode = view.findViewById(R.id.etZipcode);
+        etZipcode.setOnEditorActionListener(onZipDoneClicked);
 
-        ((Button) view.findViewById(R.id.btnAdd)).setOnClickListener(onClickListenerbtnAdd);
+        view.findViewById(R.id.btnAdd).setOnClickListener(onClickListenerbtnAdd);
 
-        listCards = (SwipeMenuListView) view.findViewById(R.id.listCards);
+        listCards = view.findViewById(R.id.listCards);
         listCards.setAdapter(cardAdapter);
 
     }
@@ -509,6 +661,22 @@ public class CardDetailFragment extends Fragment {
         params.height = totalHeight + (listView.getDividerHeight() * (cardAdapter.getCount() - 1));
         listView.setLayoutParams(params);
         listView.requestLayout();
+
+    }
+
+    private void clearInput() {
+        etCardNumber.setText("");
+        etMonth.setText("");
+        etYear.setText("");
+        etCvv.setText("");
+        etZipcode.setText("");
+    }
+
+    public interface UpdateCards {
+
+        void cardList();
+
+        void selectedCardPosition(int pos);
 
     }
 }

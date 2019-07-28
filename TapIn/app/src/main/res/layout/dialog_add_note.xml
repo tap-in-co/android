@@ -51,12 +51,12 @@
             android:layout_gravity="center"
             android:layout_marginRight="25dp"
             android:gravity="center"
-            android:visibility="gone"
             android:text="@string/cancel"
             android:textAllCaps="true"
             android:textColor="@color/black"
             android:textSize="18sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/tvOk"

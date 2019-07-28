@@ -6,10 +6,10 @@
     android:background="@drawable/progress_hud_bg"
     android:gravity="center_horizontal"
     android:orientation="vertical"
-    android:paddingBottom="20dp"
     android:paddingLeft="25dp"
+    android:paddingTop="20dp"
     android:paddingRight="25dp"
-    android:paddingTop="20dp">
+    android:paddingBottom="20dp">
 
     <ImageView
         android:id="@+id/spinnerImageView"

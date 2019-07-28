@@ -2,22 +2,8 @@ package com.tapin.tapin.activity;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.BottomNavigationView;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -26,38 +12,32 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.tapin.tapin.R;
-import com.tapin.tapin.fragment.CardDetailFragment;
 import com.tapin.tapin.fragment.HomeFragment;
 import com.tapin.tapin.fragment.MenuFoodListFragment;
 import com.tapin.tapin.fragment.NotificationsFragment;
 import com.tapin.tapin.fragment.OrderFragment;
-import com.tapin.tapin.fragment.OrderSummaryFragment;
 import com.tapin.tapin.fragment.PointsFragment;
 import com.tapin.tapin.fragment.ProfileFragment;
-import com.tapin.tapin.model.OrderedInfo;
 import com.tapin.tapin.utils.AlertMessages;
-import com.tapin.tapin.utils.BottomNavigationViewHelper;
 import com.tapin.tapin.utils.Constant;
-import com.tapin.tapin.utils.Debug;
-import com.tapin.tapin.utils.Utils;
-
-import org.w3c.dom.Text;
-
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class HomeActivity extends BaseActivity {
 
     public static final String CURRENT_TAG = HomeFragment.class.getSimpleName();
-
+    public static final int PERMISSION_FINE_LOCATION = 1001;
+    private static final String SELECTED_ITEM = "SELECTED_ITEM";
     FrameLayout frame_home;
     FrameLayout frame_profile;
     FrameLayout frame_notifications;
     FrameLayout frame_points;
-
     LinearLayout llHome;
     ImageView ivHome;
     TextView tvHome;
@@ -70,20 +50,14 @@ public class HomeActivity extends BaseActivity {
     LinearLayout llPoints;
     ImageView ivPoints;
     TextView tvPoints;
-
     boolean isHome;
     boolean isProfile;
     boolean isNotifications;
     boolean isPoints;
-
-    private static final String SELECTED_ITEM = "SELECTED_ITEM";
-
-    private int selectedItem;
     MenuItem selectedMenuItem;
 
     AlertMessages messages;
-
-    public static final int PERMISSION_FINE_LOCATION = 1001;
+    private int selectedItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,29 +81,29 @@ public class HomeActivity extends BaseActivity {
 
     private void initViews() {
 
-        frame_home = (FrameLayout) findViewById(R.id.frame_home);
-        frame_profile = (FrameLayout) findViewById(R.id.frame_profile);
-        frame_notifications = (FrameLayout) findViewById(R.id.frame_notifications);
-        frame_points = (FrameLayout) findViewById(R.id.frame_points);
+        frame_home = findViewById(R.id.frame_home);
+        frame_profile = findViewById(R.id.frame_profile);
+        frame_notifications = findViewById(R.id.frame_notifications);
+        frame_points = findViewById(R.id.frame_points);
 
-        llHome = (LinearLayout) findViewById(R.id.llHome);
-        ivHome = (ImageView) findViewById(R.id.ivHome);
-        tvHome = (TextView) findViewById(R.id.tvHome);
-        llProfile = (LinearLayout) findViewById(R.id.llProfile);
-        ivProfile = (ImageView) findViewById(R.id.ivProfile);
-        tvProfile = (TextView) findViewById(R.id.tvProfile);
-        llNotifications = (LinearLayout) findViewById(R.id.llNotifications);
-        ivNotifications = (ImageView) findViewById(R.id.ivNotifications);
-        tvNotifications = (TextView) findViewById(R.id.tvNotifications);
-        llPoints = (LinearLayout) findViewById(R.id.llPoints);
-        ivPoints = (ImageView) findViewById(R.id.ivPoints);
-        tvPoints = (TextView) findViewById(R.id.tvPoints);
+        llHome = findViewById(R.id.llHome);
+        ivHome = findViewById(R.id.ivHome);
+        tvHome = findViewById(R.id.tvHome);
+        llProfile = findViewById(R.id.llProfile);
+        ivProfile = findViewById(R.id.ivProfile);
+        tvProfile = findViewById(R.id.tvProfile);
+        llNotifications = findViewById(R.id.llNotifications);
+        ivNotifications = findViewById(R.id.ivNotifications);
+        tvNotifications = findViewById(R.id.tvNotifications);
+        llPoints = findViewById(R.id.llPoints);
+        ivPoints = findViewById(R.id.ivPoints);
+        tvPoints = findViewById(R.id.tvPoints);
 
         llHome.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                if (frame_home.getVisibility() == View.VISIBLE) {
+                /*if (frame_home.getVisibility() == View.VISIBLE) {
 
                     messages.alert(HomeActivity.this, null, "Are you sure you want to cancel your current Order Process", "Yes", "No", null, new AlertMessages.AlertDialogCallback() {
                         @Override
@@ -154,15 +128,7 @@ public class HomeActivity extends BaseActivity {
                     });
 
                 }
-                selectBottomMenu(frame_home, ivHome, R.drawable.tab_home_activated, tvHome);
-
-                if (!isHome) {
-                    isHome = true;
-                    Fragment homeFragment = HomeFragment.newInstance("", "");
-                    FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                    ft.add(R.id.frame_home, homeFragment);
-                    ft.commit();
-                }
+                markHomeAsSelected();*/
             }
         });
 
@@ -170,16 +136,7 @@ public class HomeActivity extends BaseActivity {
             @Override
             public void onClick(View view) {
 
-                selectBottomMenu(frame_profile, ivProfile, R.drawable.tab_profile_activated, tvProfile);
-
-                if (!isProfile) {
-                    isProfile = true;
-                    Fragment profileFragment = ProfileFragment.newInstance("DASHBOARD", "");
-//                    Fragment profileFragment = new CardDetailFragment();
-                    FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                    ft.add(R.id.frame_profile, profileFragment);
-                    ft.commit();
-                }
+                markProfileAsSelected();
 
             }
         });
@@ -218,6 +175,11 @@ public class HomeActivity extends BaseActivity {
             }
         });
 
+        if (BaseActivity.Companion.isPickUpOrder()) {
+            markProfileAsSelected();
+        } else {
+            markHomeAsSelected();
+        }
     }
 
     @Override
@@ -229,13 +191,9 @@ public class HomeActivity extends BaseActivity {
             int permissionCheck = ContextCompat.checkSelfPermission(HomeActivity.this,
                     android.Manifest.permission.ACCESS_FINE_LOCATION);
 
-            if (Build.VERSION.SDK_INT >= 23) {
-                if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(this,
-                            new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1001);
-                } else {
-
-                }
+            if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1001);
             } else {
 
             }
@@ -313,6 +271,30 @@ public class HomeActivity extends BaseActivity {
         trans.addToBackStack(null);
         trans.commit();
 
+    }
+
+    private void markHomeAsSelected() {
+        selectBottomMenu(frame_home, ivHome, R.drawable.tab_home_activated, tvHome);
+
+        if (!isHome) {
+            isHome = true;
+            Fragment homeFragment = HomeFragment.newInstance("", "");
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.add(R.id.frame_home, homeFragment);
+            ft.commit();
+        }
+    }
+
+    private void markProfileAsSelected() {
+        selectBottomMenu(frame_profile, ivProfile, R.drawable.tab_profile_activated, tvProfile);
+
+        if (!isProfile) {
+            isProfile = true;
+            Fragment profileFragment = ProfileFragment.Companion.newInstance("DASHBOARD");
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.add(R.id.frame_profile, profileFragment);
+            ft.commit();
+        }
     }
 
     private Fragment getCurrentFragment() {

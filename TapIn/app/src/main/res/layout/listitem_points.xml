@@ -1,8 +1,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:padding="8dp"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:padding="8dp">
 
 
     <TextView
@@ -10,12 +9,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:gravity="center_vertical"
         android:layout_toLeftOf="@+id/tvEarnedPoints"
+        android:gravity="center_vertical"
         android:maxLines="1"
         android:text="Mar 23 01:46 AM"
         android:textColor="@color/black" />
-
 
 
     <TextView
@@ -23,12 +21,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
+        android:layout_marginRight="6dp"
+        android:layout_toLeftOf="@+id/tvPoints"
         android:gravity="center_vertical"
         android:maxLines="1"
         android:text="Earned Points"
-        android:layout_marginRight="6dp"
-        android:layout_toLeftOf="@+id/tvPoints"
         android:textColor="@color/black" />
+
     <TextView
         android:id="@+id/tvPoints"
         android:layout_width="70dp"

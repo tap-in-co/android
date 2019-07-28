@@ -1,5 +1,5 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/card_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -28,10 +28,10 @@
                 android:gravity="center_vertical"
                 android:maxLines="1"
                 android:paddingTop="5dp"
-                android:text="NAme"
                 android:textAppearance="?android:attr/textAppearanceSmallInverse"
                 android:textColor="@color/colorText"
-                android:typeface="normal" />
+                android:typeface="normal"
+                tools:text="NAme" />
 
             <TextView
                 android:id="@+id/tvPrice"
@@ -143,18 +143,18 @@
                 android:layout_alignParentRight="true"
                 android:gravity="center_vertical"
                 android:maxLines="1"
-                android:text="NAme"
                 android:textAllCaps="true"
                 android:textAppearance="?android:attr/textAppearanceSmallInverse"
                 android:textColor="@color/colorTextLight"
-                android:typeface="normal" />
+                android:typeface="normal"
+                tools:text="NAme" />
 
         </RelativeLayout>
 
 
     </LinearLayout>
 
-    <android.support.v4.view.ViewPager
+    <androidx.viewpager.widget.ViewPager
         android:id="@+id/pager"
         android:layout_width="match_parent"
         android:layout_height="@dimen/_140sdp" />

@@ -1,12 +1,8 @@
 package com.tapin.tapin.activity;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -27,22 +23,21 @@ import com.tapin.tapin.utils.Constant;
 import com.tapin.tapin.utils.Debug;
 import com.tapin.tapin.utils.PreferenceManager;
 import com.tapin.tapin.utils.ProgressHUD;
-import com.tapin.tapin.utils.URLs;
+import com.tapin.tapin.utils.UrlGenerator;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 import cz.msebera.android.httpclient.Header;
 
 public class MainActivity extends BaseActivity {
 
+    ProgressHUD progressHUD;
+    AlertMessages messages;
     private LinearLayout llBusinessContainer;
     private LinearLayout llCheckOrder;
     private EditText etBusinessName;
     private Button btnSubmit;
     private Button btnCheckOrder;
-
-    ProgressHUD progressHUD;
-    AlertMessages messages;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,12 +52,12 @@ public class MainActivity extends BaseActivity {
 
     private void initViews() {
 
-        etBusinessName = (EditText) findViewById(R.id.edbusinessName);
-        llBusinessContainer = (LinearLayout) findViewById(R.id.llBusinessContainer);
-        btnSubmit = (Button) findViewById(R.id.btnSubmit);
-        llCheckOrder = (LinearLayout) findViewById(R.id.llCheckOrder);
+        etBusinessName = findViewById(R.id.edbusinessName);
+        llBusinessContainer = findViewById(R.id.llBusinessContainer);
+        btnSubmit = findViewById(R.id.btnSubmit);
+        llCheckOrder = findViewById(R.id.llCheckOrder);
 
-        btnCheckOrder = (Button) findViewById(R.id.btnCheckOrder);
+        btnCheckOrder = findViewById(R.id.btnCheckOrder);
 
         btnCheckOrder.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -134,45 +129,34 @@ public class MainActivity extends BaseActivity {
         params.put("business_name", etBusinessName.getText().toString());
         params.put("device_token", refreshedToken);
 
-        Log.e("URL", URLs.REWARD);
-        Log.e("Parameters", params + "");
+        Debug.d("Parameters", params + "");
+        Debug.d("Okhttp", "API: " + UrlGenerator.INSTANCE.getRewardApi() + " " + params.toString());
 
         AsyncHttpClient client = new AsyncHttpClient();
         client.setTimeout(Constant.TIMEOUT);
-        client.get(URLs.REWARD, params, new AsyncHttpResponseHandler() {
+        client.get(UrlGenerator.INSTANCE.getRewardApi(), params, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
 
-                try {
+                String content = new String(responseBody, StandardCharsets.UTF_8);
+                Debug.d("Okhttp", "Success Response: " + content);
 
-                    String content = new String(responseBody, "UTF-8");
-                    Log.e("RESP_SUCC_SEND_REQ", "-" + content);
-
-                    AddBusinessResp addBusinessResp = new Gson().fromJson(content, AddBusinessResp.class);
-                    if (addBusinessResp.status > -1) {
-                        PreferenceManager.putIsSubmitRestaurent(true);
-                        PreferenceManager.putNotificationLink("https://tapforall.com/staging/" + addBusinessResp.data.user_name);
-                        llBusinessContainer.setVisibility(View.GONE);
-                        llCheckOrder.setVisibility(View.VISIBLE);
-                    } else {
-                        messages.showCustomMessage(addBusinessResp.error_message);
-                    }
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
+                AddBusinessResp addBusinessResp = new Gson().fromJson(content, AddBusinessResp.class);
+                if (addBusinessResp.status > -1) {
+                    PreferenceManager.putIsSubmitRestaurent(true);
+                    PreferenceManager.putNotificationLink("https://tapforall.com/staging/" + addBusinessResp.data.user_name);
+                    llBusinessContainer.setVisibility(View.GONE);
+                    llCheckOrder.setVisibility(View.VISIBLE);
+                } else {
+                    messages.showCustomMessage(addBusinessResp.error_message);
                 }
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                String content = new String(responseBody, StandardCharsets.UTF_8);
+                Debug.d("Okhttp", "Success Response: " + content);
 
-                try {
-
-                    String content = new String(responseBody, "UTF-8");
-                    Log.e("RESP_FAIL_SEND_REQ", "-" + content);
-
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
             }
 
             @Override

@@ -1,29 +1,25 @@
 package com.tapin.tapin.fragment;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
+
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 
 import com.tapin.tapin.R;
 import com.tapin.tapin.activity.HomeActivity;
-import com.tapin.tapin.model.Business;
 import com.tapin.tapin.model.OrderSummaryInfo;
-import com.tapin.tapin.model.OrderedInfo;
+import com.tapin.tapin.model.resturants.Business;
 import com.tapin.tapin.utils.Constant;
-
-import java.util.ArrayList;
 
 /**
  * Created by Narendra on 5/28/17.
  */
 
-public class OrderSummaryFragment extends Fragment {
+public class OrderSummaryFragment extends BaseFragment {
 
     View view;
 
@@ -89,7 +85,7 @@ public class OrderSummaryFragment extends Fragment {
 
     private void setData() {
 
-        tvHotelName.setText("" + business.name);
+        tvHotelName.setText("" + business.getName());
 
         for (int i = 0; i < orderSummaryInfo.listOrdered.size(); i++) {
 
@@ -101,14 +97,14 @@ public class OrderSummaryFragment extends Fragment {
 
             tvDeliveryTo.setText("Pick up your food from counter at " + orderSummaryInfo.counterPickupTime);
 
-            deliveryCharge = Double.parseDouble(business.pickup_counter_charge);
+            deliveryCharge = Double.parseDouble(business.getPickupCounterCharge());
 
         } else if (selectedOption.equalsIgnoreCase("TABLE")) {
 
             tvDeliveryTo.setText("Your Food will be deliver at table number " + orderSummaryInfo.tableNumber);
 
-            if (business.delivery_table_charge != null && business.delivery_table_charge.length() > 0) {
-                String tableCharge = business.delivery_table_charge.replace("%", "");
+            if (business.getDeliveryTableCharge() != null && business.getDeliveryTableCharge().length() > 0) {
+                String tableCharge = business.getDeliveryTableCharge().replace("%", "");
                 deliveryCharge = subTotal * 0.01 * Double.parseDouble(tableCharge);
             }
 
@@ -116,27 +112,27 @@ public class OrderSummaryFragment extends Fragment {
 
             tvDeliveryTo.setText("Your food will be deliver at " + orderSummaryInfo.deliveryLocation);
 
-            deliveryCharge = Double.parseDouble(business.delivery_location_charge);
+            deliveryCharge = Double.parseDouble(business.getDeliveryLocationCharge());
 
         } else if (selectedOption.equalsIgnoreCase("PARKING")) {
 
             tvDeliveryTo.setText("Pick up your food at " + orderSummaryInfo.parkingPickupTime + " from Parking.");
 
-            deliveryCharge = Double.parseDouble(business.pickup_location_charge);
+            deliveryCharge = Double.parseDouble(business.getPickupLocationCharge());
 
         }
 
-        tvSubTotal.setText(""+business.curr_symbol + String.format("%.2f", subTotal));
+        tvSubTotal.setText("" + business.getCurrSymbol() + String.format("%.2f", subTotal));
 
-        tvDeliveryCharge.setText(""+business.curr_symbol + String.format("%.2f", deliveryCharge));
+        tvDeliveryCharge.setText("" + business.getCurrSymbol() + String.format("%.2f", deliveryCharge));
 
         tvTotalPoints.setText("Earn " + Math.round(subTotal) + " Pts");
 
-        if (business.promotion_code != null && business.promotion_code.length() > 0) {
+        if (business.getCurrSymbol() != null && business.getPromotionCode().length() > 0) {
 
-            tvPromotionalCode.setText("" + business.promotion_code);
+            tvPromotionalCode.setText("" + business.getCurrSymbol());
 
-            promotionalDiscount = Double.parseDouble(business.promotion_discount_amount);
+            promotionalDiscount = Double.parseDouble(business.getPromotionDiscountAmount());
 
             if (promotionalDiscount > subTotal) {
 
@@ -144,7 +140,7 @@ public class OrderSummaryFragment extends Fragment {
 
             }
 
-            tvPromotionalDiscount.setText(""+business.curr_symbol + String.format("%.2f", promotionalDiscount));
+            tvPromotionalDiscount.setText("" + business.getCurrSymbol() + String.format("%.2f", promotionalDiscount));
 
         }
 
@@ -152,14 +148,14 @@ public class OrderSummaryFragment extends Fragment {
         tip15 = subTotal * 0.15;
         tip20 = subTotal * 0.20;
 
-        tv10.setText(""+business.curr_symbol + String.format("%.2f", tip10));
-        tv15.setText(""+business.curr_symbol + String.format("%.2f", tip15));
-        tv20.setText(""+business.curr_symbol + String.format("%.2f", tip20));
+        tv10.setText("" + business.getCurrSymbol() + String.format("%.2f", tip10));
+        tv15.setText("" + business.getCurrSymbol() + String.format("%.2f", tip15));
+        tv20.setText("" + business.getCurrSymbol() + String.format("%.2f", tip20));
 
-        if (business.tax_rate != null && business.tax_rate.length() > 0) {
+        if (business.getTaxRate() != null && business.getTaxRate().length() > 0) {
 
-            tax = subTotal * Double.parseDouble(business.tax_rate) * 0.01;
-            tvTax.setText(""+business.curr_symbol + String.format("%.2f", tax));
+            tax = subTotal * Double.parseDouble(business.getTaxRate()) * 0.01;
+            tvTax.setText("" + business.getCurrSymbol() + String.format("%.2f", tax));
 
         }
 
@@ -190,7 +186,7 @@ public class OrderSummaryFragment extends Fragment {
 
         selectedTip = tip;
 
-        tvTotal.setText(""+business.curr_symbol + String.format("%.2f", total));
+        tvTotal.setText("" + business.getCurrSymbol() + String.format("%.2f", total));
 
     }
 
@@ -198,7 +194,7 @@ public class OrderSummaryFragment extends Fragment {
 
         ((TextView) view.findViewById(R.id.tvToolbarTitle)).setText(getString(R.string.order_summary));
 
-        TextView tvToolbarLeft = (TextView) view.findViewById(R.id.tvToolbarLeft);
+        TextView tvToolbarLeft = view.findViewById(R.id.tvToolbarLeft);
         tvToolbarLeft.setVisibility(View.VISIBLE);
         tvToolbarLeft.setText("Back");
         tvToolbarLeft.setOnClickListener(new View.OnClickListener() {
@@ -212,23 +208,23 @@ public class OrderSummaryFragment extends Fragment {
 
     private void initViews() {
 
-        tvHotelName = (TextView) view.findViewById(R.id.tvHotelName);
-        tvDeliveryTo = (TextView) view.findViewById(R.id.tvDeliveryTo);
+        tvHotelName = view.findViewById(R.id.tvHotelName);
+        tvDeliveryTo = view.findViewById(R.id.tvDeliveryTo);
 
-        tvSubTotal = (TextView) view.findViewById(R.id.tvSubTotal);
-        tvTotalPoints = (TextView) view.findViewById(R.id.tvTotalPoints);
-        tvDeliveryCharge = (TextView) view.findViewById(R.id.tvDeliveryCharge);
-        tvPromotionalCode = (TextView) view.findViewById(R.id.tvPromotionalCode);
-        tvPromotionalDiscount = (TextView) view.findViewById(R.id.tvPromotionalDiscount);
+        tvSubTotal = view.findViewById(R.id.tvSubTotal);
+        tvTotalPoints = view.findViewById(R.id.tvTotalPoints);
+        tvDeliveryCharge = view.findViewById(R.id.tvDeliveryCharge);
+        tvPromotionalCode = view.findViewById(R.id.tvPromotionalCode);
+        tvPromotionalDiscount = view.findViewById(R.id.tvPromotionalDiscount);
 
-        tvNoTip = (TextView) view.findViewById(R.id.tvNoTip);
-        tv10 = (TextView) view.findViewById(R.id.tv10);
-        tv15 = (TextView) view.findViewById(R.id.tv15);
-        tv20 = (TextView) view.findViewById(R.id.tv20);
+        tvNoTip = view.findViewById(R.id.tvNoTip);
+        tv10 = view.findViewById(R.id.tv10);
+        tv15 = view.findViewById(R.id.tv15);
+        tv20 = view.findViewById(R.id.tv20);
 
-        tvTax = (TextView) view.findViewById(R.id.tvTax);
+        tvTax = view.findViewById(R.id.tvTax);
 
-        tvTotal = (TextView) view.findViewById(R.id.tvTotal);
+        tvTotal = view.findViewById(R.id.tvTotal);
 
         tvNoTip.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -258,14 +254,14 @@ public class OrderSummaryFragment extends Fragment {
             }
         });
 
-        ((Button) view.findViewById(R.id.btnProceed)).setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.btnProceed).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
                 orderSummaryInfo.promotion_code = tvPromotionalCode.getText().toString();
                 orderSummaryInfo.total = total;
-                orderSummaryInfo.business_id = business.businessID;
-                orderSummaryInfo.points_dollar_amount = business.businessID;
+                orderSummaryInfo.business_id = business.getBusinessID();
+                orderSummaryInfo.points_dollar_amount = business.getBusinessID();
                 orderSummaryInfo.tax_amount = tax;
                 orderSummaryInfo.subtotal = subTotal;
                 orderSummaryInfo.tip_amount = selectedTip;

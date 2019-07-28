@@ -8,7 +8,8 @@ import java.io.Serializable;
  * Created by Narendra on 5/25/17.
  */
 
-public class CardInfo implements Serializable,Cloneable{
+public class CardInfo implements Serializable, Cloneable {
+    private static final String DEFAULT_CARD = "1";
 
     @SerializedName("status")
     public String status;
@@ -48,4 +49,8 @@ public class CardInfo implements Serializable,Cloneable{
 
     @SerializedName("timestamp")
     public String timestamp;
+
+    public boolean isDefaultCard() {
+        return DEFAULT_CARD.equalsIgnoreCase(defaultCard);
+    }
 }

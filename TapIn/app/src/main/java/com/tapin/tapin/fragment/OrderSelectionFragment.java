@@ -1,12 +1,11 @@
 package com.tapin.tapin.fragment;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
+
+import androidx.annotation.Nullable;
 
 import com.tapin.tapin.R;
 import com.tapin.tapin.activity.HomeActivity;
@@ -15,17 +14,16 @@ import com.tapin.tapin.activity.HomeActivity;
  * Created by Narendra on 5/22/17.
  */
 
-public class OrderSelectionFragment extends Fragment {
+public class OrderSelectionFragment extends BaseFragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
+    View view;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-
 
     public OrderSelectionFragment() {
         // Required empty public constructor
@@ -58,8 +56,6 @@ public class OrderSelectionFragment extends Fragment {
         }
     }
 
-    View view;
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -74,7 +70,7 @@ public class OrderSelectionFragment extends Fragment {
 
     private void initViews() {
 
-        ((LinearLayout) view.findViewById(R.id.llNewOrder)).setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.order_activity_new_order).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 

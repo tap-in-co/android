@@ -1,6 +1,5 @@
 package com.tapin.tapin.utils;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -9,20 +8,12 @@ import com.tapin.tapin.R;
 
 public class AlertMessages {
 
+    static AlertDialogCallback alertDialogCallback;
     Context context;
 
     public AlertMessages(Context context) {
         this.context = context;
     }
-
-    static AlertDialogCallback alertDialogCallback;
-
-    public interface AlertDialogCallback {
-
-        public void clickedButtonText(String s);
-
-    }
-
 
     public void showNetworkAlert() {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -41,7 +32,7 @@ public class AlertMessages {
 
     public void showserverdataerror() {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setMessage("No Data found on server.").setPositiveButton("Ok",
+        builder.setMessage("No CorporateDomain found on server.").setPositiveButton("Ok",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         dialog.cancel();
@@ -206,6 +197,12 @@ public class AlertMessages {
         }
 
         alertDialog.show();
+    }
+
+    public interface AlertDialogCallback {
+
+        void clickedButtonText(String s);
+
     }
 
 
