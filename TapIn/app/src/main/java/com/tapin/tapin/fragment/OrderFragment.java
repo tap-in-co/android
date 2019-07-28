@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.tapin.tapin.R;
 import com.tapin.tapin.activity.HomeActivity;
+import com.tapin.tapin.model.OrderSummaryInfo;
 import com.tapin.tapin.model.OrderedInfo;
 import com.tapin.tapin.model.resturants.Business;
 import com.tapin.tapin.utils.AlertMessages;
@@ -176,11 +177,7 @@ public class OrderFragment extends BaseFragment {
                     });
 
                 } else {
-                    PickupOrderFragment pickupOrderFragment = new PickupOrderFragment();
-                    Bundle bundle = new Bundle();
-                    bundle.putSerializable("ORDERED_LIST", listOrdered);
-                    pickupOrderFragment.setArguments(bundle);
-                    ((HomeActivity) getActivity()).addFragment(pickupOrderFragment, R.id.frame_home);
+                    navigateToNext();
                 }
             }
         });
@@ -225,6 +222,39 @@ public class OrderFragment extends BaseFragment {
 
         tvPoints.setText("Earn " + Math.round(totalValue) + " Pts");
 
+    }
+
+    private void navigateToNext() {
+        if (isCorporateOrder()) {
+            navigateToOrderSummaryForCorporateOrder();
+        } else {
+            navigateToPickupOrderForIndividualOrder();
+        }
+    }
+
+    private void navigateToPickupOrderForIndividualOrder() {
+        PickupOrderFragment pickupOrderFragment = new PickupOrderFragment();
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("ORDERED_LIST", listOrdered);
+        pickupOrderFragment.setArguments(bundle);
+        ((HomeActivity) getActivity()).addFragment(pickupOrderFragment, R.id.frame_home);
+    }
+
+    private void navigateToOrderSummaryForCorporateOrder() {
+        OrderSummaryFragment orderSummaryFragment = new OrderSummaryFragment();
+        orderSummaryFragment.setArguments(getCorpOrderArgumentsBundle());
+        ((HomeActivity) getActivity()).addFragment(orderSummaryFragment, R.id.frame_home);
+    }
+
+    private Bundle getCorpOrderArgumentsBundle() {
+        final Bundle bundle = new Bundle();
+
+        final OrderSummaryInfo orderSummaryInfo = new OrderSummaryInfo();
+        orderSummaryInfo.listOrdered = listOrdered;
+
+        bundle.putString("SELECTED_OPTION", ""); // Sending blank intentionally
+        bundle.putSerializable("ORDER_SUMMARY", orderSummaryInfo);
+        return bundle;
     }
 
     public class OrderAdapter extends BaseAdapter {

@@ -128,20 +128,24 @@ public class OrderSummaryFragment extends BaseFragment {
 
         tvTotalPoints.setText("Earn " + Math.round(subTotal) + " Pts");
 
-        if (business.getCurrSymbol() != null && business.getPromotionCode().length() > 0) {
+        try {
+            if (business.getCurrSymbol() != null && business.getPromotionCode().length() > 0) {
 
-            tvPromotionalCode.setText("" + business.getCurrSymbol());
+                tvPromotionalCode.setText("" + business.getCurrSymbol());
 
-            promotionalDiscount = Double.parseDouble(business.getPromotionDiscountAmount());
+                promotionalDiscount = Double.parseDouble(business.getPromotionDiscountAmount());
 
-            if (promotionalDiscount > subTotal) {
+                if (promotionalDiscount > subTotal) {
 
-                promotionalDiscount = subTotal;
+                    promotionalDiscount = subTotal;
+
+                }
+
+                tvPromotionalDiscount.setText("" + business.getCurrSymbol() + String.format("%.2f", promotionalDiscount));
 
             }
-
-            tvPromotionalDiscount.setText("" + business.getCurrSymbol() + String.format("%.2f", promotionalDiscount));
-
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         tip10 = subTotal * 0.10;
