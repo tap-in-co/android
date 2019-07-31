@@ -17,11 +17,5 @@ open class BaseFragment : Fragment() {
         isCorporateOrder = PreferenceManager.getInstance().isCorporateOrder
         corporateOrderMerchantIds = PreferenceManager.getInstance().corporateOrderMerchantIds
         userInfo = PreferenceManager.getUserInfo()
-
-        activity?.let {
-            Toast.makeText(it, "Order Type: $isCorporateOrder", Toast.LENGTH_SHORT).show()
-            Toast.makeText(it, "MerchantIds: $corporateOrderMerchantIds", Toast.LENGTH_SHORT).show()
-            Toast.makeText(it, "UserInfo: $userInfo", Toast.LENGTH_SHORT).show()
-        }
     }
 }

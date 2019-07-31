@@ -1,12 +1,14 @@
 package com.tapin.tapin.activity
 
 import android.content.Intent
+import android.os.Bundle
 import android.widget.Toast
 import com.google.firebase.iid.FirebaseInstanceId
 import com.google.gson.Gson
 import com.loopj.android.http.AsyncHttpClient
 import com.loopj.android.http.AsyncHttpResponseHandler
 import com.loopj.android.http.RequestParams
+import com.tapin.tapin.R
 import com.tapin.tapin.model.profile.CardDetailsResponse
 import com.tapin.tapin.model.profile.ProfileResponse
 import com.tapin.tapin.utils.Constant
@@ -17,6 +19,11 @@ import cz.msebera.android.httpclient.Header
 
 class SplashActivity : BaseActivity() {
     private var client: AsyncHttpClient? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_splash)
+    }
 
     override fun onResume() {
         super.onResume()
@@ -53,11 +60,6 @@ class SplashActivity : BaseActivity() {
                         val profileResponse = Gson().fromJson(content, ProfileResponse::class.java)
 
                         Debug.d("Hello", profileResponse.toString())
-                        Toast.makeText(
-                            this@SplashActivity,
-                            profileResponse.toString(),
-                            Toast.LENGTH_SHORT
-                        ).show()
 
                         if (profileResponse.isValidProfile()) {
                             getConsumerCardDetails(profileResponse)
@@ -81,7 +83,6 @@ class SplashActivity : BaseActivity() {
                     Debug.d("Okhttp", "Failure Response: $content")
                 }
                 Debug.d("Hello", error?.message ?: "")
-                Toast.makeText(this@SplashActivity, error?.message ?: "", Toast.LENGTH_SHORT).show()
             }
 
             override fun onCancel() {
@@ -111,11 +112,6 @@ class SplashActivity : BaseActivity() {
                                 Gson().fromJson(content, CardDetailsResponse::class.java)
 
                             Debug.d("Hello", cardDetailsResponse.toString())
-                            Toast.makeText(
-                                this@SplashActivity,
-                                profileResponse.toString(),
-                                Toast.LENGTH_SHORT
-                            ).show()
                         }
                     } catch (e: Exception) {
                     }
@@ -132,8 +128,6 @@ class SplashActivity : BaseActivity() {
                         Debug.d("Okhttp", "Failure Response: $content")
                     }
                     Debug.d("Hello", error?.message ?: "")
-                    Toast.makeText(this@SplashActivity, error?.message ?: "", Toast.LENGTH_SHORT)
-                        .show()
                 }
 
                 override fun onCancel() {
