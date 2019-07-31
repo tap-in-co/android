@@ -3,17 +3,17 @@
     <item
         android:id="@+id/action_home"
         android:icon="@drawable/tab_home_deactivated"
-        android:title="@string/home"/>
+        android:title="@string/home" />
     <item
         android:id="@+id/action_profile"
         android:icon="@drawable/tab_profile_deactivated"
-        android:title="@string/profile"/>
+        android:title="@string/profile" />
     <item
         android:id="@+id/action_notifications"
         android:icon="@drawable/tab_notification_deactivated"
-        android:title="@string/notifications"/>
+        android:title="@string/notifications" />
     <item
         android:id="@+id/action_points"
         android:icon="@drawable/tab_points_deactivated"
-        android:title="@string/points"/>
+        android:title="@string/points" />
 </menu>

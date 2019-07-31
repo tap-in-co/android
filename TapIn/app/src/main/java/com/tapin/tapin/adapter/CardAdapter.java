@@ -1,19 +1,15 @@
 package com.tapin.tapin.adapter;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.LinearLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.tapin.tapin.R;
-import com.tapin.tapin.model.AllCardsInfo;
-import com.tapin.tapin.model.BusinessMenu;
 import com.tapin.tapin.model.CardInfo;
-import com.tapin.tapin.utils.Debug;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,11 +20,9 @@ import java.util.List;
 
 public class CardAdapter extends BaseAdapter {
 
-    Context context;
-
-    LayoutInflater inflater;
-
     public ArrayList<CardInfo> listCards = new ArrayList<>();
+    Context context;
+    LayoutInflater inflater;
 
     public CardAdapter(Context c) {
 
@@ -78,7 +72,8 @@ public class CardAdapter extends BaseAdapter {
             holder = new ViewHolder();
             convertView = inflater.inflate(R.layout.list_item_card, viewGroup, false);
 
-            holder.tvCardDetail = (TextView) convertView.findViewById(R.id.tvCardDetail);
+            holder.tvCardDetail = convertView.findViewById(R.id.tvCardDetail);
+            holder.imageViewDefalutCard = convertView.findViewById(R.id.imgvDefaultCard);
 
             convertView.setTag(holder);
 
@@ -88,7 +83,8 @@ public class CardAdapter extends BaseAdapter {
 
         CardInfo cardInfo = listCards.get(position);
 
-        holder.tvCardDetail.setText(cardInfo.card_type + "     "+"xxxx xxxx xxxx " + cardInfo.cc_no.substring(cardInfo.cc_no.length() - 4));
+        holder.tvCardDetail.setText(cardInfo.card_type + "     " + "xxxx xxxx xxxx " + cardInfo.cc_no.substring(cardInfo.cc_no.length() - 4));
+        holder.imageViewDefalutCard.setVisibility(cardInfo.isDefaultCard() ? View.VISIBLE : View.GONE);
 
         return convertView;
 
@@ -97,6 +93,7 @@ public class CardAdapter extends BaseAdapter {
     public class ViewHolder {
 
         TextView tvCardDetail;
+        ImageView imageViewDefalutCard;
     }
 
 }

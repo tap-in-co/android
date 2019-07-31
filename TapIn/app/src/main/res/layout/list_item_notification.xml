@@ -2,8 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="@dimen/_10sdp"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:padding="@dimen/_10sdp">
 
     <TextView
         android:id="@+id/tvTime"
@@ -33,8 +33,8 @@
         android:layout_centerHorizontal="true"
         android:gravity="center_vertical"
         android:maxLines="1"
-        android:paddingBottom="5dp"
         android:paddingTop="5dp"
+        android:paddingBottom="5dp"
         android:text="Your order can not be fulfilled at his time."
         android:textColor="@color/black"
         android:typeface="normal" />

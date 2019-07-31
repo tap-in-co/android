@@ -4,9 +4,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -14,7 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -23,7 +19,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
 
 import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
@@ -31,27 +29,26 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.tapin.tapin.R;
 import com.tapin.tapin.activity.HomeActivity;
-import com.tapin.tapin.adapter.OrderStickyListViewAdapter;
 import com.tapin.tapin.adapter.MenuAdapter;
-import com.tapin.tapin.model.Business;
+import com.tapin.tapin.adapter.OrderStickyListViewAdapter;
 import com.tapin.tapin.model.BusinessMenu;
 import com.tapin.tapin.model.Options;
 import com.tapin.tapin.model.OrderInfo;
 import com.tapin.tapin.model.OrderedInfo;
+import com.tapin.tapin.model.resturants.Business;
 import com.tapin.tapin.utils.AlertMessages;
 import com.tapin.tapin.utils.Constant;
+import com.tapin.tapin.utils.Debug;
 import com.tapin.tapin.utils.PreferenceManager;
 import com.tapin.tapin.utils.ProgressHUD;
-import com.tapin.tapin.utils.URLs;
+import com.tapin.tapin.utils.UrlGenerator;
 import com.tapin.tapin.utils.Utils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Array;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -64,16 +61,33 @@ import cz.msebera.android.httpclient.Header;
 import se.emilsjolander.stickylistheaders.ExpandableStickyListHeadersListView;
 
 
-public class MenuFoodListFragment extends Fragment {
+public class MenuFoodListFragment extends BaseFragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
+    static TextView tvOrderBadge;
+    static ArrayList<OrderedInfo> listOrdered = new ArrayList<>();
+    View view;
+    TextView tvToolbarLeft;
+    LinearLayout llToolbarTitle;
+    TextView tvToolbarTitle;
+    TextView tvToolbarRight;
+    ImageView ivTitleDropDown;
+    ListView lvMenu;
+    List<BusinessMenu> listBusinessMenu = new ArrayList<>();
+    List<OrderInfo> listOrders = new ArrayList<>();
+    MenuAdapter menuAdapter;
+    Business business;
+    OrderStickyListViewAdapter adapter;
+    ProgressHUD pd;
+    AlertMessages messages;
+    SimpleDateFormat dateFormat;
+    boolean isOpened;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-
+    private ExpandableStickyListHeadersListView lvOrderFood;
 
     public MenuFoodListFragment() {
         // Required empty public constructor
@@ -97,6 +111,43 @@ public class MenuFoodListFragment extends Fragment {
         return fragment;
     }
 
+    public static void updateOrderData(ArrayList<OrderedInfo> list) {
+
+        try {
+
+            listOrdered.clear();
+
+            listOrdered.addAll(list);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        modifyTotalOrders();
+
+        OrderFragment.isOrderChanged = false;
+
+    }
+
+    private static void modifyTotalOrders() {
+
+        int totalQuantity = 0;
+
+        for (int i = 0; i < listOrdered.size(); i++) {
+
+            totalQuantity = totalQuantity + listOrdered.get(i).quantity;
+
+        }
+
+        if (totalQuantity == 0) {
+            tvOrderBadge.setVisibility(View.GONE);
+        } else {
+            tvOrderBadge.setVisibility(View.VISIBLE);
+            tvOrderBadge.setText("" + totalQuantity);
+        }
+
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -105,34 +156,6 @@ public class MenuFoodListFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
-
-    View view;
-
-    TextView tvToolbarLeft;
-    LinearLayout llToolbarTitle;
-    TextView tvToolbarTitle;
-    TextView tvToolbarRight;
-    static TextView tvOrderBadge;
-    ImageView ivTitleDropDown;
-
-    ListView lvMenu;
-    List<BusinessMenu> listBusinessMenu = new ArrayList<>();
-    List<OrderInfo> listOrders = new ArrayList<>();
-    MenuAdapter menuAdapter;
-
-    Business business;
-
-    private ExpandableStickyListHeadersListView lvOrderFood;
-    OrderStickyListViewAdapter adapter;
-
-    ProgressHUD pd;
-    AlertMessages messages;
-
-    static ArrayList<OrderedInfo> listOrdered = new ArrayList<>();
-
-    SimpleDateFormat dateFormat;
-
-    boolean isOpened;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -149,7 +172,7 @@ public class MenuFoodListFragment extends Fragment {
 
         checkIsOpened();
 
-        menuAdapter = new MenuAdapter(getActivity(), Utils.getColor(business.bg_color), Utils.getColor(business.text_color));
+        menuAdapter = new MenuAdapter(getActivity(), Utils.getColor(business.getBgColor()), Utils.getColor(business.getTextColor()));
 
         initHeader();
 
@@ -192,11 +215,7 @@ public class MenuFoodListFragment extends Fragment {
 
         try {
 
-            if (!Utils.isTimeBetweenTwoTime(business.opening_time, business.closing_time, currentTime)) {
-                isOpened = false;
-            } else {
-                isOpened = true;
-            }
+            isOpened = Utils.isTimeBetweenTwoTime(business.getOpeningTime(), business.getClosingTime(), currentTime);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -212,17 +231,20 @@ public class MenuFoodListFragment extends Fragment {
 
         RequestParams params = new RequestParams();
         params.put("cmd", "products_for_business");
-        params.put("businessID", business.businessID);
+        params.put("businessID", business.getBusinessID());
         params.put("consumer_id", PreferenceManager.getUserId()/*"1234570319"*/);
-        params.put("sub_businesses", business.sub_businesses);
+        params.put("sub_businesses", business.getSubBusinesses());
 
-        client.get(getActivity(), URLs.BUSINESS_MENU, params, new AsyncHttpResponseHandler() {
+
+        Debug.d("Okhttp", "API: " + UrlGenerator.INSTANCE.getMainUrl() + " " + params.toString());
+
+        client.get(getActivity(), UrlGenerator.INSTANCE.getMainUrl(), params, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
 
                 try {
-
-                    String content = new String(responseBody, "UTF-8");
+                    String content = new String(responseBody, StandardCharsets.UTF_8);
+                    Debug.d("Okhttp", "Success Response: " + content);
 
                     JSONObject json = new JSONObject(content);
 
@@ -285,8 +307,6 @@ public class MenuFoodListFragment extends Fragment {
 
                     menuAdapter.addAll(listBusinessMenu);
 
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -308,6 +328,11 @@ public class MenuFoodListFragment extends Fragment {
                     pd = null;
                 }
 
+                try {
+                    String content = new String(responseBody, StandardCharsets.UTF_8);
+                    Debug.d("Okhttp", "Failure Response: " + content);
+                } catch (Exception e) {
+                }
             }
         });
 
@@ -315,12 +340,12 @@ public class MenuFoodListFragment extends Fragment {
 
     public void initHeader() {
 
-        tvToolbarLeft = (TextView) view.findViewById(R.id.tvToolbarLeft);
-        llToolbarTitle = (LinearLayout) view.findViewById(R.id.llToolbarTitle);
-        tvToolbarTitle = (TextView) view.findViewById(R.id.tvToolbarTitle);
-        tvToolbarRight = (TextView) view.findViewById(R.id.tvToolbarRight);
-        tvOrderBadge = (TextView) view.findViewById(R.id.tvOrderBadge);
-        ivTitleDropDown = (ImageView) view.findViewById(R.id.ivTitleDropDown);
+        tvToolbarLeft = view.findViewById(R.id.tvToolbarLeft);
+        llToolbarTitle = view.findViewById(R.id.llToolbarTitle);
+        tvToolbarTitle = view.findViewById(R.id.tvToolbarTitle);
+        tvToolbarRight = view.findViewById(R.id.tvToolbarRight);
+        tvOrderBadge = view.findViewById(R.id.tvOrderBadge);
+        ivTitleDropDown = view.findViewById(R.id.ivTitleDropDown);
 
         tvToolbarLeft.setVisibility(View.VISIBLE);
         tvToolbarLeft.setText("Back");
@@ -353,46 +378,61 @@ public class MenuFoodListFragment extends Fragment {
             }
         });
 
-        tvToolbarTitle.setText(business.short_name + " Menu");
+        tvToolbarTitle.setText(business.getShortName() + " Menu");
 
         tvToolbarRight.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (isOpened) {
-                    OrderFragment orderFragment = new OrderFragment();
-                    Bundle bundle = new Bundle();
-                    bundle.putSerializable("ORDERED_LIST", (Serializable) listOrdered);
-                    orderFragment.setArguments(bundle);
-                    ((HomeActivity) getActivity()).addFragment(orderFragment, R.id.frame_home);
+                if (isCorporateOrder()) {
+                    showCorpOrderFlow();
                 } else {
-
-                    android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(getActivity());
-
-                    builder.setTitle("Sorry!");
-                    builder.setMessage("We are not able to deliver now,\nplease Order at " + Utils.convertTime("HH:mm:ss", "hh:mm a", business.opening_time)).setCancelable(false)
-                            .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-
-                                }
-                            });
-
-                    android.app.AlertDialog alert = builder.create();
-                    alert.setCancelable(false);
-                    alert.show();
-
+                    showIndiOrderFlow();
                 }
+
             }
         });
     }
 
+    private void showCorpOrderFlow() {
+        OrderFragment orderFragment = new OrderFragment();
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("ORDERED_LIST", listOrdered);
+        orderFragment.setArguments(bundle);
+        ((HomeActivity) getActivity()).addFragment(orderFragment, R.id.frame_home);
+    }
+
+    private void showIndiOrderFlow() {
+        if (isOpened) {
+            OrderFragment orderFragment = new OrderFragment();
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("ORDERED_LIST", listOrdered);
+            orderFragment.setArguments(bundle);
+            ((HomeActivity) getActivity()).addFragment(orderFragment, R.id.frame_home);
+        } else {
+            android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(getActivity());
+
+            builder.setTitle("Sorry!");
+            builder.setMessage("We are not able to deliver now,\nplease Order at " + Utils.convertTime("HH:mm:ss", "hh:mm a", business.getOpeningTime())).setCancelable(false)
+                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+
+                        }
+                    });
+
+            android.app.AlertDialog alert = builder.create();
+            alert.setCancelable(false);
+            alert.show();
+        }
+    }
+
     private void initViews() {
 
-        lvMenu = (ListView) view.findViewById(R.id.lvMenu);
+        lvMenu = view.findViewById(R.id.lvMenu);
         lvMenu.setAdapter(menuAdapter);
 
-        lvOrderFood = (ExpandableStickyListHeadersListView) view.findViewById(R.id.lvOrderFood);
+        lvOrderFood = view.findViewById(R.id.lvOrderFood);
 
-        adapter = new OrderStickyListViewAdapter(getActivity(), business,new OrderStickyListViewAdapter.AddOrder() {
+        adapter = new OrderStickyListViewAdapter(getActivity(), business, new OrderStickyListViewAdapter.AddOrder() {
             @Override
             public void addOrder(OrderInfo orderInfo) {
 
@@ -474,28 +514,28 @@ public class MenuFoodListFragment extends Fragment {
         final AlertDialog alertDialog = dialogBuilder.create();
         alertDialog.show();
 
-        LinearLayout llHeaderView = (LinearLayout) dialogView.findViewById(R.id.llHeaderView);
+        LinearLayout llHeaderView = dialogView.findViewById(R.id.llHeaderView);
 
-        ((TextView) dialogView.findViewById(R.id.tvHeader)).setBackgroundColor(Color.parseColor(Utils.getColor(business.bg_color)));
-        final TextView tvOption1 = (TextView) dialogView.findViewById(R.id.tvOption1);
-        tvOption1.setBackgroundColor(Color.parseColor(Utils.getColor(business.bg_color)));
-        final ListView lvOption1 = (ListView) dialogView.findViewById(R.id.lvOption1);
+        dialogView.findViewById(R.id.tvHeader).setBackgroundColor(Color.parseColor(Utils.getColor(business.getBgColor())));
+        final TextView tvOption1 = dialogView.findViewById(R.id.tvOption1);
+        tvOption1.setBackgroundColor(Color.parseColor(Utils.getColor(business.getBgColor())));
+        final ListView lvOption1 = dialogView.findViewById(R.id.lvOption1);
         final OptionDataAdapter optionDataAdapter1 = new OptionDataAdapter(getActivity());
         lvOption1.setAdapter(optionDataAdapter1);
-        final TextView tvOption2 = (TextView) dialogView.findViewById(R.id.tvOption2);
+        final TextView tvOption2 = dialogView.findViewById(R.id.tvOption2);
         tvOption2.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.gray));
-        final ListView lvOption2 = (ListView) dialogView.findViewById(R.id.lvOption2);
+        final ListView lvOption2 = dialogView.findViewById(R.id.lvOption2);
         final OptionDataAdapter optionDataAdapter2 = new OptionDataAdapter(getActivity());
         lvOption2.setAdapter(optionDataAdapter2);
-        final TextView tvOption3 = (TextView) dialogView.findViewById(R.id.tvOption3);
+        final TextView tvOption3 = dialogView.findViewById(R.id.tvOption3);
         tvOption3.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.gray));
-        final ListView lvOption3 = (ListView) dialogView.findViewById(R.id.lvOption3);
+        final ListView lvOption3 = dialogView.findViewById(R.id.lvOption3);
         final OptionDataAdapter optionDataAdapter3 = new OptionDataAdapter(getActivity());
         lvOption3.setAdapter(optionDataAdapter3);
-        Button btnAddOrder = (Button) dialogView.findViewById(R.id.btnAddOrder);
-        btnAddOrder.setBackgroundColor(Color.parseColor(Utils.getColor(business.bg_color)));
-        Button btnCancel = (Button) dialogView.findViewById(R.id.btnCancel);
-        btnCancel.setBackgroundColor(Color.parseColor(Utils.getColor(business.bg_color)));
+        Button btnAddOrder = dialogView.findViewById(R.id.btnAddOrder);
+        btnAddOrder.setBackgroundColor(Color.parseColor(Utils.getColor(business.getBgColor())));
+        Button btnCancel = dialogView.findViewById(R.id.btnCancel);
+        btnCancel.setBackgroundColor(Color.parseColor(Utils.getColor(business.getBgColor())));
 
         for (int i = 0; i < orderInfo.listOptions.size(); i++) {
 
@@ -533,7 +573,7 @@ public class MenuFoodListFragment extends Fragment {
         }
 
         if (optionDataAdapter1.getCount() > 0) {
-            tvOption1.setBackgroundColor(Color.parseColor(Utils.getColor(business.bg_color)));
+            tvOption1.setBackgroundColor(Color.parseColor(Utils.getColor(business.getBgColor())));
             tvOption2.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.gray));
             tvOption3.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.gray));
 
@@ -542,7 +582,7 @@ public class MenuFoodListFragment extends Fragment {
             lvOption3.setVisibility(View.GONE);
         } else if (optionDataAdapter2.getCount() > 0) {
             tvOption1.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.gray));
-            tvOption2.setBackgroundColor(Color.parseColor(Utils.getColor(business.bg_color)));
+            tvOption2.setBackgroundColor(Color.parseColor(Utils.getColor(business.getBgColor())));
             tvOption3.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.gray));
 
             lvOption1.setVisibility(View.GONE);
@@ -551,7 +591,7 @@ public class MenuFoodListFragment extends Fragment {
         } else if (optionDataAdapter3.getCount() > 0) {
             tvOption1.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.gray));
             tvOption2.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.gray));
-            tvOption3.setBackgroundColor(Color.parseColor(Utils.getColor(business.bg_color)));
+            tvOption3.setBackgroundColor(Color.parseColor(Utils.getColor(business.getBgColor())));
 
             lvOption1.setVisibility(View.GONE);
             lvOption2.setVisibility(View.GONE);
@@ -562,7 +602,7 @@ public class MenuFoodListFragment extends Fragment {
             @Override
             public void onClick(View view) {
 
-                tvOption1.setBackgroundColor(Color.parseColor(Utils.getColor(business.bg_color)));
+                tvOption1.setBackgroundColor(Color.parseColor(Utils.getColor(business.getBgColor())));
                 tvOption2.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.gray));
                 tvOption3.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.gray));
 
@@ -578,7 +618,7 @@ public class MenuFoodListFragment extends Fragment {
             public void onClick(View view) {
 
                 tvOption1.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.gray));
-                tvOption2.setBackgroundColor(Color.parseColor(Utils.getColor(business.bg_color)));
+                tvOption2.setBackgroundColor(Color.parseColor(Utils.getColor(business.getBgColor())));
                 tvOption3.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.gray));
 
                 lvOption1.setVisibility(View.GONE);
@@ -594,7 +634,7 @@ public class MenuFoodListFragment extends Fragment {
 
                 tvOption1.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.gray));
                 tvOption2.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.gray));
-                tvOption3.setBackgroundColor(Color.parseColor(Utils.getColor(business.bg_color)));
+                tvOption3.setBackgroundColor(Color.parseColor(Utils.getColor(business.getBgColor())));
 
                 lvOption1.setVisibility(View.GONE);
                 lvOption2.setVisibility(View.GONE);
@@ -603,7 +643,7 @@ public class MenuFoodListFragment extends Fragment {
             }
         });
 
-        final EditText etNote = (EditText) dialogView.findViewById(R.id.etNote);
+        final EditText etNote = dialogView.findViewById(R.id.etNote);
 
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -701,18 +741,18 @@ public class MenuFoodListFragment extends Fragment {
         View dialogView = inflater.inflate(R.layout.dialog_add_note, null);
         dialogBuilder.setView(dialogView);
 
-        final EditText etNote = (EditText) dialogView.findViewById(R.id.etNote);
+        final EditText etNote = dialogView.findViewById(R.id.etNote);
         final AlertDialog alertDialog = dialogBuilder.create();
         alertDialog.show();
 
-        ((TextView) dialogView.findViewById(R.id.tvCancel)).setOnClickListener(new View.OnClickListener() {
+        dialogView.findViewById(R.id.tvCancel).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 alertDialog.dismiss();
             }
         });
 
-        ((TextView) dialogView.findViewById(R.id.tvOk)).setOnClickListener(new View.OnClickListener() {
+        dialogView.findViewById(R.id.tvOk).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
@@ -726,6 +766,7 @@ public class MenuFoodListFragment extends Fragment {
                 orderedInfo.product_description = orderInfo.short_description;
                 orderedInfo.product_imageurl = orderInfo.pictures;
                 orderedInfo.product_name = orderInfo.name;
+                orderedInfo.product_option = etNote.getText().toString().trim();
                 orderedInfo.price = Double.parseDouble(orderInfo.price);
                 orderedInfo.points = Math.round(orderedInfo.price);
 
@@ -777,22 +818,42 @@ public class MenuFoodListFragment extends Fragment {
         });
     }
 
+    private void checkButtonClick() {
+
+//        Button myButton = (Button) findViewById(R.id.findSelected);
+//        myButton.setOnClickListener(new OnClickListener() {
+//
+//            @Override
+//            public void onClick(View v) {
+//
+//                StringBuffer responseText = new StringBuffer();
+//                responseText.append("The following were selected...\n");
+//
+//                ArrayList<Country> countryList = dataAdapter.countryList;
+//                for(int i=0;i<countryList.size();i++){
+//                    Country country = countryList.get(i);
+//                    if(country.isSelected()){
+//                        responseText.append("\n" + country.getName());
+//                    }
+//                }
+//
+//                Toast.makeText(getApplicationContext(),
+//                        responseText, Toast.LENGTH_LONG).show();
+//
+//            }
+//        });
+
+    }
+
     private class OptionDataAdapter extends BaseAdapter {
 
         public Context context;
-        private ArrayList<Options.OptionData> optionDataList = new ArrayList<>();
         LayoutInflater inflater;
+        private ArrayList<Options.OptionData> optionDataList = new ArrayList<>();
 
         public OptionDataAdapter(Context c) {
             this.context = c;
             inflater = LayoutInflater.from(context);
-        }
-
-        private class ViewHolder {
-
-            TextView optionName;
-            CheckBox chkBox;
-
         }
 
         public void addAll(List<Options.OptionData> list) {
@@ -834,8 +895,8 @@ public class MenuFoodListFragment extends Fragment {
                 convertView = inflater.inflate(R.layout.list_item_option, null);
 
                 holder = new ViewHolder();
-                holder.optionName = (TextView) convertView.findViewById(R.id.optionName);
-                holder.chkBox = (CheckBox) convertView.findViewById(R.id.chkBox);
+                holder.optionName = convertView.findViewById(R.id.optionName);
+                holder.chkBox = convertView.findViewById(R.id.chkBox);
                 convertView.setTag(holder);
 
                 holder.chkBox.setOnClickListener(new View.OnClickListener() {
@@ -863,70 +924,13 @@ public class MenuFoodListFragment extends Fragment {
             return convertView;
 
         }
-    }
 
-    private void checkButtonClick() {
+        private class ViewHolder {
 
-//        Button myButton = (Button) findViewById(R.id.findSelected);
-//        myButton.setOnClickListener(new OnClickListener() {
-//
-//            @Override
-//            public void onClick(View v) {
-//
-//                StringBuffer responseText = new StringBuffer();
-//                responseText.append("The following were selected...\n");
-//
-//                ArrayList<Country> countryList = dataAdapter.countryList;
-//                for(int i=0;i<countryList.size();i++){
-//                    Country country = countryList.get(i);
-//                    if(country.isSelected()){
-//                        responseText.append("\n" + country.getName());
-//                    }
-//                }
-//
-//                Toast.makeText(getApplicationContext(),
-//                        responseText, Toast.LENGTH_LONG).show();
-//
-//            }
-//        });
-
-    }
-
-    public static void updateOrderData(ArrayList<OrderedInfo> list) {
-
-        try {
-
-            listOrdered.clear();
-
-            listOrdered.addAll(list);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        modifyTotalOrders();
-
-        OrderFragment.isOrderChanged = false;
-
-    }
-
-    private static void modifyTotalOrders() {
-
-        int totalQuantity = 0;
-
-        for (int i = 0; i < listOrdered.size(); i++) {
-
-            totalQuantity = totalQuantity + listOrdered.get(i).quantity;
+            TextView optionName;
+            CheckBox chkBox;
 
         }
-
-        if (totalQuantity == 0) {
-            tvOrderBadge.setVisibility(View.GONE);
-        } else {
-            tvOrderBadge.setVisibility(View.VISIBLE);
-            tvOrderBadge.setText("" + totalQuantity);
-        }
-
     }
 
 

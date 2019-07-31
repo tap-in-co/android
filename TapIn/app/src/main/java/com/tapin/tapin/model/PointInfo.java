@@ -34,7 +34,7 @@ public class PointInfo implements Serializable {
     @SerializedName("time_redeemed")
     public String time_redeemed;
 
-     @SerializedName("activity_time")
+    @SerializedName("activity_time")
     public String activity_time;
 
 

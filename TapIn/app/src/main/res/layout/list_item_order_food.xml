@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
@@ -22,10 +23,10 @@
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
                 android:orientation="vertical"
-                android:paddingBottom="5dp"
                 android:paddingLeft="10dp"
+                android:paddingTop="5dp"
                 android:paddingRight="10dp"
-                android:paddingTop="5dp">
+                android:paddingBottom="5dp">
 
                 <ImageView
                     android:id="@+id/ivIncreaseItem"
@@ -57,15 +58,15 @@
                 android:layout_weight="1"
                 android:gravity="center_vertical"
                 android:orientation="vertical"
-                android:paddingBottom="5dp"
-                android:paddingTop="5dp">
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp">
 
                 <TextView
                     android:id="@+id/tvItemName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:maxLines="1"
-                    android:text="Item Name"
+                    tools:text="Item Name"
                     android:textColor="@color/black"
                     android:textSize="18sp"
                     android:textStyle="bold" />
@@ -75,7 +76,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
-                    android:text="Extra Item"
+                    tools:text="Extra Item"
                     android:textColor="@color/black"
                     android:textSize="16sp" />
 
@@ -121,16 +122,20 @@
                 android:layout_gravity="center_vertical"
                 android:ems="3"
                 android:text=""
+                android:gravity="end"
                 android:textColor="@color/black"
                 android:textSize="20sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                tools:text="$ 5.00"/>
 
             <TextView
                 android:id="@+id/tvPoints"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/black"
-                android:visibility="gone" />
+                android:textColor="@color/colorPrimary"
+                android:visibility="gone"
+                tools:text="Earn 4 Points"
+                tools:visibility="visible"/>
 
         </LinearLayout>
 

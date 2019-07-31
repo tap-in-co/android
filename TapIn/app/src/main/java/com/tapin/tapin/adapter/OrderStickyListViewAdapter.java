@@ -11,10 +11,9 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.tapin.tapin.R;
-import com.tapin.tapin.model.Business;
-import com.tapin.tapin.model.BusinessMenu;
 import com.tapin.tapin.model.OrderInfo;
-import com.tapin.tapin.utils.URLs;
+import com.tapin.tapin.model.resturants.Business;
+import com.tapin.tapin.utils.UrlGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,12 +29,6 @@ public class OrderStickyListViewAdapter extends BaseAdapter implements StickyLis
     private Business business;
 
     private AddOrder addOrder;
-
-    public interface AddOrder {
-
-        public void addOrder(OrderInfo orderInfo);
-
-    }
 
     public OrderStickyListViewAdapter(Activity activity, Business b, AddOrder addOrder) {
         this.context = activity;
@@ -80,7 +73,7 @@ public class OrderStickyListViewAdapter extends BaseAdapter implements StickyLis
 
         holder.tvFoodTitle.setText(orderInfo.name);
         holder.tvFoodDescription.setText(orderInfo.short_description);
-        holder.tvPrice.setText(business.curr_symbol + " " + orderInfo.price);
+        holder.tvPrice.setText(business.getCurrSymbol() + " " + orderInfo.price);
 
         float earnPoints = Float.parseFloat(orderInfo.price);
 
@@ -109,7 +102,7 @@ public class OrderStickyListViewAdapter extends BaseAdapter implements StickyLis
 
         if (orderInfo.pictures != null && orderInfo.pictures.length() > 0) {
             holder.ivFood.setVisibility(View.VISIBLE);
-            String imageUrl = URLs.IMAGE_URL1 + orderInfo.businessID + "/products/" + orderInfo.pictures;
+            String imageUrl = UrlGenerator.INSTANCE.getImageBaseApi() + orderInfo.businessID + "/products/" + orderInfo.pictures;
             Glide.with(context).load(imageUrl).centerCrop().placeholder(R.color.gray).into(holder.ivFood);
         } else {
             holder.ivFood.setVisibility(View.GONE);
@@ -121,7 +114,7 @@ public class OrderStickyListViewAdapter extends BaseAdapter implements StickyLis
             holder.ivHeart.setImageResource(R.drawable.ic_heart_unlike);
         }
 
-        String image = URLs.IMAGE_URL_LIVE + orderInfo.product_icon;
+        String image = UrlGenerator.INSTANCE.getMainUrl() + orderInfo.product_icon;
         Glide.with(context).load(image).centerCrop().placeholder(R.mipmap.ic_launcher).into(holder.ivIcon);
 
         holder.ivHeart.setOnClickListener(new View.OnClickListener() {
@@ -184,14 +177,36 @@ public class OrderStickyListViewAdapter extends BaseAdapter implements StickyLis
 
     }
 
+    public void addAll(List<OrderInfo> list) {
+
+        try {
+
+            listOrders.clear();
+
+            listOrders.addAll(list);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        notifyDataSetChanged();
+
+    }
+
+    public interface AddOrder {
+
+        void addOrder(OrderInfo orderInfo);
+
+    }
+
     private class HeaderViewHolder {
 
         private LinearLayout llHeaderView;
         private TextView tvHeader;
 
         public HeaderViewHolder(View view) {
-            llHeaderView = (LinearLayout) view.findViewById(R.id.llHeaderView);
-            tvHeader = (TextView) view.findViewById(R.id.tvHeader);
+            llHeaderView = view.findViewById(R.id.llHeaderView);
+            tvHeader = view.findViewById(R.id.tvHeader);
         }
     }
 
@@ -208,33 +223,17 @@ public class OrderStickyListViewAdapter extends BaseAdapter implements StickyLis
 
         public ViewHolder(View view) {
 
-            ivFood = (ImageView) view.findViewById(R.id.ivFood);
-            ivIcon = (ImageView) view.findViewById(R.id.ivIcon);
-            tvFoodTitle = (TextView) view.findViewById(R.id.tvFoodTitle);
-            ivHeart = (ImageView) view.findViewById(R.id.ivHeart);
-            tvFoodDescription = (TextView) view.findViewById(R.id.tvFoodDescription);
-            tvPrice = (TextView) view.findViewById(R.id.tvPrice);
-            tvEarnPoint = (TextView) view.findViewById(R.id.tvEarnPoint);
-            ivAdd = (ImageView) view.findViewById(R.id.ivAdd);
-            tvOut = (TextView) view.findViewById(R.id.tvOut);
+            ivFood = view.findViewById(R.id.ivFood);
+            ivIcon = view.findViewById(R.id.ivIcon);
+            tvFoodTitle = view.findViewById(R.id.tvFoodTitle);
+            ivHeart = view.findViewById(R.id.ivHeart);
+            tvFoodDescription = view.findViewById(R.id.tvFoodDescription);
+            tvPrice = view.findViewById(R.id.tvPrice);
+            tvEarnPoint = view.findViewById(R.id.tvEarnPoint);
+            ivAdd = view.findViewById(R.id.ivAdd);
+            tvOut = view.findViewById(R.id.tvOut);
 
         }
-    }
-
-    public void addAll(List<OrderInfo> list) {
-
-        try {
-
-            listOrders.clear();
-
-            listOrders.addAll(list);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        notifyDataSetChanged();
-
     }
 
 }

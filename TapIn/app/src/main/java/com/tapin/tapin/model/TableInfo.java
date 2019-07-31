@@ -8,7 +8,7 @@ import java.io.Serializable;
  * Created by Narendra on 5/6/17.
  */
 
-public class TableInfo implements Serializable,Cloneable{
+public class TableInfo implements Serializable, Cloneable {
 
     @SerializedName("delivery_table_id")
     public String delivery_table_id;

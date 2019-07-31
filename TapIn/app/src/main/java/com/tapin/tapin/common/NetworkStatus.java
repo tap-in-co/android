@@ -6,15 +6,9 @@ import android.net.NetworkInfo;
 import android.util.Log;
 
 import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 public class NetworkStatus {
@@ -25,6 +19,38 @@ public class NetworkStatus {
 
     public NetworkStatus(Context context) {
         this.context = context;
+    }
+
+    public static String getResponce(String strUr, String method) {
+
+        try {
+            URL url = new URL(strUr);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setReadTimeout(10000);
+            connection.setConnectTimeout(15000);
+            connection.setRequestMethod(method);
+            connection.setDoInput(true);
+            connection.connect();
+
+            InputStream inputStream = connection.getInputStream();
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+            String line;
+            StringBuffer buffer = new StringBuffer();
+            while ((line = reader.readLine()) != null) {
+                buffer.append(line);
+            }
+
+            Log.v("Server Answer:", buffer.toString());
+
+            return buffer.toString();
+
+        } catch (Exception e) {
+            Log.v("Server Exception:", e.toString());
+        }
+
+        return "";
+
     }
 
     public boolean isOnline() {
@@ -67,38 +93,6 @@ public class NetworkStatus {
             Log.v("Connectivity Exception:", e.toString());
         }
         return connected;
-
-    }
-
-    public static String getResponce(String strUr, String method) {
-
-        try {
-            URL url = new URL(strUr);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setReadTimeout(10000);
-            connection.setConnectTimeout(15000);
-            connection.setRequestMethod(method);
-            connection.setDoInput(true);
-            connection.connect();
-
-            InputStream inputStream = connection.getInputStream();
-
-            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-            String line;
-            StringBuffer buffer = new StringBuffer();
-            while ((line = reader.readLine()) != null) {
-                buffer.append(line);
-            }
-
-            Log.v("Server Answer:", buffer.toString());
-
-            return buffer.toString();
-
-        } catch (Exception e) {
-            Log.v("Server Exception:", e.toString());
-        }
-
-        return "";
 
     }
 

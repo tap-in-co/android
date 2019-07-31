@@ -3,15 +3,28 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="10dp" >
+    android:orientation="horizontal"
+    android:padding="10dp">
 
     <TextView
         android:id="@+id/tvCardDetail"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
+        android:layout_weight="1"
         android:maxLines="1"
         android:textColor="@color/black"
-        android:textSize="18sp" />
+        android:textSize="18sp"
+        tools:text="VISA XXXX....4444" />
 
+    <ImageView
+        android:id="@+id/imgvDefaultCard"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_16sdp"
+        android:layout_marginLeft="@dimen/_16sdp"
+        android:src="@drawable/ic_done_black_24dp"
+        android:tint="@color/light_blue"
+        android:visibility="gone"
+        tools:visibility="visible" />
 </LinearLayout>

@@ -1,23 +1,17 @@
 package com.tapin.tapin.adapter;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Color;
-import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.tapin.tapin.R;
 import com.tapin.tapin.model.BusinessMenu;
-import com.tapin.tapin.model.BusinessType;
 import com.tapin.tapin.utils.Debug;
-
-import org.json.JSONArray;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -87,9 +81,9 @@ public class MenuAdapter extends BaseAdapter {
             holder = new ViewHolder();
             convertView = inflater.inflate(R.layout.list_item_menu, viewGroup, false);
 
-            holder.llMenu = (LinearLayout) convertView.findViewById(R.id.llMenu);
+            holder.llMenu = convertView.findViewById(R.id.llMenu);
 
-            holder.tvMenuType = (TextView) convertView.findViewById(R.id.tvMenuType);
+            holder.tvMenuType = convertView.findViewById(R.id.tvMenuType);
 
             convertView.setTag(holder);
 

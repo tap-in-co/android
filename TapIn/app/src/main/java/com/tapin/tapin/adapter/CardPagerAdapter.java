@@ -1,12 +1,13 @@
 package com.tapin.tapin.adapter;
 
 import android.content.Context;
-import android.support.v4.view.PagerAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import androidx.viewpager.widget.PagerAdapter;
 
 import com.tapin.tapin.R;
 import com.tapin.tapin.model.CardInfo;
@@ -39,7 +40,7 @@ public class CardPagerAdapter extends PagerAdapter {
 
     @Override
     public boolean isViewFromObject(View view, Object object) {
-        return view == ((LinearLayout) object);
+        return view == object;
     }
 
     @Override
@@ -47,8 +48,8 @@ public class CardPagerAdapter extends PagerAdapter {
 
         View itemView = mLayoutInflater.inflate(R.layout.list_item_card_pager, container, false);
 
-        TextView tvCardNumber = (TextView) itemView.findViewById(R.id.tvCardNumber);
-        TextView tvValid = (TextView) itemView.findViewById(R.id.tvValid);
+        TextView tvCardNumber = itemView.findViewById(R.id.tvCardNumber);
+        TextView tvValid = itemView.findViewById(R.id.tvValid);
 
         CardInfo card = listCards.get(position);
 

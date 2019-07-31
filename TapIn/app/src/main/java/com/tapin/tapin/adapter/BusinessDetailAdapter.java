@@ -1,10 +1,8 @@
 package com.tapin.tapin.adapter;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
-import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,8 +12,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.tapin.tapin.R;
-import com.tapin.tapin.activity.HomeActivity;
-import com.tapin.tapin.fragment.MenuFoodListFragment;
 import com.tapin.tapin.model.BusinessType;
 import com.tapin.tapin.utils.AlertMessages;
 import com.tapin.tapin.utils.Debug;
@@ -37,12 +33,6 @@ public class BusinessDetailAdapter extends BaseAdapter {
     int previousOrder = 0;
 
     PreviousOrderClickListener previousOrderClickListener;
-
-    public interface PreviousOrderClickListener {
-
-        public void clicked(String s);
-
-    }
 
     public BusinessDetailAdapter(Context activity, String bg, String text, PreviousOrderClickListener pOrderClickListener) {
 
@@ -88,11 +78,11 @@ public class BusinessDetailAdapter extends BaseAdapter {
             holder = new ViewHolder();
             convertView = inflter.inflate(R.layout.list_item_business_detail, viewGroup, false);
 
-            holder.llDetailContainer = (LinearLayout) convertView.findViewById(R.id.llDetailContainer);
-            holder.ivCategory = (ImageView) convertView.findViewById(R.id.ivCategory);
-            holder.tvBusinessType = (TextView) convertView.findViewById(R.id.tvBusinessType);
-            holder.llPreviousOrder = (LinearLayout) convertView.findViewById(R.id.llPreviousOrder);
-            holder.tvPreviousOrderCount = (TextView) convertView.findViewById(R.id.tvPreviousOrderCount);
+            holder.llDetailContainer = convertView.findViewById(R.id.llDetailContainer);
+            holder.ivCategory = convertView.findViewById(R.id.ivCategory);
+            holder.tvBusinessType = convertView.findViewById(R.id.tvBusinessType);
+            holder.llPreviousOrder = convertView.findViewById(R.id.llPreviousOrder);
+            holder.tvPreviousOrderCount = convertView.findViewById(R.id.tvPreviousOrderCount);
 
             convertView.setTag(holder);
         } else {
@@ -156,20 +146,26 @@ public class BusinessDetailAdapter extends BaseAdapter {
         return resourceId;
     }
 
-    class ViewHolder {
-        LinearLayout llDetailContainer;
-        ImageView ivCategory;
-        TextView tvBusinessType;
-        LinearLayout llPreviousOrder;
-        TextView tvPreviousOrderCount;
-    }
-
     public void setPreviousOrderCount(int pOrder) {
 
         this.previousOrder = pOrder;
 
         notifyDataSetChanged();
 
+    }
+
+    public interface PreviousOrderClickListener {
+
+        void clicked(String s);
+
+    }
+
+    class ViewHolder {
+        LinearLayout llDetailContainer;
+        ImageView ivCategory;
+        TextView tvBusinessType;
+        LinearLayout llPreviousOrder;
+        TextView tvPreviousOrderCount;
     }
 
 }

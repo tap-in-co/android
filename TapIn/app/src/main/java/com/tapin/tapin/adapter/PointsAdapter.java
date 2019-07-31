@@ -17,11 +17,11 @@ import java.util.List;
 
 public class PointsAdapter extends BaseAdapter {
 
+    SimpleDateFormat format = new SimpleDateFormat("d");
     private List<PointInfo> objects = new ArrayList<PointInfo>();
-
     private Context context;
     private LayoutInflater layoutInflater;
-    SimpleDateFormat format = new SimpleDateFormat("d");
+
     public PointsAdapter(Context context) {
         this.context = context;
         this.layoutInflater = LayoutInflater.from(context);
@@ -77,9 +77,9 @@ public class PointsAdapter extends BaseAdapter {
         private TextView tvPoints;
 
         public ViewHolder(View view) {
-            tvDate = (TextView) view.findViewById(R.id.tvDate);
-            tvEarnedPoints = (TextView) view.findViewById(R.id.tvEarnedPoints);
-            tvPoints = (TextView) view.findViewById(R.id.tvPoints);
+            tvDate = view.findViewById(R.id.tvDate);
+            tvEarnedPoints = view.findViewById(R.id.tvEarnedPoints);
+            tvPoints = view.findViewById(R.id.tvPoints);
         }
     }
 }

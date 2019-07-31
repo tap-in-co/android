@@ -5,14 +5,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.tapin.tapin.R;
-import com.tapin.tapin.fragment.OrderFragment;
-import com.tapin.tapin.model.Business;
 import com.tapin.tapin.model.OrderedInfo;
-import com.tapin.tapin.utils.Constant;
+import com.tapin.tapin.model.resturants.Business;
 
 import java.util.ArrayList;
 
@@ -22,13 +19,11 @@ import java.util.ArrayList;
 
 public class FinalOrderSummaryAdapter extends BaseAdapter {
 
-    private ArrayList<OrderedInfo> listOrders = new ArrayList<OrderedInfo>();
-
     Business business;
-
+    private ArrayList<OrderedInfo> listOrders = new ArrayList<OrderedInfo>();
     private LayoutInflater mInflater;
 
-    public FinalOrderSummaryAdapter(Context context,Business b) {
+    public FinalOrderSummaryAdapter(Context context, Business b) {
         mInflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.business = b;
@@ -59,13 +54,13 @@ public class FinalOrderSummaryAdapter extends BaseAdapter {
 
             convertView = mInflater.inflate(R.layout.list_item_final_order, null);
 
-            holder.tvItemCount = (TextView) convertView.findViewById(R.id.tvItemCount);
+            holder.tvItemCount = convertView.findViewById(R.id.tvItemCount);
 
-            holder.tvItemName = (TextView) convertView.findViewById(R.id.tvItemName);
+            holder.tvItemName = convertView.findViewById(R.id.tvItemName);
 
-            holder.tvExtraItem = (TextView) convertView.findViewById(R.id.tvExtraItem);
+            holder.tvExtraItem = convertView.findViewById(R.id.tvExtraItem);
 
-            holder.tvItemPriceTotal = (TextView) convertView.findViewById(R.id.tvItemPriceTotal);
+            holder.tvItemPriceTotal = convertView.findViewById(R.id.tvItemPriceTotal);
 
             convertView.setTag(holder);
 
@@ -85,7 +80,7 @@ public class FinalOrderSummaryAdapter extends BaseAdapter {
 
             holder.tvExtraItem.setText("" + order.product_option);
 
-            holder.tvItemPriceTotal.setText(""+business.curr_symbol+" " + String.format("%.2f", (order.quantity * order.price)));
+            holder.tvItemPriceTotal.setText("" + business.getCurrSymbol() + " " + String.format("%.2f", (order.quantity * order.price)));
 
             if (position == getCount() - 1) {
 
@@ -98,18 +93,6 @@ public class FinalOrderSummaryAdapter extends BaseAdapter {
         }
 
         return convertView;
-    }
-
-    public class ViewHolder {
-
-        TextView tvItemCount;
-
-        TextView tvItemName;
-
-        TextView tvExtraItem;
-
-        TextView tvItemPriceTotal;
-
     }
 
     public void addAll(ArrayList<OrderedInfo> list) {
@@ -125,6 +108,18 @@ public class FinalOrderSummaryAdapter extends BaseAdapter {
         }
 
         notifyDataSetChanged();
+
+    }
+
+    public class ViewHolder {
+
+        TextView tvItemCount;
+
+        TextView tvItemName;
+
+        TextView tvExtraItem;
+
+        TextView tvItemPriceTotal;
 
     }
 

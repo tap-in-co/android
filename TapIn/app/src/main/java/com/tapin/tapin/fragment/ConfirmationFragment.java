@@ -1,30 +1,28 @@
 package com.tapin.tapin.fragment;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentManager;
+
 import com.tapin.tapin.R;
 import com.tapin.tapin.adapter.FinalOrderSummaryAdapter;
-import com.tapin.tapin.model.Business;
 import com.tapin.tapin.model.CardInfo;
 import com.tapin.tapin.model.OrderSummaryInfo;
+import com.tapin.tapin.model.resturants.Business;
 import com.tapin.tapin.utils.Constant;
 import com.tapin.tapin.utils.Utils;
-
-import java.util.Calendar;
 
 /**
  * Created by Narendra on 6/10/17.
  */
 
-public class ConfirmationFragment extends Fragment {
+public class ConfirmationFragment extends BaseFragment {
 
     View view;
 
@@ -85,7 +83,7 @@ public class ConfirmationFragment extends Fragment {
 
         tvOrder.setText("" + orderId);
 
-        tvTotal.setText("" + business.curr_symbol + String.format("%.2f", orderSummaryInfo.total));
+        tvTotal.setText("" + business.getCurrSymbol() + String.format("%.2f", orderSummaryInfo.total));
 
         tvAverageWait.setText(orderSummaryInfo.averageWaitTime);
 
@@ -103,7 +101,7 @@ public class ConfirmationFragment extends Fragment {
 
         ((TextView) view.findViewById(R.id.tvToolbarTitle)).setText(getString(R.string.confirmation));
 
-        TextView tvToolbarLeft = (TextView) view.findViewById(R.id.tvToolbarLeft);
+        TextView tvToolbarLeft = view.findViewById(R.id.tvToolbarLeft);
         tvToolbarLeft.setVisibility(View.VISIBLE);
         tvToolbarLeft.setText("Done");
         tvToolbarLeft.setOnClickListener(new View.OnClickListener() {
@@ -119,17 +117,17 @@ public class ConfirmationFragment extends Fragment {
 
     private void initViews() {
 
-        tvOrderId = (TextView) view.findViewById(R.id.tvOrderId);
+        tvOrderId = view.findViewById(R.id.tvOrderId);
 
-        lvOrders = (ListView) view.findViewById(R.id.lvOrders);
+        lvOrders = view.findViewById(R.id.lvOrders);
         lvOrders.setAdapter(finalOrderSummaryAdapter);
 
-        tvOrder = (TextView) view.findViewById(R.id.tvOrder);
-        tvTotal = (TextView) view.findViewById(R.id.tvTotal);
-        tvCardDetail = (TextView) view.findViewById(R.id.tvCardDetail);
-        tvAverageWait = (TextView) view.findViewById(R.id.tvAverageWait);
-        tvRewardPoints = (TextView) view.findViewById(R.id.tvRewardPoints);
-        tvRedeemedPoints = (TextView) view.findViewById(R.id.tvRedeemedPoints);
+        tvOrder = view.findViewById(R.id.tvOrder);
+        tvTotal = view.findViewById(R.id.tvTotal);
+        tvCardDetail = view.findViewById(R.id.tvCardDetail);
+        tvAverageWait = view.findViewById(R.id.tvAverageWait);
+        tvRewardPoints = view.findViewById(R.id.tvRewardPoints);
+        tvRedeemedPoints = view.findViewById(R.id.tvRedeemedPoints);
 
     }
 }

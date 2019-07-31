@@ -1,9 +1,10 @@
 package com.tapin.tapin.view;
 
 import android.content.Context;
-import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.View;
+
+import androidx.viewpager.widget.ViewPager;
 
 /**
  * Created by Narendra on 6/10/17.

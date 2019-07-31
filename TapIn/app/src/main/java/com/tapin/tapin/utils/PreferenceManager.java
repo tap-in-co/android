@@ -1,97 +1,60 @@
 package com.tapin.tapin.utils;
 
-import android.app.Activity;
 import android.app.Application;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.util.DisplayMetrics;
+import android.util.Log;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.tapin.tapin.R;
+import com.tapin.tapin.model.CorporateDomain;
 import com.tapin.tapin.model.GetPointsResp;
 import com.tapin.tapin.model.UserInfo;
+import com.tapin.tapin.network.Api;
+import com.tapin.tapin.network.Service;
 
-import org.json.JSONObject;
-
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
+import java.net.URLEncoder;
 
 
 public class PreferenceManager extends Application {
-
-    public static SharedPreferences preferences;
-    public static SharedPreferences.Editor prefEditor;
-
-    DisplayMetrics displaymetrics;
-
     public static final String APP_ID = "30301";
     public static final String AUTH_KEY = "HWNLh8WUzCksBJ7";
     public static final String AUTH_SECRET = "ZCE9QcbnMUn9d3U";
     public static final String ACCOUNT_KEY = "ymqyQAPnm7yHxZ62iykW";
+    public static SharedPreferences preferences;
+    public static SharedPreferences.Editor prefEditor;
+    private static PreferenceManager instance;
 
+    private CorporateDomain selectedCorporateDomain = null;
 
-//    public static boolean isTesting = false;
+    // Get The API interface for all the apis
+    private Api api = null;
 
+    // Is it a Corporate Order
+    private boolean isCorporateOrder = false;
+    private String corporateOrderMerchantIds = "";
+
+    @NonNull
+    public static PreferenceManager getInstance() {
+        return instance;
+    }
+
+    public CorporateDomain getSelectedCorporateDomain() {
+        return selectedCorporateDomain;
+    }
+
+    public void setSelectedCorporateDomain(CorporateDomain selectedCorporateDomain) {
+        this.selectedCorporateDomain = selectedCorporateDomain;
+    }
 
     public static String getEmail() {
 
         return preferences.getString("email", "");
-    }
-
-    @Override
-    public void onCreate() {
-
-        super.onCreate();
-        preferences = getSharedPreferences(getString(R.string.app_name), MODE_PRIVATE);
-        prefEditor = preferences.edit();
-
-        prefEditor.commit();
-        instance = this;
-
-    }
-
-    public void onTerminate() {
-        // TODO Auto-generated method stub
-        super.onTerminate();
-    }
-
-    private Activity mCurrentActivity = null;
-
-    public Activity getCurrentActivity() {
-        return mCurrentActivity;
-    }
-
-    public void setCurrentActivity(Activity mCurrentActivity) {
-        this.mCurrentActivity = mCurrentActivity;
-    }
-
-
-    public static boolean isNotification1Hour() {
-        return preferences.getBoolean("hour1", true);
-    }
-
-    public static void setIsNotification1Hour(boolean bool) {
-        prefEditor.putBoolean("hour1", bool);
-        prefEditor.commit();
-    }
-
-    public static boolean isNotification1Day() {
-        return preferences.getBoolean("day1", true);
-    }
-
-    public static void setIsNotification1Day(boolean bool) {
-        prefEditor.putBoolean("day1", bool);
-        prefEditor.commit();
-    }
-
-    public static String getFullName() {
-        return preferences.getString("full_name", "");
-    }
-
-    public static void putFullname(String lname) {
-        prefEditor.putString("full_name", lname);
-        prefEditor.commit();
     }
 
     public static String getUserId() {
@@ -103,47 +66,18 @@ public class PreferenceManager extends Application {
         prefEditor.commit();
     }
 
-
-    public static String getFirstName() {
-        return preferences.getString("first_name", "");
-    }
-
-    public static void putFirstname(String fname) {
-        prefEditor.putString("first_name", fname);
-        prefEditor.commit();
-    }
-
-    public static String getLastName() {
-        return preferences.getString("last_name", "");
-    }
-
-    public static void putLastname(String lname) {
-        prefEditor.putString("last_name", lname);
-        prefEditor.commit();
-    }
-
     public static void putEmail(String email) {
         prefEditor.putString("email", email);
         prefEditor.commit();
     }
 
-    public static String getGender() {
-        return preferences.getString("gender", "");
-    }
-
-    public static void putGender(String gender) {
-        prefEditor.putString("gender", gender);
+    public static void putWorkEmail(String workEmail) {
+        prefEditor.putString("workEmail", workEmail);
         prefEditor.commit();
     }
 
-    public static String getProfilePic() {
-//        return Utils.getProfilePic(PreferenceManager.getUserId());
-        return preferences.getString("profile_pic", "");
-    }
-
-    public static void putProfilePic(String profilePic) {
-        prefEditor.putString("profile_pic", profilePic);
-        prefEditor.commit();
+    public static String getWorkEmail() {
+        return preferences.getString("workEmail", "");
     }
 
     public static void putZipcode(String zipcode) {
@@ -155,56 +89,13 @@ public class PreferenceManager extends Application {
         return preferences.getString("zipcode", "");
     }
 
-    public static String getDegreeType() {
-        return preferences.getString("degree_type", "");
-    }
-
-    public static void putDegreeType(String dtype) {
-        prefEditor.putString("degree_type", dtype);
-
-    }
-
     public static String getPhone() {
         return preferences.getString("phone", "");
     }
 
     public static void putPhone(String phone) {
         prefEditor.putString("phone", phone);
-
     }
-
-    public static String getCreatedDate() {
-        return preferences.getString("created", "");
-    }
-
-    public static void putCreated(String created) {
-        prefEditor.putString("created", created);
-
-    }
-
-    public static int isUserVerified() {
-        return preferences.getInt("is_verified", 0);
-    }
-
-    public static void putIsUserVerified(int isVerified) {
-        prefEditor.putInt("is_verified", isVerified);
-
-    }
-
-    public static String getLastdate() {
-        return preferences.getString("last_date", "");
-    }
-
-    public static boolean isShowSuggestedOrganization() {
-        return preferences.getBoolean("isShowSuggestedOrganization", true);
-    }
-
-
-    public static void putIsShowSuggestedOrganization(boolean bool) {
-        prefEditor.putBoolean("isShowSuggestedOrganization", bool);
-        prefEditor.commit();
-    }
-
 
     public static String getUsername() {
         return preferences.getString("user_name", "");
@@ -212,106 +103,11 @@ public class PreferenceManager extends Application {
 
     public static void putUsername(String uniid) {
         prefEditor.putString("user_name", uniid);
-
-    }
-
-    public static String getTokenType() {
-        return preferences.getString("token_type", "");
-    }
-
-    public static void putTokenType(String uniid) {
-        prefEditor.putString("token_type", uniid);
-
-    }
-
-    public static void putAccessToken(String access_token) {
-        prefEditor.putString("access_token", access_token);
-    }
-
-    public static String getAccessToken() {
-        return preferences.getString("access_token", "");
-    }
-
-    public static void putLastActive(String access_token) {
-        prefEditor.putString("last_active", access_token);
-    }
-
-    public static String getLastActive() {
-        return preferences.getString("last_active", "");
-    }
-
-    public static void putQBLogin(String qb_login) {
-        prefEditor.putString("qb_login", qb_login);
-        prefEditor.commit();
-    }
-
-    public static String getQBId() {
-        return preferences.getString("qb_id", "");
-    }
-
-    public static void putQBId(String qb_password) {
-        prefEditor.putString("qb_id", qb_password);
-        prefEditor.commit();
-    }
-
-    public static String getQBLogin() {
-        return preferences.getString("qb_login", "");
-    }
-
-    public static void putQBPassword(String qb_password) {
-        prefEditor.putString("qb_password", qb_password);
-        prefEditor.commit();
-    }
-
-    public static String getQBPassword() {
-        return preferences.getString("qb_password", "");
-    }
-
-    public static void putRating(String rating) {
-        prefEditor.putString("rating", rating);
-    }
-
-    public static String getRating() {
-        return preferences.getString("rating", "");
-    }
-
-    public static void putCity(String city) {
-        prefEditor.putString("city", city);
-    }
-
-    public static String getCity() {
-        return preferences.getString("city", "");
-    }
-
-    public static void putState(String state) {
-        prefEditor.putString("state", state);
-        prefEditor.commit();
-    }
-
-    public static String getState() {
-        return preferences.getString("state", "");
-    }
-
-    public static String getCountry() {
-        return preferences.getString("country", "");
-    }
-
-    public static void putCountry(String country) {
-        prefEditor.putString("country", country);
-        prefEditor.commit();
-    }
-
-    public static String getBirthday() {
-        return preferences.getString("birthday", "");
     }
 
     public static void putBirthday(String birthday) {
         prefEditor.putString("birthday", birthday);
         prefEditor.commit();
-    }
-
-    public static String getAgeGroup() {
-        return preferences.getString("age_group", "");
     }
 
     public static void putAgeGroup(String age_group) {
@@ -320,17 +116,8 @@ public class PreferenceManager extends Application {
         prefEditor.commit();
     }
 
-    public static String getDescription() {
-        return preferences.getString("description", "");
-    }
-
     public static void putDescription(String description) {
         prefEditor.putString("description", description);
-        prefEditor.commit();
-    }
-
-    public static void putRegId(String regId) {
-        prefEditor.putString("regId", regId);
         prefEditor.commit();
     }
 
@@ -344,16 +131,6 @@ public class PreferenceManager extends Application {
         prefEditor.commit();
     }
 
-    public static String getSavedLocation() {
-        return preferences.getString("location", "");
-    }
-
-    public static void putSavedLocation(String location) {
-
-        prefEditor.putString("location", location);
-        prefEditor.commit();
-    }
-
     public static boolean getIsSubmitRestaurent() {
         return preferences.getBoolean("submit_restaurent", false);
     }
@@ -364,19 +141,10 @@ public class PreferenceManager extends Application {
         prefEditor.commit();
     }
 
-    public static String getSavedLocationLongitude() {
-        return preferences.getString("location_longitude", "");
-    }
-
-    public static void putSavedLocationLongitude(String location_longitude) {
-
-        prefEditor.putString("location_longitude", location_longitude);
-        prefEditor.commit();
-    }
-
-
-    public static String getRegId() {
-        return preferences.getString("regId", "");
+    public static String getWorkEmailDomain() {
+        String email = preferences.getString("workEmail", "");
+        String fullDomain = email.substring(email.indexOf("@") + 1);
+        return fullDomain.substring(0, fullDomain.indexOf("."));
     }
 
     public static void setUserData(UserInfo userInfo) {
@@ -390,11 +158,21 @@ public class PreferenceManager extends Application {
         if (Utils.isNotEmpty(userInfo.uid)) {
             putUserId(userInfo.uid);
         }
+
+        if (Utils.isNotEmpty(userInfo.email2)) {
+            putWorkEmail(userInfo.email2);
+        }
+
         if (Utils.isNotEmpty(userInfo.age_group))
             putAgeGroup(userInfo.age_group);
 
-        putBirthday(userInfo.dob);
-        putDescription(userInfo.qrcode_file);
+        if (Utils.isNotEmpty(userInfo.dob)) {
+            putBirthday(userInfo.dob);
+        }
+
+        if (Utils.isNotEmpty(userInfo.qrcode_file)) {
+            putDescription(userInfo.qrcode_file);
+        }
 
         if (Utils.isNotEmpty(userInfo.sms_no))
             putPhone(userInfo.sms_no);
@@ -402,30 +180,22 @@ public class PreferenceManager extends Application {
         if (Utils.isNotEmpty(userInfo.zipcode))
             putZipcode(userInfo.zipcode);
 
-        prefEditor.putString("userInfo", new Gson().toJson(userInfo).toString());
+        prefEditor.putString("userInfo", new Gson().toJson(userInfo));
 
         prefEditor.commit();
 
     }
 
     public static void saveCardData(String json) {
-
         prefEditor.putString("CARD_DATA", json);
         prefEditor.commit();
-
     }
 
-    public static String getCardData() {
-
-        return preferences.getString("CARD_DATA", null);
-
-    }
-
+    @Nullable
     public static UserInfo getUserInfo() {
         UserInfo userInfo = null;
         String content = preferences.getString("userInfo", null);
-        if (Utils.isEmpty(content))
-            return userInfo;
+
         try {
             Type type = new TypeToken<UserInfo>() {
             }.getType();
@@ -434,24 +204,19 @@ public class PreferenceManager extends Application {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         return userInfo;
     }
 
-
     public static void putPointsData(GetPointsResp getPointsResp) {
-
         if (getPointsResp != null) {
-
-            prefEditor.putString("PointsData", new Gson().toJson(getPointsResp).toString());
+            prefEditor.putString("PointsData", new Gson().toJson(getPointsResp));
             prefEditor.commit();
 
         }
-
-
     }
 
     public static GetPointsResp getPointsData() {
-
         GetPointsResp userInfo = null;
         String content = preferences.getString("PointsData", "");
         if (Utils.isEmpty(content))
@@ -468,7 +233,6 @@ public class PreferenceManager extends Application {
 
     }
 
-
     public static void resetAll() {
 
         prefEditor.clear();
@@ -476,19 +240,42 @@ public class PreferenceManager extends Application {
 
     }
 
-    private static PreferenceManager instance;
+    @Override
+    public void onCreate() {
+        super.onCreate();
 
-    public static PreferenceManager getInstance() {
-        return instance;
+        api = new Service().getClient().create(Api.class);
+
+        preferences = getSharedPreferences(getString(R.string.app_name), MODE_PRIVATE);
+        prefEditor = preferences.edit();
+
+        prefEditor.commit();
+        instance = this;
     }
 
-    public int getAppVersion() {
+    @NonNull
+    public Api getApi() {
+        return api;
+    }
+
+    public boolean isCorporateOrder() {
+        return isCorporateOrder;
+    }
+
+    public void setCorporateOrder(boolean corporateOrder) {
+        isCorporateOrder = corporateOrder;
+    }
+
+    public String getCorporateOrderMerchantIds() {
+        return corporateOrderMerchantIds;
+    }
+
+    public void setCorporateOrderMerchantIds(String corporateOrderMerchantId) {
         try {
-            PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
-            return packageInfo.versionCode;
-        } catch (PackageManager.NameNotFoundException e) {
-            // should never happen
-            throw new RuntimeException("Could not get package name: " + e);
+            corporateOrderMerchantIds = URLEncoder.encode(corporateOrderMerchantId, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            corporateOrderMerchantIds = "";
         }
+        Log.d("Hello", corporateOrderMerchantIds);
     }
 }

@@ -1,9 +1,10 @@
 <resources>
     <string name="app_name">TapIn</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="email">Email</string>
+    <string name="work_email">Work Email (Optional for Individual services)</string>
+    <string name="work_email_hint">Work Email</string>
     <string name="zip_code">Zip code</string>
     <string name="nick_name">Nickname</string>
     <string name="sms_number">SMS Number</string>
@@ -17,6 +18,7 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="cancel">Cancel</string>
+    <string name="done">Done</string>
 
     <string name="action_settings">Settings</string>
 
@@ -26,59 +28,58 @@
 
     <string-array name="countries">
 
-    <item>Afghanistan</item>
-    <item>Albania</item>
-    <item>Algeria</item>
+        <item>Afghanistan</item>
+        <item>Albania</item>
+        <item>Algeria</item>
 
 
-    <item>Bahamas</item>
-    <item>Bahrain</item>
-    <item>Bangladesh</item>
-    <item>Barbados</item>
-    <item>Belarus</item>
+        <item>Bahamas</item>
+        <item>Bahrain</item>
+        <item>Bangladesh</item>
+        <item>Barbados</item>
+        <item>Belarus</item>
 
 
+        <item>Cambodia</item>
+        <item>Cameroon</item>
+        <item>Canada</item>
+        <item>Cape Verde</item>
 
-    <item>Cambodia</item>
-    <item>Cameroon</item>
-    <item>Canada</item>
-    <item>Cape Verde</item>
+        <item>Czech Republic</item>
 
-    <item>Czech Republic</item>
+        <item>Denmark</item>
+        <item>Djibouti</item>
+        <item>Dominica</item>
+        <item>Dominican Republic</item>
 
-    <item>Denmark</item>
-    <item>Djibouti</item>
-    <item>Dominica</item>
-    <item>Dominican Republic</item>
+        <item>Ecuador</item>
+        <item>Egypt</item>
+        <item>El Salvador</item>
 
-    <item>Ecuador</item>
-    <item>Egypt</item>
-    <item>El Salvador</item>
+        <item>Fiji</item>
+        <item>Finland</item>
+        <item>France</item>
 
-    <item>Fiji</item>
-    <item>Finland</item>
-    <item>France</item>
-
-    <item>Gabon</item>
-    <item>Gambia, The</item>
-    <item>Georgia</item>
-    <item>Ghana</item>
-    <item>Greece</item>
-
-
-    <item>Haiti</item>
-    <item>Holy See</item>
-    <item>Honduras</item>
+        <item>Gabon</item>
+        <item>Gambia, The</item>
+        <item>Georgia</item>
+        <item>Ghana</item>
+        <item>Greece</item>
 
 
-    <item>Iceland</item>
-    <item>India</item>
-    <item>Indonesia</item>
+        <item>Haiti</item>
+        <item>Holy See</item>
+        <item>Honduras</item>
 
 
-    <item>Jamaica</item>
-    <item>Japan</item>
-    <item>Jordan</item>
+        <item>Iceland</item>
+        <item>India</item>
+        <item>Indonesia</item>
+
+
+        <item>Jamaica</item>
+        <item>Japan</item>
+        <item>Jordan</item>
     </string-array>
 
     <!--DASHBOARD-->
@@ -97,4 +98,10 @@
         <item>@string/points</item>
     </string-array>
 
+    <string name="save_and_back">Save &amp; back</string>
+
+    <string name="no_work_email">There is not work email in your profile so we cannot determine your corporation.</string>
+    <string name="please_update_your_work_email">We are taking you to the profile page. Please update you profile info and work email. Then come back to this page.</string>
+    <string name="join_tap_in_text_with_email">Based on your work email, your company has not joined our lunch service. Request service at info@Tap-in.com.</string>
+    <string name="delivery_location">Delivery location?</string>
 </resources>

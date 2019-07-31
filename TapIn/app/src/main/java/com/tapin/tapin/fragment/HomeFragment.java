@@ -6,42 +6,43 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.LogInterface;
 import com.loopj.android.http.RequestParams;
 import com.tapin.tapin.R;
 import com.tapin.tapin.adapter.BusinessAdpater;
 import com.tapin.tapin.common.GPSTracker;
-import com.tapin.tapin.model.Business;
 import com.tapin.tapin.model.BusinessInfo;
+import com.tapin.tapin.model.resturants.Business;
 import com.tapin.tapin.utils.AlertMessages;
 import com.tapin.tapin.utils.Constant;
+import com.tapin.tapin.utils.Debug;
 import com.tapin.tapin.utils.ProgressHUD;
-import com.tapin.tapin.utils.URLs;
+import com.tapin.tapin.utils.UrlGenerator;
 import com.tapin.tapin.utils.Utils;
 
+import org.jetbrains.annotations.Nullable;
+
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -51,16 +52,29 @@ import cz.msebera.android.httpclient.Header;
 import static android.content.Context.LOCATION_SERVICE;
 
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends BaseFragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
+    Context context;
+    BusinessInfo businessInfo;
+    ArrayList<Business> businesses = new ArrayList<>();
+    BusinessAdpater businessAdpater;
+    RecyclerView recyclerViewBusiness;
+    LinearLayoutManager mLayoutManager;
+    Calendar calendar;
+    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
+    EditText etSearch;
+    View view;
+    ProgressHUD pd;
+    AlertMessages messages;
+    double currentLat;
+    double currentLng;
+    boolean isGPSSetting = false;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-
 
     public HomeFragment() {
         // Required empty public constructor
@@ -93,23 +107,6 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    Context context;
-
-    BusinessInfo businessInfo;
-    ArrayList<Business> businesses = new ArrayList<>();
-    BusinessAdpater businessAdpater;
-
-    RecyclerView recyclerViewBusiness;
-    LinearLayoutManager mLayoutManager;
-    Calendar calendar;
-    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
-
-    EditText etSearch;
-    View view;
-
-    ProgressHUD pd;
-    AlertMessages messages;
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -124,7 +121,7 @@ public class HomeFragment extends Fragment {
 
         // list data
         calendar = Calendar.getInstance();
-        recyclerViewBusiness = (RecyclerView) view.findViewById(R.id.recyclerViewBusiness);
+        recyclerViewBusiness = view.findViewById(R.id.recyclerViewBusiness);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         recyclerViewBusiness.setLayoutManager(mLayoutManager);
         recyclerViewBusiness.setItemAnimator(new DefaultItemAnimator());
@@ -139,7 +136,7 @@ public class HomeFragment extends Fragment {
         }
 
         // search filter
-        etSearch = (EditText) view.findViewById(R.id.etSearch);
+        etSearch = view.findViewById(R.id.etSearch);
         etSearch.setActivated(false);
         etSearch.addTextChangedListener(new TextWatcher() {
             @Override
@@ -165,15 +162,6 @@ public class HomeFragment extends Fragment {
 
             }
         });
-
-        if (Utils.isInternetConnected(getActivity())) {
-
-            pd = ProgressHUD.show(getActivity(), getActivity().getResources().getString(R.string.please_wait), true, false);
-            getData();
-
-        } else {
-            messages.showErrorInConnection();
-        }
 
         return view;
     }
@@ -202,8 +190,17 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    double currentLat;
-    double currentLng;
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        if (Utils.isInternetConnected(getActivity())) {
+            getData();
+
+        } else {
+            messages.showErrorInConnection();
+        }
+    }
 
     private void getCurrentLocation() {
 
@@ -225,8 +222,6 @@ public class HomeFragment extends Fragment {
         }
 
     }
-
-    boolean isGPSSetting = false;
 
     /**
      * Function to show settings alert dialog
@@ -261,24 +256,28 @@ public class HomeFragment extends Fragment {
     }
 
     private void getData() {
+        pd = ProgressHUD.show(getActivity(), getActivity().getResources().getString(R.string.please_wait), true, false);
 
         AsyncHttpClient client = new AsyncHttpClient();
         client.setTimeout(Constant.TIMEOUT);
+        client.setLoggingEnabled(true);
+        client.setLoggingLevel(LogInterface.DEBUG);
 
-        RequestParams params = new RequestParams();
+        final RequestParams params = new RequestParams();
+        final String url = UrlGenerator.INSTANCE.getRestaurantsApi(isCorporateOrder(), getCorporateOrderMerchantIds());
+        Debug.d("Okhttp", "API: " + url);
 
-        client.get(getActivity(), URLs.GET_HOME_DATA, params, new AsyncHttpResponseHandler() {
+        client.get(getActivity(), url, params, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
 
                 try {
-
-                    String content = new String(responseBody, "UTF-8");
-                    Log.e("RES_ALL_HOTEL", "" + content);
+                    String content = new String(responseBody, StandardCharsets.UTF_8);
+                    Debug.d("Okhttp", "Success Response: " + content);
 
                     businessInfo = new Gson().fromJson(content, BusinessInfo.class);
 
-                    businessAdpater.addAllBusiness(businessInfo.listBusinesses);
+                    businessAdpater.addAllBusiness(businessInfo.getListBusinesses());
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -299,6 +298,12 @@ public class HomeFragment extends Fragment {
                     pd = null;
                 }
 
+                try {
+                    String content = new String(responseBody, StandardCharsets.UTF_8);
+                    Debug.d("Okhttp", "Failure Response: " + content);
+                } catch (Exception e) {
+
+                }
             }
         });
 
@@ -306,13 +311,13 @@ public class HomeFragment extends Fragment {
 
     public void initHeader() {
 
-        Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
+        Toolbar toolbar = view.findViewById(R.id.toolbar);
 
         toolbar.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.white));
 
-        ((TextView) view.findViewById(R.id.tvToolbarTitle)).setVisibility(View.GONE);
+        view.findViewById(R.id.tvToolbarTitle).setVisibility(View.GONE);
 
-        ImageView ivToolbarLogo = (ImageView) view.findViewById(R.id.ivToolbarLogo);
+        ImageView ivToolbarLogo = view.findViewById(R.id.ivToolbarLogo);
         ivToolbarLogo.setVisibility(View.VISIBLE);
 
     }

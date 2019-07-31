@@ -2,15 +2,16 @@ package com.tapin.tapin.adapter;
 
 import android.content.Context;
 import android.os.Parcelable;
-import android.support.v4.view.PagerAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import androidx.viewpager.widget.PagerAdapter;
+
 import com.bumptech.glide.Glide;
 import com.tapin.tapin.R;
-import com.tapin.tapin.utils.URLs;
+import com.tapin.tapin.utils.UrlGenerator;
 
 import java.util.List;
 
@@ -22,9 +23,9 @@ public class SlidingImage_Adapter extends PagerAdapter {
     private Context context;
     private String businessID;
 
-    public SlidingImage_Adapter(Context context, String businessID,List<String> IMAGES) {
+    public SlidingImage_Adapter(Context context, String businessID, List<String> IMAGES) {
         this.context = context;
-        this.businessID=businessID;
+        this.businessID = businessID;
         this.IMAGES = IMAGES;
         inflater = LayoutInflater.from(context);
     }
@@ -44,12 +45,12 @@ public class SlidingImage_Adapter extends PagerAdapter {
         View imageLayout = inflater.inflate(R.layout.list_item_image_slider, view, false);
 
         assert imageLayout != null;
-        final ImageView imageView = (ImageView) imageLayout
+        final ImageView imageView = imageLayout
                 .findViewById(R.id.image);
 
 
-        String URL=URLs.IMAGE_URL1 +businessID+"/"+ IMAGES.get(position);
-       // Debug.e("view pager at"+position,URL);
+        String URL = UrlGenerator.INSTANCE.getImageBaseApi() + businessID + "/" + IMAGES.get(position);
+        // Debug.e("view pager at"+position,URL);
         Glide.with(context).load(URL).placeholder(R.color.gray).into(imageView);
 
         view.addView(imageLayout, 0);

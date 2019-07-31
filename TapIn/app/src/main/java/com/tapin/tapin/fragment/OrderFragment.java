@@ -2,32 +2,27 @@ package com.tapin.tapin.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.design.widget.BottomNavigationView;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.tapin.tapin.R;
 import com.tapin.tapin.activity.HomeActivity;
-import com.tapin.tapin.model.Business;
-import com.tapin.tapin.model.OrderInfo;
+import com.tapin.tapin.model.OrderSummaryInfo;
 import com.tapin.tapin.model.OrderedInfo;
+import com.tapin.tapin.model.resturants.Business;
 import com.tapin.tapin.utils.AlertMessages;
 import com.tapin.tapin.utils.Constant;
 import com.tapin.tapin.utils.PreferenceManager;
 import com.tapin.tapin.utils.ProgressHUD;
 import com.tapin.tapin.utils.Utils;
 
-import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -38,16 +33,29 @@ import java.util.Date;
  * Created by Narendra on 4/25/17.
  */
 
-public class OrderFragment extends Fragment {
+public class OrderFragment extends BaseFragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
+    public static boolean isOrderChanged = false;
+    View view;
+    TextView tvToolbarLeft;
+    TextView tvToolbarTitle;
+    TextView tvHotelName;
+    ListView lvOrders;
+    TextView tvItemPriceTotal;
+    TextView tvPoints;
+    Button btnContinue;
+    ArrayList<OrderedInfo> listOrdered = new ArrayList<>();
+    OrderAdapter orderAdapter;
+    Business business;
+    ProgressHUD pd;
+    AlertMessages messages;
+    String currentTime;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-
 
     public OrderFragment() {
         // Required empty public constructor
@@ -80,28 +88,6 @@ public class OrderFragment extends Fragment {
         }
     }
 
-    View view;
-    TextView tvToolbarLeft;
-    TextView tvToolbarTitle;
-
-    TextView tvHotelName;
-    ListView lvOrders;
-    TextView tvItemPriceTotal;
-    TextView tvPoints;
-    Button btnContinue;
-
-    ArrayList<OrderedInfo> listOrdered = new ArrayList<>();
-    OrderAdapter orderAdapter;
-
-    Business business;
-
-    ProgressHUD pd;
-    AlertMessages messages;
-
-    public static boolean isOrderChanged = false;
-
-    String currentTime;
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -122,7 +108,7 @@ public class OrderFragment extends Fragment {
 
         initViews();
 
-        tvHotelName.setText("" + business.name);
+        tvHotelName.setText("" + business.getName());
 
         orderAdapter.addAll(listOrdered);
 
@@ -133,15 +119,15 @@ public class OrderFragment extends Fragment {
         Log.e("CURRENT_TIME", "" + currentTime);
 
         try {
-            if (!Utils.isTimeBetweenTwoTime(business.opening_time, business.closing_time, currentTime)) {
+            if (!Utils.isTimeBetweenTwoTime(business.getOpeningTime(), business.getClosingTime(), currentTime)) {
 
                 try {
 
                     SimpleDateFormat dFormat = new SimpleDateFormat("hh:mm a");
-                    Date date = new SimpleDateFormat("HH:mm:ss").parse(business.opening_time);
+                    Date date = new SimpleDateFormat("HH:mm:ss").parse(business.getOpeningTime());
                     String openingTime = dFormat.format(date);
 
-                    String title = business.name + " is closed now!";
+                    String title = business.getName() + " is closed now!";
 
                     String message1 = "You may add items to your cart.\nBut if you pay, your order will be ready after the opening time (" + openingTime + ").";
 
@@ -155,7 +141,7 @@ public class OrderFragment extends Fragment {
                     e.printStackTrace();
                 }
             }
-        } catch (ParseException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -164,11 +150,11 @@ public class OrderFragment extends Fragment {
 
     private void initViews() {
 
-        tvHotelName = (TextView) view.findViewById(R.id.tvHotelName);
-        lvOrders = (ListView) view.findViewById(R.id.lvOrders);
+        tvHotelName = view.findViewById(R.id.tvHotelName);
+        lvOrders = view.findViewById(R.id.lvOrders);
         lvOrders.setAdapter(orderAdapter);
 
-        btnContinue = (Button) view.findViewById(R.id.btnContinue);
+        btnContinue = view.findViewById(R.id.btnContinue);
         btnContinue.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -185,32 +171,30 @@ public class OrderFragment extends Fragment {
                         public void clickedButtonText(String s) {
 
 //                            ((BottomNavigationView) getActivity().findViewById(R.id.bottom_navigation)).getMenu().performIdentifierAction(R.id.action_profile,0);
-                            ((LinearLayout) getActivity().findViewById(R.id.llProfile)).performClick();
+                            getActivity().findViewById(R.id.llProfile).performClick();
 
                         }
                     });
 
                 } else {
-                    PickupOrderFragment pickupOrderFragment = new PickupOrderFragment();
-                    Bundle bundle = new Bundle();
-                    bundle.putSerializable("ORDERED_LIST", (Serializable) listOrdered);
-                    pickupOrderFragment.setArguments(bundle);
-                    ((HomeActivity) getActivity()).addFragment(pickupOrderFragment, R.id.frame_home);
+                    navigateToNext();
                 }
             }
         });
 
-        ((LinearLayout) view.findViewById(R.id.llItemDesc)).setVisibility(View.GONE);
-        ((LinearLayout) view.findViewById(R.id.llTotal)).setVisibility(View.VISIBLE);
-        tvItemPriceTotal = (TextView) view.findViewById(R.id.tvItemPriceTotal);
-        tvPoints = (TextView) view.findViewById(R.id.tvPoints);
+        view.findViewById(R.id.llItemDesc).setVisibility(View.GONE);
+        view.findViewById(R.id.llTotal).setVisibility(View.VISIBLE);
+        tvItemPriceTotal = view.findViewById(R.id.tvItemPriceTotal);
+        tvPoints = view.findViewById(R.id.tvPoints);
+
+        setTotal(listOrdered);
 
     }
 
     public void initHeader() {
 
-        tvToolbarLeft = (TextView) view.findViewById(R.id.tvToolbarLeft);
-        tvToolbarTitle = (TextView) view.findViewById(R.id.tvToolbarTitle);
+        tvToolbarLeft = view.findViewById(R.id.tvToolbarLeft);
+        tvToolbarTitle = view.findViewById(R.id.tvToolbarTitle);
 
         tvToolbarLeft.setVisibility(View.VISIBLE);
         tvToolbarLeft.setText("Back");
@@ -236,10 +220,57 @@ public class OrderFragment extends Fragment {
 
         }
 
-        tvItemPriceTotal.setText(business.curr_symbol + " " + String.format("%.2f", totalValue));
+        tvItemPriceTotal.setText(business.getCurrSymbol() + " " + String.format("%.2f", totalValue));
 
-        tvPoints.setText("Earn " + Math.round(totalValue) + " Pts");
+        final int earnedPoints = (int) Math.round(totalValue);
+        tvPoints.setText("Earn " + earnedPoints + " Pts");
 
+
+        if (earnedPoints > 0) {
+            tvPoints.setVisibility(View.VISIBLE);
+        } else {
+            tvPoints.setVisibility(View.INVISIBLE);
+        }
+
+
+    }
+
+    private void navigateToNext() {
+        if (isCorporateOrder()) {
+            navigateToOrderSummaryForCorporateOrder();
+        } else {
+            navigateToPickupOrderForIndividualOrder();
+        }
+    }
+
+    private void navigateToPickupOrderForIndividualOrder() {
+        PickupOrderFragment pickupOrderFragment = new PickupOrderFragment();
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("ORDERED_LIST", listOrdered);
+        pickupOrderFragment.setArguments(bundle);
+        ((HomeActivity) getActivity()).addFragment(pickupOrderFragment, R.id.frame_home);
+    }
+
+    private void navigateToOrderSummaryForCorporateOrder() {
+        OrderSummaryFragment orderSummaryFragment = new OrderSummaryFragment();
+        orderSummaryFragment.setArguments(getCorpOrderArgumentsBundle());
+        ((HomeActivity) getActivity()).addFragment(orderSummaryFragment, R.id.frame_home);
+    }
+
+    private Bundle getCorpOrderArgumentsBundle() {
+        final Bundle bundle = new Bundle();
+
+        final OrderSummaryInfo orderSummaryInfo = new OrderSummaryInfo();
+        orderSummaryInfo.listOrdered = listOrdered;
+
+        if (isCorporateOrder() && PreferenceManager.getInstance().getSelectedCorporateDomain() != null) {
+            orderSummaryInfo.locationDeliveryTime = PreferenceManager.getInstance().getSelectedCorporateDomain().getDeliveryTime();
+            orderSummaryInfo.deliveryLocation = PreferenceManager.getInstance().getSelectedCorporateDomain().getDeliveryLocation();
+        }
+
+        bundle.putString("SELECTED_OPTION", ""); // Sending blank intentionally
+        bundle.putSerializable("ORDER_SUMMARY", orderSummaryInfo);
+        return bundle;
     }
 
     public class OrderAdapter extends BaseAdapter {
@@ -281,17 +312,17 @@ public class OrderFragment extends Fragment {
 
                 convertView = mInflater.inflate(R.layout.list_item_order_food, null);
 
-                holder.ivIncreaseItem = (ImageView) convertView.findViewById(R.id.ivIncreaseItem);
+                holder.ivIncreaseItem = convertView.findViewById(R.id.ivIncreaseItem);
 
-                holder.tvItemCount = (TextView) convertView.findViewById(R.id.tvItemCount);
+                holder.tvItemCount = convertView.findViewById(R.id.tvItemCount);
 
-                holder.ivDecreaseItem = (ImageView) convertView.findViewById(R.id.ivDecreaseItem);
+                holder.ivDecreaseItem = convertView.findViewById(R.id.ivDecreaseItem);
 
-                holder.tvItemName = (TextView) convertView.findViewById(R.id.tvItemName);
+                holder.tvItemName = convertView.findViewById(R.id.tvItemName);
 
-                holder.tvExtraItem = (TextView) convertView.findViewById(R.id.tvExtraItem);
+                holder.tvExtraItem = convertView.findViewById(R.id.tvExtraItem);
 
-                holder.tvItemPriceTotal = (TextView) convertView.findViewById(R.id.tvItemPriceTotal);
+                holder.tvItemPriceTotal = convertView.findViewById(R.id.tvItemPriceTotal);
 
                 convertView.setTag(holder);
 
@@ -338,9 +369,11 @@ public class OrderFragment extends Fragment {
 
                 holder.tvItemName.setText("" + order.product_name);
 
-                holder.tvExtraItem.setText("" + order.product_option);
+                if (order.product_option != null && !order.product_option.isEmpty()) {
+                    holder.tvExtraItem.setText("Note :" + order.product_option);
+                }
 
-                holder.tvItemPriceTotal.setText(business.curr_symbol + " " + String.format("%.2f", (order.quantity * order.price)));
+                holder.tvItemPriceTotal.setText(business.getCurrSymbol() + " " + String.format("%.2f", (order.quantity * order.price)));
 
                 if (position == getCount() - 1) {
 
@@ -361,22 +394,6 @@ public class OrderFragment extends Fragment {
             return convertView;
         }
 
-        public class ViewHolder {
-
-            ImageView ivIncreaseItem;
-
-            TextView tvItemCount;
-
-            ImageView ivDecreaseItem;
-
-            TextView tvItemName;
-
-            TextView tvExtraItem;
-
-            TextView tvItemPriceTotal;
-
-        }
-
         public void addAll(ArrayList<OrderedInfo> list) {
 
             try {
@@ -390,6 +407,22 @@ public class OrderFragment extends Fragment {
             }
 
             notifyDataSetChanged();
+
+        }
+
+        public class ViewHolder {
+
+            ImageView ivIncreaseItem;
+
+            TextView tvItemCount;
+
+            ImageView ivDecreaseItem;
+
+            TextView tvItemName;
+
+            TextView tvExtraItem;
+
+            TextView tvItemPriceTotal;
 
         }
 

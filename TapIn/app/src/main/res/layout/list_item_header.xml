@@ -18,9 +18,9 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="Entrees (8)"
-            android:textStyle="bold"
             android:textColor="@color/white"
-            android:textSize="@dimen/_18sdp" />
+            android:textSize="@dimen/_18sdp"
+            android:textStyle="bold" />
 
     </LinearLayout>
 

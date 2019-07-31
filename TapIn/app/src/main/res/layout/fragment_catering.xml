@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -217,7 +215,7 @@
 
             </LinearLayout>
 
-            <android.support.v4.view.ViewPager
+            <androidx.viewpager.widget.ViewPager
                 android:id="@+id/pager"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/_140sdp" />
@@ -364,10 +362,10 @@
                     android:layout_gravity="center"
                     android:layout_margin="@dimen/_10sdp"
                     android:background="@color/yellow"
-                    android:paddingBottom="@dimen/_10sdp"
                     android:paddingLeft="@dimen/_20sdp"
-                    android:paddingRight="@dimen/_20sdp"
                     android:paddingTop="@dimen/_10sdp"
+                    android:paddingRight="@dimen/_20sdp"
+                    android:paddingBottom="@dimen/_10sdp"
                     android:text="SEND REQUEST"
                     android:textColor="@color/white" />
 

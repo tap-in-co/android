@@ -1,11 +1,6 @@
 package com.tapin.tapin.utils;
 
-import android.support.design.internal.BottomNavigationItemView;
-import android.support.design.internal.BottomNavigationMenuView;
-import android.support.design.widget.BottomNavigationView;
-import android.util.Log;
-
-import java.lang.reflect.Field;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 /**
  * Created by Narendra on 4/27/17.
@@ -14,7 +9,7 @@ import java.lang.reflect.Field;
 public class BottomNavigationViewHelper {
 
     public static void disableShiftMode(BottomNavigationView view) {
-        BottomNavigationMenuView menuView = (BottomNavigationMenuView) view.getChildAt(0);
+        /*BottomNavigationMenuView menuView = (BottomNavigationMenuView) view.getChildAt(0);
         try {
             Field shiftingMode = menuView.getClass().getDeclaredField("mShiftingMode");
             shiftingMode.setAccessible(true);
@@ -32,7 +27,7 @@ public class BottomNavigationViewHelper {
             Log.e("BNVHelper", "Unable to get shift mode field", e);
         } catch (IllegalAccessException e) {
             Log.e("BNVHelper", "Unable to change value of shift mode", e);
-        }
+        }*/
     }
 
 }

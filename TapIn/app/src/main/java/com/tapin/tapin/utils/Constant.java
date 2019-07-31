@@ -1,10 +1,10 @@
 package com.tapin.tapin.utils;
 
 
-import com.tapin.tapin.model.Business;
 import com.tapin.tapin.model.BusinessType;
 import com.tapin.tapin.model.BusinessTypeList;
 import com.tapin.tapin.model.OrderedInfo;
+import com.tapin.tapin.model.resturants.Business;
 
 import java.util.ArrayList;
 

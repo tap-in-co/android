@@ -8,7 +8,7 @@ import java.io.Serializable;
  * Created by Narendra on 5/6/17.
  */
 
-public class BusinessDeliveryInfo implements Serializable,Cloneable{
+public class BusinessDeliveryInfo implements Serializable, Cloneable {
 
     @SerializedName("status")
     public int status;
