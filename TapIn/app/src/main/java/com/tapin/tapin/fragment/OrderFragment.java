@@ -187,6 +187,8 @@ public class OrderFragment extends BaseFragment {
         tvItemPriceTotal = view.findViewById(R.id.tvItemPriceTotal);
         tvPoints = view.findViewById(R.id.tvPoints);
 
+        setTotal(listOrdered);
+
     }
 
     public void initHeader() {
@@ -220,7 +222,16 @@ public class OrderFragment extends BaseFragment {
 
         tvItemPriceTotal.setText(business.getCurrSymbol() + " " + String.format("%.2f", totalValue));
 
-        tvPoints.setText("Earn " + Math.round(totalValue) + " Pts");
+        final int earnedPoints = (int) Math.round(totalValue);
+        tvPoints.setText("Earn " + earnedPoints + " Pts");
+
+
+        if (earnedPoints > 0) {
+            tvPoints.setVisibility(View.VISIBLE);
+        } else {
+            tvPoints.setVisibility(View.INVISIBLE);
+        }
+
 
     }
 
@@ -251,6 +262,11 @@ public class OrderFragment extends BaseFragment {
 
         final OrderSummaryInfo orderSummaryInfo = new OrderSummaryInfo();
         orderSummaryInfo.listOrdered = listOrdered;
+
+        if (isCorporateOrder() && PreferenceManager.getInstance().getSelectedCorporateDomain() != null) {
+            orderSummaryInfo.locationDeliveryTime = PreferenceManager.getInstance().getSelectedCorporateDomain().getDeliveryTime();
+            orderSummaryInfo.deliveryLocation = PreferenceManager.getInstance().getSelectedCorporateDomain().getDeliveryLocation();
+        }
 
         bundle.putString("SELECTED_OPTION", ""); // Sending blank intentionally
         bundle.putSerializable("ORDER_SUMMARY", orderSummaryInfo);
@@ -353,7 +369,9 @@ public class OrderFragment extends BaseFragment {
 
                 holder.tvItemName.setText("" + order.product_name);
 
-                holder.tvExtraItem.setText("" + order.product_option);
+                if (order.product_option != null && !order.product_option.isEmpty()) {
+                    holder.tvExtraItem.setText("Note :" + order.product_option);
+                }
 
                 holder.tvItemPriceTotal.setText(business.getCurrSymbol() + " " + String.format("%.2f", (order.quantity * order.price)));
 

@@ -65,6 +65,8 @@ public class PaymentFragment extends BaseFragment {
     ViewPager viewPager;
     TextView tvAddRemoveCard;
 
+    private TextView waitingOrDeliveryTime;
+
     double total = 0;
     int totalAvailablePoints = 0;
     double modifiedTotal = 0;
@@ -225,7 +227,9 @@ public class PaymentFragment extends BaseFragment {
 
                         orderSummaryInfo.averageWaitTime = process_time;
 
-                        ((TextView) view.findViewById(R.id.tvWaitTime)).setText(process_time);
+                        if (!isCorporateOrder()) {
+                            waitingOrDeliveryTime.setText(process_time);
+                        }
 
                         getCards(0);
 
@@ -361,6 +365,11 @@ public class PaymentFragment extends BaseFragment {
         viewPager.setAdapter(cardPagerAdapter);
 
         tvAddRemoveCard = view.findViewById(R.id.tvAddRemoveCard);
+
+        waitingOrDeliveryTime =  view.findViewById(R.id.tvWaitTime);
+        if (PreferenceManager.getInstance().getSelectedCorporateDomain() != null) {
+            waitingOrDeliveryTime.setText("Delivery at " + PreferenceManager.getInstance().getSelectedCorporateDomain().getDeliveryTime());
+        }
 
         tvAddRemoveCard.setOnClickListener(new View.OnClickListener() {
             @Override

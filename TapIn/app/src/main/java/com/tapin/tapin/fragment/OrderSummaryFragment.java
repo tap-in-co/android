@@ -14,6 +14,7 @@ import com.tapin.tapin.activity.HomeActivity;
 import com.tapin.tapin.model.OrderSummaryInfo;
 import com.tapin.tapin.model.resturants.Business;
 import com.tapin.tapin.utils.Constant;
+import com.tapin.tapin.utils.PreferenceManager;
 
 /**
  * Created by Narendra on 5/28/17.
@@ -120,6 +121,13 @@ public class OrderSummaryFragment extends BaseFragment {
 
             deliveryCharge = Double.parseDouble(business.getPickupLocationCharge());
 
+        }
+        // For Corporate Order
+        else {
+            if (PreferenceManager.getInstance().getSelectedCorporateDomain() != null) {
+                tvDeliveryTo.setText(orderSummaryInfo.deliveryLocation + " at " + orderSummaryInfo.locationDeliveryTime);
+                deliveryCharge = Double.parseDouble(business.getDeliveryLocationCharge());
+            }
         }
 
         tvSubTotal.setText("" + business.getCurrSymbol() + String.format("%.2f", subTotal));

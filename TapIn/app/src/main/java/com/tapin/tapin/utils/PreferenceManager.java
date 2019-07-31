@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.tapin.tapin.R;
+import com.tapin.tapin.model.CorporateDomain;
 import com.tapin.tapin.model.GetPointsResp;
 import com.tapin.tapin.model.UserInfo;
 import com.tapin.tapin.network.Api;
@@ -29,6 +30,8 @@ public class PreferenceManager extends Application {
     public static SharedPreferences.Editor prefEditor;
     private static PreferenceManager instance;
 
+    private CorporateDomain selectedCorporateDomain = null;
+
     // Get The API interface for all the apis
     private Api api = null;
 
@@ -39,6 +42,14 @@ public class PreferenceManager extends Application {
     @NonNull
     public static PreferenceManager getInstance() {
         return instance;
+    }
+
+    public CorporateDomain getSelectedCorporateDomain() {
+        return selectedCorporateDomain;
+    }
+
+    public void setSelectedCorporateDomain(CorporateDomain selectedCorporateDomain) {
+        this.selectedCorporateDomain = selectedCorporateDomain;
     }
 
     public static String getEmail() {

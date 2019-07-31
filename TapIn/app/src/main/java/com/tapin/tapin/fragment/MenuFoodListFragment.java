@@ -766,6 +766,7 @@ public class MenuFoodListFragment extends BaseFragment {
                 orderedInfo.product_description = orderInfo.short_description;
                 orderedInfo.product_imageurl = orderInfo.pictures;
                 orderedInfo.product_name = orderInfo.name;
+                orderedInfo.product_option = etNote.getText().toString().trim();
                 orderedInfo.price = Double.parseDouble(orderInfo.price);
                 orderedInfo.points = Math.round(orderedInfo.price);
 

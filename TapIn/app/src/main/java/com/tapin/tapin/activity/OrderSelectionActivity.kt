@@ -61,6 +61,7 @@ class OrderSelectionActivity : BaseActivity(), OnDeliveryLocationSelectionListen
 
     override fun onLocationSelected(position: Int, corporateDomain: CorporateDomain) {
         selectedCorporateDomain = corporateDomain
+        PreferenceManager.getInstance().selectedCorporateDomain = selectedCorporateDomain
         deliveryLocationAdapter?.markAsSelected(position)
     }
 
@@ -69,6 +70,7 @@ class OrderSelectionActivity : BaseActivity(), OnDeliveryLocationSelectionListen
         newOrderLayout.setOnClickListener {
             PreferenceManager.getInstance().isCorporateOrder = false
             PreferenceManager.getInstance().corporateOrderMerchantIds = ""
+            PreferenceManager.getInstance().selectedCorporateDomain = null
 
             isPickUpOrder = false
 
