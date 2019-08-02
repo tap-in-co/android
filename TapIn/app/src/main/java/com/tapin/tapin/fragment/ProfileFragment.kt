@@ -127,7 +127,7 @@ class ProfileFragment : BaseFragment() {
 
     @SuppressLint("SetTextI18n")
     fun initHeader() {
-        (view?.findViewById<View>(R.id.tvToolbarTitle) as TextView).text = "ProfileResponse"
+        (view?.findViewById<View>(R.id.tvToolbarTitle) as TextView).text = "Profile"
     }
 
     private fun onProfileSaveClickedNew() {

@@ -34,6 +34,7 @@ class OrderSelectionActivity : BaseActivity(), OnDeliveryLocationSelectionListen
     private lateinit var bottomRecyclerView: RecyclerView
 
     private var deliveryLocationAdapter: DeliveryLocationAdapter? = null
+    private var corporateDomains: CorporateDomains? = null
 
     private var asyncHttpClient: AsyncHttpClient? = null
     private var selectedCorporateDomain: CorporateDomain? = null
@@ -66,7 +67,7 @@ class OrderSelectionActivity : BaseActivity(), OnDeliveryLocationSelectionListen
     }
 
     private fun initViews() {
-        newOrderLayout = findViewById<View>(R.id.order_activity_new_order)
+        newOrderLayout = findViewById(R.id.order_activity_new_order)
         newOrderLayout.setOnClickListener {
             PreferenceManager.getInstance().isCorporateOrder = false
             PreferenceManager.getInstance().corporateOrderMerchantIds = ""
@@ -84,7 +85,7 @@ class OrderSelectionActivity : BaseActivity(), OnDeliveryLocationSelectionListen
             centerText.visibility = View.VISIBLE
         }
 
-        corporateOrderLayout = findViewById<View>(R.id.order_activity_corporate_order)
+        corporateOrderLayout = findViewById(R.id.order_activity_corporate_order)
         corporateOrderLayout.setOnClickListener { showProfileAlertDialog() }
         corporateOrderLayout.isClickable = false
 
@@ -120,18 +121,17 @@ class OrderSelectionActivity : BaseActivity(), OnDeliveryLocationSelectionListen
 
             val alert = builder.create()
             alert.show()
+        } else {
+            checkDomain()
         }
-        /*else {
-            // Sets the app for Corporate Orders
-            PreferenceManager.getInstance().isCorporateOrder = true
-            isPickUpOrder = false
-
-            val i = Intent(baseContext, HomeActivity::class.java)
-            startActivity(i)
-        }*/
     }
 
     private fun checkDomain() {
+        if (corporateDomains != null) {
+            onSuccess(corporateDomains!!)
+            return
+        }
+
         asyncHttpClient = AsyncHttpClient()
         asyncHttpClient?.isLoggingEnabled = true
         asyncHttpClient?.loggingLevel = LogInterface.DEBUG
@@ -185,6 +185,7 @@ class OrderSelectionActivity : BaseActivity(), OnDeliveryLocationSelectionListen
     }
 
     private fun onSuccess(corporateDomains: CorporateDomains) {
+        this.corporateDomains = corporateDomains
         showHideBottomLayout(true)
         deliveryLocationAdapter =
             DeliveryLocationAdapter(corporateDomains = corporateDomains.data, listener = this)
