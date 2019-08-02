@@ -24,16 +24,26 @@ import com.tapin.tapin.fragment.HomeFragment;
 import com.tapin.tapin.fragment.MenuFoodListFragment;
 import com.tapin.tapin.fragment.NotificationsFragment;
 import com.tapin.tapin.fragment.OrderFragment;
+import com.tapin.tapin.fragment.OrderSummaryFragment;
+import com.tapin.tapin.fragment.PaymentFragment;
 import com.tapin.tapin.fragment.PointsFragment;
 import com.tapin.tapin.fragment.ProfileFragment;
+import com.tapin.tapin.model.OrderedInfo;
 import com.tapin.tapin.utils.AlertMessages;
 import com.tapin.tapin.utils.Constant;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class HomeActivity extends BaseActivity {
 
     public static final String CURRENT_TAG = HomeFragment.class.getSimpleName();
     public static final int PERMISSION_FINE_LOCATION = 1001;
     private static final String SELECTED_ITEM = "SELECTED_ITEM";
+
+
+    private static final List<String> FRAGMENT_NAMES_TO_GO_HOME = new ArrayList<>();
+
     FrameLayout frame_home;
     FrameLayout frame_profile;
     FrameLayout frame_notifications;
@@ -59,14 +69,19 @@ public class HomeActivity extends BaseActivity {
     AlertMessages messages;
     private int selectedItem;
 
+    static {
+        FRAGMENT_NAMES_TO_GO_HOME.add(MenuFoodListFragment.class.getName());
+        FRAGMENT_NAMES_TO_GO_HOME.add(OrderFragment.class.getName());
+        FRAGMENT_NAMES_TO_GO_HOME.add(OrderSummaryFragment.class.getName());
+        FRAGMENT_NAMES_TO_GO_HOME.add(PaymentFragment.class.getName());
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
         messages = new AlertMessages(this);
-
-        String refreshedToken = FirebaseInstanceId.getInstance().getToken();
 
         initViews();
 
@@ -102,33 +117,9 @@ public class HomeActivity extends BaseActivity {
         llHome.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                /*if (frame_home.getVisibility() == View.VISIBLE) {
-
-                    messages.alert(HomeActivity.this, null, "Are you sure you want to cancel your current Order Process", "Yes", "No", null, new AlertMessages.AlertDialogCallback() {
-                        @Override
-                        public void clickedButtonText(String s) {
-
-                            if (s.equalsIgnoreCase("Yes")) {
-
-                                Constant.listOrdered = new ArrayList<OrderedInfo>();
-
-                                FragmentManager fm = getSupportFragmentManager();
-                                for (int i = 0; i < fm.getBackStackEntryCount(); ++i) {
-                                    fm.popBackStack();
-                                }
-                                setResult(RESULT_OK);
-                                finish();
-
-                            } else if (s.equalsIgnoreCase("No")) {
-
-                            }
-
-                        }
-                    });
-
+                if (shouldShowCancelOrder()) {
+                    showClearOrderDialog();
                 }
-                markHomeAsSelected();*/
             }
         });
 
@@ -297,14 +288,37 @@ public class HomeActivity extends BaseActivity {
         }
     }
 
-    private Fragment getCurrentFragment() {
+    private boolean shouldShowCancelOrder() {
+        final List<Fragment> fragments = getSupportFragmentManager().getFragments();
 
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        int stackCount = fragmentManager.getBackStackEntryCount();
-        if (fragmentManager.getFragments() != null)
-            return fragmentManager.getFragments().get(stackCount > 0 ? stackCount - 1 : stackCount);
-        else return null;
+        if (fragments.size() > 0) {
+            final Fragment topFragment = fragments.get(fragments.size() - 1);
+            final String fragmentName = topFragment.getClass().getName();
 
+            return FRAGMENT_NAMES_TO_GO_HOME.contains(fragmentName);
+        }
+
+        return false;
     }
 
+    private void showClearOrderDialog() {
+        messages.alert(HomeActivity.this, null, "Are you sure you want to cancel your current Order Process", "Yes", "No", null, new AlertMessages.AlertDialogCallback() {
+            @Override
+            public void clickedButtonText(String s) {
+                if (s.equalsIgnoreCase("Yes")) {
+                    clearOrders();
+                    FragmentManager fm = getSupportFragmentManager();
+                    for (int i = 0; i < fm.getBackStackEntryCount(); ++i) {
+                        fm.popBackStack();
+                    }
+                    setResult(RESULT_OK);
+                    finish();
+
+                } else if (s.equalsIgnoreCase("No")) {
+
+                }
+
+            }
+        });
+    }
 }

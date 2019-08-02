@@ -49,6 +49,8 @@ class OrderSelectionActivity : BaseActivity(), OnDeliveryLocationSelectionListen
     override fun onResume() {
         super.onResume()
 
+        clearOrders()
+
         if (!Utils.isEmpty(PreferenceManager.getWorkEmail())) {
             checkDomain()
         }

@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.tapin.tapin.model.OrderedInfo
 import com.tapin.tapin.model.UserInfo
+import com.tapin.tapin.utils.Constant
 import com.tapin.tapin.utils.PreferenceManager
 import java.util.*
 
@@ -30,5 +31,10 @@ open class BaseActivity : AppCompatActivity() {
         isCorporateOrder = PreferenceManager.getInstance().isCorporateOrder
         corporateOrderMerchantIds = PreferenceManager.getInstance().corporateOrderMerchantIds
         userInfo = PreferenceManager.getUserInfo()
+    }
+
+    // Removes the list
+    fun clearOrders() {
+        Constant.listOrdered.clear()
     }
 }
