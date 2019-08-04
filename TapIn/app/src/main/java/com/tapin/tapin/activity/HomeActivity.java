@@ -11,6 +11,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -45,21 +46,26 @@ public class HomeActivity extends BaseActivity {
     private static final List<String> FRAGMENT_NAMES_TO_GO_HOME = new ArrayList<>();
 
     FrameLayout frame_home;
-    FrameLayout frame_profile;
-    FrameLayout frame_notifications;
-    FrameLayout frame_points;
     LinearLayout llHome;
     ImageView ivHome;
     TextView tvHome;
+
+
+    FrameLayout frame_profile;
     LinearLayout llProfile;
     ImageView ivProfile;
     TextView tvProfile;
+
+    FrameLayout frame_notifications;
     LinearLayout llNotifications;
     ImageView ivNotifications;
     TextView tvNotifications;
+
+    FrameLayout frame_points;
     LinearLayout llPoints;
     ImageView ivPoints;
     TextView tvPoints;
+
     boolean isHome;
     boolean isProfile;
     boolean isNotifications;
@@ -85,13 +91,25 @@ public class HomeActivity extends BaseActivity {
 
         initViews();
 
-        llHome.performClick();
-
+        handleIntent();
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
+    private void handleIntent() {
+        final Bundle args = getIntent().getExtras();
+
+        if (args != null && args.getString("to_screen") != null) {
+            if (args.getString("to_screen").equalsIgnoreCase("Profile")) {
+                markProfileAsSelected();
+            } else if (args.getString("to_screen").equalsIgnoreCase("Notification")) {
+                markNotificationAsSelected();
+            } else if (args.getString("to_screen").equalsIgnoreCase("Points")) {
+                markPointsAsSelected();
+            } else {
+                llHome.performClick();
+            }
+        } else {
+            llHome.performClick();
+        }
     }
 
     private void initViews() {
@@ -126,43 +144,21 @@ public class HomeActivity extends BaseActivity {
         llProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 markProfileAsSelected();
-
             }
         });
 
         llNotifications.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                selectBottomMenu(frame_notifications, ivNotifications, R.drawable.tab_notification_activated, tvNotifications);
-
-                if (!isNotifications) {
-                    isNotifications = true;
-                    Fragment notificationsFragment = NotificationsFragment.newInstance("", "");
-                    FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                    ft.add(R.id.frame_notifications, notificationsFragment);
-                    ft.commit();
-                }
-
+                markNotificationAsSelected();
             }
         });
 
         llPoints.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                selectBottomMenu(frame_points, ivPoints, R.drawable.tab_points_activated, tvPoints);
-
-                if (!isPoints) {
-                    isPoints = true;
-                    Fragment pointsFragment = PointsFragment.newInstance("", "");
-                    FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                    ft.add(R.id.frame_points, pointsFragment);
-                    ft.commit();
-                }
-
+                markPointsAsSelected();
             }
         });
 
@@ -221,10 +217,6 @@ public class HomeActivity extends BaseActivity {
             }
             super.onBackPressed();
         }
-
-//        Fragment fragment = getCurrentFragment();
-//        Log.e("onBackPressed ", "fragment=" + fragment);
-
     }
 
     private void selectBottomMenu(FrameLayout selectedMenuFrame, ImageView iv, int imageId, TextView tv) {
@@ -284,6 +276,30 @@ public class HomeActivity extends BaseActivity {
             Fragment profileFragment = ProfileFragment.Companion.newInstance("DASHBOARD");
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.add(R.id.frame_profile, profileFragment);
+            ft.commit();
+        }
+    }
+
+    private void markNotificationAsSelected() {
+        selectBottomMenu(frame_notifications, ivNotifications, R.drawable.tab_notification_activated, tvNotifications);
+
+        if (!isNotifications) {
+            isNotifications = true;
+            Fragment notificationsFragment = NotificationsFragment.newInstance("", "");
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.add(R.id.frame_notifications, notificationsFragment);
+            ft.commit();
+        }
+    }
+
+    private void markPointsAsSelected() {
+        selectBottomMenu(frame_points, ivPoints, R.drawable.tab_points_activated, tvPoints);
+
+        if (!isPoints) {
+            isPoints = true;
+            Fragment pointsFragment = PointsFragment.newInstance("", "");
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.add(R.id.frame_points, pointsFragment);
             ft.commit();
         }
     }

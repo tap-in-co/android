@@ -4,7 +4,7 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -28,6 +28,9 @@ class OrderSelectionActivity : BaseActivity(), OnDeliveryLocationSelectionListen
     private lateinit var newOrderLayout: View
     private lateinit var centerText: AppCompatTextView
     private lateinit var corporateOrderLayout: View
+
+    private lateinit var bottomMenuLayout: View
+
     private lateinit var bottomLayout: View
     private lateinit var bottomLayoutCancel: View
     private lateinit var bottomLayoutDone: View
@@ -90,6 +93,28 @@ class OrderSelectionActivity : BaseActivity(), OnDeliveryLocationSelectionListen
         corporateOrderLayout = findViewById(R.id.order_activity_corporate_order)
         corporateOrderLayout.setOnClickListener { showProfileAlertDialog() }
         corporateOrderLayout.isClickable = false
+
+        bottomMenuLayout = findViewById(R.id.bottom_menu_layout)
+
+        findViewById<View>(R.id.llProfile).setOnClickListener {
+            val i = Intent(baseContext, HomeActivity::class.java).also {
+                it.putExtra("to_screen", "Profile")
+            }
+            startActivity(i)
+        }
+        findViewById<View>(R.id.llNotifications).setOnClickListener {
+            val i = Intent(baseContext, HomeActivity::class.java).also {
+                it.putExtra("to_screen", "Notification")
+            }
+            startActivity(i)
+        }
+        findViewById<View>(R.id.llPoints).setOnClickListener {
+            val i = Intent(baseContext, HomeActivity::class.java).also {
+                it.putExtra("to_screen", "Points")
+            }
+            startActivity(i)
+        }
+
 
         bottomLayoutCancel = findViewById(R.id.order_activity_cancel)
         bottomLayoutCancel.setOnClickListener {
@@ -209,6 +234,7 @@ class OrderSelectionActivity : BaseActivity(), OnDeliveryLocationSelectionListen
     private fun showHideBottomLayout(show: Boolean) {
         bottomLayout.visibility = if (show) View.VISIBLE else View.GONE
         corporateOrderLayout.isClickable = !show
+        bottomMenuLayout.isClickable = !show
     }
 
     private fun onDoneClicked() {
