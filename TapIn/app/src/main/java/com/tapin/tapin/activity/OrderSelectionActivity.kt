@@ -69,6 +69,11 @@ class OrderSelectionActivity : BaseActivity(), OnDeliveryLocationSelectionListen
         selectedCorporateDomain = corporateDomain
         PreferenceManager.getInstance().selectedCorporateDomain = selectedCorporateDomain
         deliveryLocationAdapter?.markAsSelected(position)
+
+        selectedCorporateDomain?.let {
+            centerText.visibility = View.VISIBLE
+            centerText.text = "Based on your work email, corp delivery service is open until ${it.deliveryTime}"
+        }
     }
 
     private fun initViews() {
@@ -133,11 +138,14 @@ class OrderSelectionActivity : BaseActivity(), OnDeliveryLocationSelectionListen
     }
 
     private fun showProfileAlertDialog() {
+        // Profile email is empty
         if (Utils.isEmpty(PreferenceManager.getWorkEmail())) {
             val builder = AlertDialog.Builder(this)
             builder.setMessage(getString(R.string.please_update_your_work_email))
                 .setCancelable(false)
-                .setPositiveButton(getString(R.string.ok)) { _, _ ->
+                .setPositiveButton(getString(R.string.ok)) { dialogInterface, _ ->
+                    dialogInterface.dismiss()
+
                     // Sets the app for Corporate Orders
                     PreferenceManager.getInstance().isCorporateOrder = true
                     isPickUpOrder = true
@@ -148,7 +156,28 @@ class OrderSelectionActivity : BaseActivity(), OnDeliveryLocationSelectionListen
 
             val alert = builder.create()
             alert.show()
-        } else {
+        }
+        // Profile email is non empty but the domain is not registered with Tap-In
+        else if (!Utils.isEmpty(PreferenceManager.getWorkEmail()) && corporateDomains == null) {
+            val builder = AlertDialog.Builder(this)
+            builder.setMessage(getString(R.string.join_tap_in_text_with_email))
+                .setCancelable(false)
+                .setPositiveButton(getString(R.string.ok)) { dialogInterface, _ ->
+                    dialogInterface.dismiss()
+
+                    // Sets the app for Corporate Orders
+                    PreferenceManager.getInstance().isCorporateOrder = true
+                    isPickUpOrder = false
+
+                    val i = Intent(baseContext, HomeActivity::class.java)
+                    startActivity(i)
+                }
+
+            val alert = builder.create()
+            alert.show()
+        }
+        // Check the domain and show the Delivery location pick up list
+        else {
             checkDomain()
         }
     }

@@ -15,7 +15,7 @@ object UrlGenerator {
 
     fun getRestaurantsApi(isCorpOrder: Boolean = false, corporateOrderMerchantIds: String) =
         if (isCorpOrder) {
-            //"https://tapforall.com/merchants/tap-in/include/model.php?cmd=get_all_businesses_for_set&ids=$corporateOrderMerchantIds"
+            // Corporate
             "${getMainUrl()}cmd=get_all_businesses_for_set&ids=$corporateOrderMerchantIds"
         } else {
             // Individual

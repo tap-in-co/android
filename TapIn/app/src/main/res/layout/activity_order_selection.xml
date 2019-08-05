@@ -32,7 +32,7 @@
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/order_activity_center_text"
-            style="@style/TextAppearance.AppCompat.Body1"
+            style="@style/TextAppearance.AppCompat.Body2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -42,7 +42,7 @@
             android:layout_marginRight="@dimen/_16sdp"
             android:autoLink="email"
             android:gravity="center"
-            android:textColor="@color/trans_white"
+            android:textColor="@color/white"
             tools:text="Hello" />
 
         <LinearLayout
