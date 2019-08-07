@@ -27,7 +27,9 @@ import cz.msebera.android.httpclient.Header
 class OrderSelectionActivity : BaseActivity(), OnDeliveryLocationSelectionListener {
     private lateinit var newOrderLayout: View
     private lateinit var centerText: AppCompatTextView
+
     private lateinit var corporateOrderLayout: View
+    private lateinit var corporateText: AppCompatTextView
 
     private lateinit var bottomMenuLayout: View
 
@@ -65,6 +67,14 @@ class OrderSelectionActivity : BaseActivity(), OnDeliveryLocationSelectionListen
         asyncHttpClient?.cancelRequests(this, true)
     }
 
+    override fun onBackPressed() {
+        if (bottomLayout.visibility == View.VISIBLE) {
+            showHideBottomLayout(false)
+        } else {
+            super.onBackPressed()
+        }
+    }
+
     override fun onLocationSelected(position: Int, corporateDomain: CorporateDomain) {
         selectedCorporateDomain = corporateDomain
         PreferenceManager.getInstance().selectedCorporateDomain = selectedCorporateDomain
@@ -98,6 +108,7 @@ class OrderSelectionActivity : BaseActivity(), OnDeliveryLocationSelectionListen
         corporateOrderLayout = findViewById(R.id.order_activity_corporate_order)
         corporateOrderLayout.setOnClickListener { showProfileAlertDialog() }
         corporateOrderLayout.isClickable = false
+        corporateText = findViewById(R.id.order_activity_corp_text)
 
         bottomMenuLayout = findViewById(R.id.bottom_menu_layout)
 
@@ -106,6 +117,9 @@ class OrderSelectionActivity : BaseActivity(), OnDeliveryLocationSelectionListen
                 it.putExtra("to_screen", "Profile")
             }
             startActivity(i)
+
+            // Here clearing the domains, since we expect the company email may change
+            corporateDomains = null
         }
         findViewById<View>(R.id.llNotifications).setOnClickListener {
             val i = Intent(baseContext, HomeActivity::class.java).also {
@@ -183,6 +197,10 @@ class OrderSelectionActivity : BaseActivity(), OnDeliveryLocationSelectionListen
     }
 
     private fun checkDomain() {
+        if (!showInternetNotWorking()) {
+            return
+        }
+
         if (corporateDomains != null) {
             onSuccess(corporateDomains!!)
             return
@@ -251,6 +269,8 @@ class OrderSelectionActivity : BaseActivity(), OnDeliveryLocationSelectionListen
         bottomRecyclerView.adapter = deliveryLocationAdapter
 
         centerText.visibility = View.GONE
+
+        corporateText.text = "Deliver to ${corporateDomains.data[0].corpName}"
     }
 
     private fun onFailure() {
@@ -258,6 +278,8 @@ class OrderSelectionActivity : BaseActivity(), OnDeliveryLocationSelectionListen
         centerText.visibility = View.VISIBLE
 
         showHideBottomLayout(false)
+
+        setMerchantIdsWhenWorkProfileIsNotSet()
     }
 
     private fun showHideBottomLayout(show: Boolean) {
@@ -295,5 +317,58 @@ class OrderSelectionActivity : BaseActivity(), OnDeliveryLocationSelectionListen
             val alert = builder.create()
             alert.show()
         }
+    }
+
+    private fun setMerchantIdsWhenWorkProfileIsNotSet() {
+        if (!showInternetNotWorking()) {
+            return
+        }
+
+        asyncHttpClient = AsyncHttpClient()
+        asyncHttpClient?.isLoggingEnabled = true
+        asyncHttpClient?.loggingLevel = LogInterface.DEBUG
+        asyncHttpClient?.setTimeout(Constant.TIMEOUT)
+
+        Debug.d(
+            "Okhttp",
+            "API: " + UrlGenerator.getCorporateDomainApi("zzz")
+        )
+
+        asyncHttpClient?.get(
+            this,
+            UrlGenerator.getCorporateDomainApi("zzz"),
+            object : AsyncHttpResponseHandler() {
+                override fun onSuccess(
+                    statusCode: Int,
+                    headers: Array<out Header>?,
+                    responseBody: ByteArray?
+                ) {
+                    try {
+                        val content = String(responseBody!!, Charsets.UTF_8)
+                        Debug.d("Okhttp", "Success Response: $content")
+                        val corporateDomains =
+                            Gson().fromJson(content, CorporateDomains::class.java)
+
+                        if (corporateDomains != null && corporateDomains.data.isNotEmpty()) {
+                            PreferenceManager.getInstance().corporateOrderMerchantIds = corporateDomains.data[0].merchantIds
+                        }
+                    } catch (e: Exception) {
+                    }
+                }
+
+                override fun onFailure(
+                    statusCode: Int,
+                    headers: Array<out Header>?,
+                    responseBody: ByteArray?,
+                    error: Throwable?
+                ) {
+                    try {
+                        val content = String(responseBody!!, Charsets.UTF_8)
+                        Debug.d("Okhttp", "Failure Response: $content")
+                    } catch (e: Exception) {
+                    }
+                }
+
+            })
     }
 }

@@ -1,11 +1,15 @@
 package com.tapin.tapin.activity
 
+import android.app.AlertDialog
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.tapin.tapin.R
 import com.tapin.tapin.model.OrderedInfo
 import com.tapin.tapin.model.UserInfo
 import com.tapin.tapin.utils.Constant
 import com.tapin.tapin.utils.PreferenceManager
+import com.tapin.tapin.utils.Utils
 import java.util.*
 
 /**
@@ -36,5 +40,24 @@ open class BaseActivity : AppCompatActivity() {
     // Removes the list
     fun clearOrders() {
         Constant.listOrdered.clear()
+    }
+
+    fun showInternetNotWorking(): Boolean {
+        if (!Utils.isInternetConnected(this)) {
+            val builder = AlertDialog.Builder(this)
+            builder.setMessage(getString(R.string.alert_check_connection))
+                .setCancelable(false)
+                .setPositiveButton(getString(R.string.ok)) { dialogInterface, _ ->
+                    dialogInterface.dismiss()
+                    finish()
+                }
+
+            val alert = builder.create()
+            alert.show()
+
+            return false
+        }
+
+        return true
     }
 }

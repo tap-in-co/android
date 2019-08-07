@@ -2,7 +2,6 @@ package com.tapin.tapin.activity
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
 import com.google.firebase.iid.FirebaseInstanceId
 import com.google.gson.Gson
 import com.loopj.android.http.AsyncHttpClient
@@ -38,6 +37,10 @@ class SplashActivity : BaseActivity() {
     }
 
     private fun getProfile() {
+        if (!showInternetNotWorking()) {
+            return
+        }
+
         val params = RequestParams().also {
             it.put("device_token", FirebaseInstanceId.getInstance().token ?: "")
             it.put("uuid", Utils.getDeviceID(this))
@@ -94,6 +97,9 @@ class SplashActivity : BaseActivity() {
     }
 
     private fun getConsumerCardDetails(profileResponse: ProfileResponse) {
+        if (!showInternetNotWorking()) {
+            return
+        }
         Debug.d("Okhttp", "API: " + UrlGenerator.getConsumerCardDetails(profileResponse.uid))
 
         client?.get(

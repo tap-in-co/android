@@ -10,13 +10,6 @@
         android:background="@drawable/img_background"
         android:orientation="vertical">
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="10dp"
-            android:src="@drawable/ic_tap_in_logo" />
-
         <LinearLayout
             android:id="@+id/order_activity_new_order"
             android:layout_width="match_parent"
@@ -50,12 +43,25 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
+            android:orientation="vertical"
             android:gravity="center">
 
             <ImageView
+                android:layout_width="156dp"
+                android:layout_height="156dp"
+                android:src="@drawable/corp_icon" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/order_activity_corp_text"
+                style="@style/TextAppearance.AppCompat.Headline"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_pickuporder" />
+                android:layout_gravity="center"
+                android:autoLink="email"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:layout_marginTop="8dp"
+                android:text="Tap For All" />
         </LinearLayout>
 
         <LinearLayout
@@ -214,4 +220,11 @@
                 android:layout_margin="@dimen/_16sdp" />
         </LinearLayout>
     </FrameLayout>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|start"
+        android:layout_margin="10dp"
+        android:src="@drawable/ic_tap_in_logo" />
 </FrameLayout>
