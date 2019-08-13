@@ -15,12 +15,24 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
+            android:orientation="vertical"
             android:gravity="center">
 
             <ImageView
+                android:layout_width="156dp"
+                android:layout_height="156dp"
+                android:src="@drawable/new_order_icon" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/TextAppearance.AppCompat.Headline"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_neworder" />
+                android:layout_gravity="center"
+                android:autoLink="email"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:layout_marginTop="8dp"
+                android:text="Individual Services" />
         </LinearLayout>
 
         <androidx.appcompat.widget.AppCompatTextView
