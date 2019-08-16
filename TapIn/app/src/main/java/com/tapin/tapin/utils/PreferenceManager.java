@@ -38,6 +38,7 @@ public class PreferenceManager extends Application {
     // Is it a Corporate Order
     private boolean isCorporateOrder = false;
     private String corporateOrderMerchantIds = "";
+    private boolean isViewMode = true;
 
     @NonNull
     public static PreferenceManager getInstance() {
@@ -142,9 +143,13 @@ public class PreferenceManager extends Application {
     }
 
     public static String getWorkEmailDomain() {
-        String email = preferences.getString("workEmail", "");
-        String fullDomain = email.substring(email.indexOf("@") + 1);
-        return fullDomain.substring(0, fullDomain.indexOf("."));
+        try {
+            String email = preferences.getString("workEmail", "");
+            String fullDomain = email.substring(email.indexOf("@") + 1);
+            return fullDomain.substring(0, fullDomain.indexOf("."));
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public static void setUserData(UserInfo userInfo) {
@@ -277,5 +282,13 @@ public class PreferenceManager extends Application {
             corporateOrderMerchantIds = "";
         }
         Log.d("Hello", corporateOrderMerchantIds);
+    }
+
+    public boolean isViewMode() {
+        return isViewMode;
+    }
+
+    public void setViewMode(boolean viewMode) {
+        isViewMode = viewMode;
     }
 }

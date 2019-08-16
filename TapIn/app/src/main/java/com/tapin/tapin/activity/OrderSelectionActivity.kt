@@ -56,6 +56,10 @@ class OrderSelectionActivity : BaseActivity(), OnDeliveryLocationSelectionListen
 
         clearOrders()
 
+        PreferenceManager.getWorkEmailDomain()?.let {
+            corporateText.text = "Deliver to ${PreferenceManager.getWorkEmailDomain()}"
+        }
+
         if (!Utils.isEmpty(PreferenceManager.getWorkEmail())) {
             checkDomain()
         }
@@ -109,6 +113,9 @@ class OrderSelectionActivity : BaseActivity(), OnDeliveryLocationSelectionListen
         corporateOrderLayout.setOnClickListener { showProfileAlertDialog() }
         corporateOrderLayout.isClickable = false
         corporateText = findViewById(R.id.order_activity_corp_text)
+        PreferenceManager.getWorkEmailDomain()?.let {
+            corporateText.text = "Deliver to ${PreferenceManager.getWorkEmailDomain()}"
+        }
 
         bottomMenuLayout = findViewById(R.id.bottom_menu_layout)
 
@@ -271,11 +278,13 @@ class OrderSelectionActivity : BaseActivity(), OnDeliveryLocationSelectionListen
         centerText.visibility = View.GONE
 
         corporateText.text = "Deliver to ${corporateDomains.data[0].corpName}"
+        PreferenceManager.getInstance().isViewMode = false
     }
 
     private fun onFailure() {
         centerText.text = getText(R.string.join_tap_in_text_with_email)
         centerText.visibility = View.VISIBLE
+        PreferenceManager.getInstance().isViewMode = true
 
         showHideBottomLayout(false)
 

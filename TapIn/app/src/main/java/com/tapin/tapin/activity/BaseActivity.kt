@@ -1,6 +1,7 @@
 package com.tapin.tapin.activity
 
 import android.app.AlertDialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -59,5 +60,18 @@ open class BaseActivity : AppCompatActivity() {
         }
 
         return true
+    }
+
+    fun showUnableToOrderDialog() {
+        val builder = AlertDialog.Builder(this)
+
+        builder.setTitle("Sorry!")
+        builder.setMessage(R.string.join_tap_in_text_with_email)
+            .setCancelable(false)
+            .setPositiveButton("Ok") { _, _ -> }
+
+        val alert = builder.create()
+        alert.setCancelable(false)
+        alert.show()
     }
 }

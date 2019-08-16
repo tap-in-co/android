@@ -11,8 +11,10 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.tapin.tapin.R;
+import com.tapin.tapin.activity.HomeActivity;
 import com.tapin.tapin.model.OrderInfo;
 import com.tapin.tapin.model.resturants.Business;
+import com.tapin.tapin.utils.PreferenceManager;
 import com.tapin.tapin.utils.UrlGenerator;
 
 import java.util.ArrayList;
@@ -94,9 +96,14 @@ public class OrderStickyListViewAdapter extends BaseAdapter implements StickyLis
         holder.ivAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                addOrder.addOrder(orderInfo);
-
+                if (context instanceof HomeActivity) {
+                    // In Corporate Order View Mode so preventing users to add items to Order list
+                    if (((HomeActivity)context).isCorporateOrder() && PreferenceManager.getInstance().isViewMode()) {
+                        ((HomeActivity) context).showUnableToOrderDialog();
+                    } else {
+                        addOrder.addOrder(orderInfo);
+                    }
+                }
             }
         });
 
@@ -120,15 +127,17 @@ public class OrderStickyListViewAdapter extends BaseAdapter implements StickyLis
         holder.ivHeart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                if (orderInfo.isLiked) {
-                    holder.ivHeart.setImageResource(R.drawable.ic_heart_unlike);
-                    orderInfo.isLiked = false;
+                if (((HomeActivity)context).isCorporateOrder() && PreferenceManager.getInstance().isViewMode()) {
+                    ((HomeActivity) context).showUnableToOrderDialog();
                 } else {
-                    holder.ivHeart.setImageResource(R.drawable.ic_heart_like);
-                    orderInfo.isLiked = true;
+                    if (orderInfo.isLiked) {
+                        holder.ivHeart.setImageResource(R.drawable.ic_heart_unlike);
+                        orderInfo.isLiked = false;
+                    } else {
+                        holder.ivHeart.setImageResource(R.drawable.ic_heart_like);
+                        orderInfo.isLiked = true;
+                    }
                 }
-
             }
         });
 

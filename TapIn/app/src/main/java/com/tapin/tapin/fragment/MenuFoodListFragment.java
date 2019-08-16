@@ -384,7 +384,14 @@ public class MenuFoodListFragment extends BaseFragment {
             @Override
             public void onClick(View view) {
                 if (isCorporateOrder()) {
-                    showCorpOrderFlow();
+                    // If your is in View Mode then show Unable to Order dialog
+                    if (PreferenceManager.getInstance().isViewMode()) {
+                        if (getActivity() instanceof HomeActivity) {
+                            ((HomeActivity) getActivity()).showUnableToOrderDialog();
+                        }
+                    } else {
+                        showCorpOrderFlow();
+                    }
                 } else {
                     showIndiOrderFlow();
                 }
