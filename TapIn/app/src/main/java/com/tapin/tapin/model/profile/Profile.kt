@@ -51,3 +51,10 @@ data class ProfileResponse(
 ) {
     fun isValidProfile(): Boolean = email1.isNotEmpty()
 }
+
+data class GetProfileRequest(
+    @SerializedName("device_token")
+    val deviceToken: String,
+    @SerializedName("uuid")
+    val uuid: String
+)
