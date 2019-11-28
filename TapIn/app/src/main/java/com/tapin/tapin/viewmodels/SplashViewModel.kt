@@ -1,7 +1,6 @@
 package com.tapin.tapin.viewmodels
 
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.*
 import com.tapin.tapin.model.profile.GetProfileRequest
 import com.tapin.tapin.network.Api
@@ -9,7 +8,6 @@ import com.tapin.tapin.utils.Debug
 import com.tapin.tapin.utils.PreferenceManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.lang.Exception
 import java.lang.IllegalArgumentException
