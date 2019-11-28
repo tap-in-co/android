@@ -122,13 +122,16 @@ public class NotificationsFragment extends BaseFragment {
         client.get(UrlGenerator.INSTANCE.getRewardApi(), params, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-
-                String content = new String(responseBody, StandardCharsets.UTF_8);
-                Debug.d("Okhttp", "Success Response: " + content);
-                GetPointsResp userInfo = new Gson().fromJson(content, GetPointsResp.class);
-                PreferenceManager.putPointsData(userInfo);
+                try {
+                    String content = new String(responseBody, StandardCharsets.UTF_8);
+                    Debug.d("Okhttp", "Success Response: " + content);
+                    GetPointsResp userInfo = new Gson().fromJson(content, GetPointsResp.class);
+                    PreferenceManager.putPointsData(userInfo);
 //                    ((HomeActivity) getActivity()).refreshPointsFragment();
-                Debug.e("Notification", content + "-");
+                    Debug.e("Notification", content + "-");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
 
             @Override
@@ -137,6 +140,7 @@ public class NotificationsFragment extends BaseFragment {
                     String content = new String(responseBody, StandardCharsets.UTF_8);
                     Debug.d("Okhttp", "Failure Response: " + content);
                 } catch (Exception e) {
+                    e.printStackTrace();
                 }
                 error.printStackTrace();
             }
@@ -178,13 +182,16 @@ public class NotificationsFragment extends BaseFragment {
         client.get(UrlGenerator.INSTANCE.getRewardApi(), params, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-
-                String content = new String(responseBody, StandardCharsets.UTF_8);
-                Debug.d("Okhttp", "Success Response: " + content);
-                GetPointsResp userInfo = new Gson().fromJson(content, GetPointsResp.class);
-                PreferenceManager.putPointsData(userInfo);
+                try {
+                    String content = new String(responseBody, StandardCharsets.UTF_8);
+                    Debug.d("Okhttp", "Success Response: " + content);
+                    GetPointsResp userInfo = new Gson().fromJson(content, GetPointsResp.class);
+                    PreferenceManager.putPointsData(userInfo);
 //                    ((HomeActivity) getActivity()).refreshPointsFragment();
-                Debug.e("Notification", content + "-");
+                    Debug.e("Notification", content + "-");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
 
             @Override
@@ -193,6 +200,7 @@ public class NotificationsFragment extends BaseFragment {
                     String content = new String(responseBody, StandardCharsets.UTF_8);
                     Debug.d("Okhttp", "Failure Response: " + content);
                 } catch (Exception e) {
+                    e.printStackTrace();
                 }
                 error.printStackTrace();
             }
