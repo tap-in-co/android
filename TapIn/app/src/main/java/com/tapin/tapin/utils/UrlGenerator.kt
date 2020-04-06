@@ -4,7 +4,7 @@ import com.tapin.tapin.BuildConfig
 
 object UrlGenerator {
     private const val STAGING_URL = "https://tapforall.com/staging/tap-in/"
-    private const val PROD_URL = "https://tapforall.com/tap-in/"
+    private const val PROD_URL = "https://tapforall.com/tap-in-servers/tap-in/" //"https://tapforall.com/tap-in/"
 
     fun getBaseUrl(): String = if (!BuildConfig.DEBUG) PROD_URL else STAGING_URL
 
