@@ -76,6 +76,8 @@ public class HomeFragment extends BaseFragment {
     private String mParam1;
     private String mParam2;
 
+    private AsyncHttpClient client = null;
+
     public HomeFragment() {
         // Required empty public constructor
     }
@@ -254,6 +256,58 @@ public class HomeFragment extends BaseFragment {
 
         alertDialog.show();
     }
+
+    /*private void getAllMarketData() {
+        pd = ProgressHUD.show(getActivity(), getActivity().getResources().getString(R.string.please_wait), true, false);
+
+        AsyncHttpClient client = new AsyncHttpClient();
+        client.setTimeout(Constant.TIMEOUT);
+        client.setLoggingEnabled(true);
+        client.setLoggingLevel(LogInterface.DEBUG);
+
+        final RequestParams params = new RequestParams();
+        final String url = UrlGenerator.INSTANCE.getAllMarkets();
+        Debug.d("Okhttp", "API: " + url);
+
+        client.get(getActivity(), url, params, new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                try {
+                    String content = new String(responseBody, StandardCharsets.UTF_8);
+                    Debug.d("Okhttp", "Success Response: " + content);
+
+                    businessInfo = new Gson().fromJson(content, BusinessInfo.class);
+
+                    businessAdpater.addAllBusiness(businessInfo.getListBusinesses());
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                if (pd != null && pd.isShowing()) {
+                    pd.dismiss();
+                    pd = null;
+                }
+
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+
+                if (pd != null && pd.isShowing()) {
+                    pd.dismiss();
+                    pd = null;
+                }
+
+                try {
+                    String content = new String(responseBody, StandardCharsets.UTF_8);
+                    Debug.d("Okhttp", "Failure Response: " + content);
+                } catch (Exception e) {
+
+                }
+            }
+        });
+    }*/
 
     private void getData() {
         pd = ProgressHUD.show(getActivity(), getActivity().getResources().getString(R.string.please_wait), true, false);
