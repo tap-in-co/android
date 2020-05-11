@@ -197,7 +197,7 @@ public class HomeFragment extends BaseFragment {
         super.onActivityCreated(savedInstanceState);
 
         if (Utils.isInternetConnected(getActivity())) {
-            getData();
+            //getData();
 
         } else {
             messages.showErrorInConnection();
