@@ -75,7 +75,7 @@ public class PointsFragment extends BaseFragment {
         lvPoints = view.findViewById(R.id.lvPoints);
         lvPoints.setAdapter(pointsAdapter);
 
-        refreshData();
+        //refreshData();
 
         return view;
     }

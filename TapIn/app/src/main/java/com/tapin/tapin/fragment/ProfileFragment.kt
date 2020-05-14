@@ -108,11 +108,11 @@ class ProfileFragment : BaseFragment() {
         btnManageCreditCard = view.findViewById(R.id.btnManageCard)
 
 
-        etEmail.setText(if (Utils.isNotEmpty(PreferenceManager.getEmail())) PreferenceManager.getEmail() else "")
+        /*etEmail.setText(if (Utils.isNotEmpty(PreferenceManager.getEmail())) PreferenceManager.getEmail() else "")
         etWorkEmail.setText(if (Utils.isNotEmpty(PreferenceManager.getWorkEmail())) PreferenceManager.getWorkEmail() else "")
         etZipcode.setText(if (Utils.isNotEmpty(PreferenceManager.getZipcode())) PreferenceManager.getZipcode() else "")
         etNickname.setText(if (Utils.isNotEmpty(PreferenceManager.getUsername())) PreferenceManager.getUsername() else "")
-        etSMSNumber.setText(if (Utils.isNotEmpty(PreferenceManager.getPhone())) PreferenceManager.getPhone() else "")
+        etSMSNumber.setText(if (Utils.isNotEmpty(PreferenceManager.getPhone())) PreferenceManager.getPhone() else "")*/
 
         btnBack.setOnClickListener(onClickListenerBack)
         btnSave.setOnClickListener(onClickListenerSave)

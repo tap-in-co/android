@@ -14,8 +14,8 @@ open class BaseFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        isCorporateOrder = PreferenceManager.getInstance().isCorporateOrder
-        corporateOrderMerchantIds = PreferenceManager.getInstance().corporateOrderMerchantIds
-        userInfo = PreferenceManager.getUserInfo()
+        //isCorporateOrder = PreferenceManager.getInstance().isCorporateOrder
+        //corporateOrderMerchantIds = PreferenceManager.getInstance().corporateOrderMerchantIds
+        //userInfo = PreferenceManager.getUserInfo()
     }
 }

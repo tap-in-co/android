@@ -112,7 +112,7 @@ public class NotificationsFragment extends BaseFragment {
 
 //        params.put("businessID", business.businessID);
         params.put("cmd", "get_all_notifications_for_consume");
-        params.put("consumer_id", PreferenceManager.getUserId()/*"1234570319"*/);
+        params.put("consumer_id", "1234570319");
 
         Debug.d("Okhttp", "API: " + UrlGenerator.INSTANCE.getRewardApi() + " " + params.toString());
 

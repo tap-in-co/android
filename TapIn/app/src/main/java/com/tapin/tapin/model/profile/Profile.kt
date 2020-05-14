@@ -1,6 +1,7 @@
 package com.tapin.tapin.model.profile
 
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
 data class ProfileRequest(
     @SerializedName("age_group")
@@ -48,7 +49,7 @@ data class ProfileResponse(
     val uid: String,
     @SerializedName("zipcode")
     val zipcode: String
-) {
+): Serializable {
     fun isValidProfile(): Boolean = email1.isNotEmpty()
 }
 

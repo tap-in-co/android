@@ -11,37 +11,28 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.google.firebase.iid.FirebaseInstanceId;
 import com.tapin.tapin.R;
-import com.tapin.tapin.fragment.HomeFragment;
-import com.tapin.tapin.fragment.MenuFoodListFragment;
-import com.tapin.tapin.fragment.NotificationsFragment;
-import com.tapin.tapin.fragment.OrderFragment;
-import com.tapin.tapin.fragment.OrderSummaryFragment;
-import com.tapin.tapin.fragment.PaymentFragment;
-import com.tapin.tapin.fragment.PointsFragment;
-import com.tapin.tapin.fragment.ProfileFragment;
-import com.tapin.tapin.model.OrderedInfo;
+import com.tapin.tapin.callbacks.Communication;
+import com.tapin.tapin.fragment.*;
+import com.tapin.tapin.model.market.Market;
 import com.tapin.tapin.utils.AlertMessages;
 import com.tapin.tapin.utils.Constant;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class HomeActivity extends BaseActivity {
-
-    public static final String CURRENT_TAG = HomeFragment.class.getSimpleName();
+public class HomeActivity extends BaseActivity implements Communication {
     public static final int PERMISSION_FINE_LOCATION = 1001;
-    private static final String SELECTED_ITEM = "SELECTED_ITEM";
-
+    private static String SELECTED_TAB_NUMBER = "selected_tab_number";
 
     private static final List<String> FRAGMENT_NAMES_TO_GO_HOME = new ArrayList<>();
 
@@ -66,11 +57,13 @@ public class HomeActivity extends BaseActivity {
     ImageView ivPoints;
     TextView tvPoints;
 
-    boolean isHome;
+    /*boolean isHome;
     boolean isProfile;
     boolean isNotifications;
     boolean isPoints;
-    MenuItem selectedMenuItem;
+    MenuItem selectedMenuItem;*/
+
+    private int selectedTabNumber = 0;
 
     AlertMessages messages;
     private int selectedItem;
@@ -89,9 +82,15 @@ public class HomeActivity extends BaseActivity {
 
         messages = new AlertMessages(this);
 
-        initViews();
+        initViews(savedInstanceState);
 
         handleIntent();
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putInt(SELECTED_TAB_NUMBER, selectedTabNumber);
+        super.onSaveInstanceState(outState);
     }
 
     private void handleIntent() {
@@ -112,7 +111,7 @@ public class HomeActivity extends BaseActivity {
         }
     }
 
-    private void initViews() {
+    private void initViews(Bundle savedInstanceState) {
 
         frame_home = findViewById(R.id.frame_home);
         frame_profile = findViewById(R.id.frame_profile);
@@ -135,9 +134,10 @@ public class HomeActivity extends BaseActivity {
         llHome.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (shouldShowCancelOrder()) {
+                markHomeAsSelected();
+                /*if (shouldShowCancelOrder()) {
                     showClearOrderDialog();
-                }
+                }*/
             }
         });
 
@@ -162,10 +162,21 @@ public class HomeActivity extends BaseActivity {
             }
         });
 
-        if (BaseActivity.Companion.isPickUpOrder()) {
-            markProfileAsSelected();
-        } else {
-            markHomeAsSelected();
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.frame_home, MarketListFragment.Companion.marketListFragment()).commit();
+            getSupportFragmentManager().beginTransaction().replace(R.id.frame_profile, ProfileFragment.Companion.newInstance("DASHBOARD")).commit();
+            getSupportFragmentManager().beginTransaction().replace(R.id.frame_notifications, NotificationsFragment.newInstance("", "")).commit();
+            getSupportFragmentManager().beginTransaction().replace(R.id.frame_points, PointsFragment.newInstance("", "")).commit();
+        }
+
+        if (savedInstanceState != null) {
+            selectedTabNumber = savedInstanceState.getInt(SELECTED_TAB_NUMBER, 0);
+        }
+        switch (selectedTabNumber) {
+            case 3: markPointsAsSelected(); break;
+            case 2: markNotificationAsSelected(); break;
+            case 1: markProfileAsSelected(); break;
+            default: markHomeAsSelected(); break;
         }
     }
 
@@ -259,52 +270,68 @@ public class HomeActivity extends BaseActivity {
     private void markHomeAsSelected() {
         selectBottomMenu(frame_home, ivHome, R.drawable.tab_home_activated, tvHome);
 
-        if (!isHome) {
-            isHome = true;
-            Fragment homeFragment = HomeFragment.newInstance("", "");
+        if (selectedTabNumber != 0) {
+            selectedTabNumber = 0;
+            findViewById(R.id.frame_home).setVisibility(View.VISIBLE);
+            findViewById(R.id.frame_profile).setVisibility(View.GONE);
+            findViewById(R.id.frame_notifications).setVisibility(View.GONE);
+            findViewById(R.id.frame_points).setVisibility(View.GONE);
+            /*Fragment homeFragment = MarketListFragment.Companion.marketListFragment();//HomeFragment.newInstance("", "");
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.add(R.id.frame_home, homeFragment);
-            ft.commit();
+            ft.commit();*/
         }
     }
 
     private void markProfileAsSelected() {
         selectBottomMenu(frame_profile, ivProfile, R.drawable.tab_profile_activated, tvProfile);
 
-        if (!isProfile) {
-            isProfile = true;
-            Fragment profileFragment = ProfileFragment.Companion.newInstance("DASHBOARD");
+        if (selectedTabNumber != 1) {
+            selectedTabNumber = 1;
+            findViewById(R.id.frame_home).setVisibility(View.GONE);
+            findViewById(R.id.frame_profile).setVisibility(View.VISIBLE);
+            findViewById(R.id.frame_notifications).setVisibility(View.GONE);
+            findViewById(R.id.frame_points).setVisibility(View.GONE);
+            /*Fragment profileFragment = ProfileFragment.Companion.newInstance("DASHBOARD");
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.add(R.id.frame_profile, profileFragment);
-            ft.commit();
+            ft.commit();*/
         }
     }
 
     private void markNotificationAsSelected() {
         selectBottomMenu(frame_notifications, ivNotifications, R.drawable.tab_notification_activated, tvNotifications);
 
-        if (!isNotifications) {
-            isNotifications = true;
-            Fragment notificationsFragment = NotificationsFragment.newInstance("", "");
+        if (selectedTabNumber != 2) {
+            selectedTabNumber = 2;
+            findViewById(R.id.frame_home).setVisibility(View.GONE);
+            findViewById(R.id.frame_profile).setVisibility(View.GONE);
+            findViewById(R.id.frame_notifications).setVisibility(View.VISIBLE);
+            findViewById(R.id.frame_points).setVisibility(View.GONE);
+            /*Fragment notificationsFragment = NotificationsFragment.newInstance("", "");
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.add(R.id.frame_notifications, notificationsFragment);
-            ft.commit();
+            ft.commit();*/
         }
     }
 
     private void markPointsAsSelected() {
         selectBottomMenu(frame_points, ivPoints, R.drawable.tab_points_activated, tvPoints);
 
-        if (!isPoints) {
-            isPoints = true;
-            Fragment pointsFragment = PointsFragment.newInstance("", "");
+        if (selectedTabNumber != 3) {
+            selectedTabNumber = 3;
+            findViewById(R.id.frame_home).setVisibility(View.GONE);
+            findViewById(R.id.frame_profile).setVisibility(View.GONE);
+            findViewById(R.id.frame_notifications).setVisibility(View.GONE);
+            findViewById(R.id.frame_points).setVisibility(View.VISIBLE);
+            /*Fragment pointsFragment = PointsFragment.newInstance("", "");
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.add(R.id.frame_points, pointsFragment);
-            ft.commit();
+            ft.commit();*/
         }
     }
 
-    private boolean shouldShowCancelOrder() {
+    /*private boolean shouldShowCancelOrder() {
         final List<Fragment> fragments = getSupportFragmentManager().getFragments();
 
         if (fragments.size() > 0) {
@@ -315,7 +342,7 @@ public class HomeActivity extends BaseActivity {
         }
 
         return false;
-    }
+    }*/
 
     private void showClearOrderDialog() {
         messages.alert(HomeActivity.this, null, "Are you sure you want to cancel your current Order Process", "Yes", "No", null, new AlertMessages.AlertDialogCallback() {
@@ -336,5 +363,10 @@ public class HomeActivity extends BaseActivity {
 
             }
         });
+    }
+
+    @Override
+    public void onMarketSelected(@NotNull Market market) {
+        getSupportFragmentManager().beginTransaction().replace(R.id.frame_home, BusinessListFragment.Companion.businessListFragment(market.getMerchantIds())).addToBackStack("").commit();
     }
 }

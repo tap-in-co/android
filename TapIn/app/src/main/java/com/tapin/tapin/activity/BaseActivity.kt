@@ -33,9 +33,9 @@ open class BaseActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        isCorporateOrder = PreferenceManager.getInstance().isCorporateOrder
-        corporateOrderMerchantIds = PreferenceManager.getInstance().corporateOrderMerchantIds
-        userInfo = PreferenceManager.getUserInfo()
+        //isCorporateOrder = PreferenceManager.getInstance().isCorporateOrder
+        //corporateOrderMerchantIds = PreferenceManager.getInstance().corporateOrderMerchantIds
+        //userInfo = PreferenceManager.getUserInfo()
     }
 
     // Removes the list

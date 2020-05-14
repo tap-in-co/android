@@ -1,5 +1,6 @@
 package com.tapin.tapin.network
 
+import com.tapin.tapin.model.business.AllBusiness
 import com.tapin.tapin.model.market.AllMarkets
 import com.tapin.tapin.model.profile.CardDetailsResponse
 import com.tapin.tapin.model.profile.GetProfileRequest
@@ -23,4 +24,7 @@ interface Api {
 
     @GET("include/model.php")
     suspend fun getAllMarkets(@Query("cmd") cmd: String = "getAllCorps"): AllMarkets
+
+    @GET("include/model.php")
+    suspend fun getAllBusinessWithIds(@Query("cmd") cmd: String = "get_all_businesses_for_set", @Query("ids") ids: String): AllBusiness
 }

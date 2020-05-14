@@ -1,11 +1,11 @@
 package com.tapin.tapin.viewmodels
 
-import android.content.Context
 import androidx.lifecycle.*
+import com.tapin.tapin.model.profile.CardDetailsResponse
 import com.tapin.tapin.model.profile.GetProfileRequest
+import com.tapin.tapin.model.profile.ProfileResponse
 import com.tapin.tapin.network.Api
 import com.tapin.tapin.utils.Debug
-import com.tapin.tapin.utils.PreferenceManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -14,10 +14,10 @@ import java.lang.IllegalArgumentException
 import java.net.UnknownHostException
 
 class SplashViewModel(val api: Api) : ViewModel() {
-    private val navigateMutableLiveData = MutableLiveData<Boolean>().also {
-        it.postValue(false)
+    private val navigateMutableLiveData = MutableLiveData<Triple<Boolean, ProfileResponse?, CardDetailsResponse?>>().also {
+        it.postValue(Triple(false, null, null))
     }
-    val navigateLiveData: LiveData<Boolean> = navigateMutableLiveData
+    val navigateLiveData: LiveData<Triple<Boolean, ProfileResponse?, CardDetailsResponse?>> = navigateMutableLiveData
 
     private val errorMutableLiveData = MutableLiveData<String?>().also {
         it.postValue(null)
@@ -53,15 +53,17 @@ class SplashViewModel(val api: Api) : ViewModel() {
 
                     val cardDetails = deferredCardDetails.await()
                     Debug.d("SplashViewModel", "Card Details : $cardDetails")
+
+                    askToNavigate(profile, cardDetails)
                 }
 
-                askToNavigate()
+                askToNavigate(profile, null)
             } catch (e: Exception) {
                 when (e) {
                     is UnknownHostException -> {
                         errorMutableLiveData.postValue("We can not proceed without network, please check your network connection.")
                     }
-                    else -> askToNavigate()
+                    else -> askToNavigate(null, null)
                 }
                 Debug.d("SplashViewModel", "$e")
                 Debug.d("SplashViewModel", "${e.message}")
@@ -69,8 +71,8 @@ class SplashViewModel(val api: Api) : ViewModel() {
         }
     }
 
-    private fun askToNavigate() {
-        navigateMutableLiveData.postValue(true)
+    private fun askToNavigate(profile: ProfileResponse?, cardDetailsResponse: CardDetailsResponse?) {
+        navigateMutableLiveData.postValue(Triple(true, profile, cardDetailsResponse))
     }
 }
 
@@ -84,12 +86,4 @@ class SplashViewModelFactory(val api: Api) : ViewModelProvider.Factory {
         throw IllegalArgumentException("Please make sure to pass the proper parameters to create this view model")
     }
 
-}
-
-object SplashViewModelHelper {
-    fun provideSplashViewModelFactory(context: Context): SplashViewModelFactory {
-        val preferenceManager: PreferenceManager = context.applicationContext as PreferenceManager
-
-        return SplashViewModelFactory(preferenceManager.api)
-    }
 }

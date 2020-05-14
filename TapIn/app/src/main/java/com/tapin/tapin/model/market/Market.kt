@@ -2,6 +2,7 @@ package com.tapin.tapin.model.market
 
 
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
 data class Market(
     @SerializedName("active")
@@ -50,4 +51,4 @@ data class Market(
     val pictures: String,
     @SerializedName("user_id")
     val userId: String
-)
+): Serializable
