@@ -26,11 +26,11 @@ import com.baoyz.swipemenulistview.SwipeMenuListView;
 import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.tapin.tapin.App;
 import com.tapin.tapin.R;
 import com.tapin.tapin.adapter.CardAdapter;
 import com.tapin.tapin.model.AllCardsInfo;
 import com.tapin.tapin.model.CardInfo;
-import com.tapin.tapin.model.UserInfo;
 import com.tapin.tapin.utils.AlertMessages;
 import com.tapin.tapin.utils.Constant;
 import com.tapin.tapin.utils.Debug;
@@ -343,9 +343,9 @@ public class CardDetailFragment extends BaseFragment {
 
         try {
 
-            UserInfo userInfo = PreferenceManager.getUserInfo();
+            //UserInfo userInfo = PreferenceManager.getUserInfo();
 
-            String URL = UrlGenerator.INSTANCE.getMainUrl() + "cmd=get_consumer_all_cc_info&consumer_id=" + userInfo.uid;
+            String URL = UrlGenerator.INSTANCE.getMainUrl() + "cmd=get_consumer_all_cc_info&consumer_id=" + ((App)requireActivity().getApplication()).getProfile().getUid();
 
             AsyncHttpClient client = new AsyncHttpClient();
             client.setTimeout(Constant.TIMEOUT);
@@ -421,7 +421,7 @@ public class CardDetailFragment extends BaseFragment {
             final JSONObject json = new JSONObject();
 
             json.put("cmd", "save_cc_info");
-            json.put("consumer_id", PreferenceManager.getUserId());
+            json.put("consumer_id", ((App)requireActivity().getApplication()).getProfile().getUid());
             json.put("cc_no", cardNo);
             json.put("expiration_date", year + "-" + month + "-01");
             json.put("cvv", cvv);
@@ -460,7 +460,7 @@ public class CardDetailFragment extends BaseFragment {
 
                             Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
 
-                            PreferenceManager.saveCardData(json.toString());
+                            //PreferenceManager.saveCardData(json.toString());
 
                             if (updateCards != null) {
                                 getActivity().onBackPressed();
@@ -523,7 +523,7 @@ public class CardDetailFragment extends BaseFragment {
             final JSONObject json = new JSONObject();
 
             json.put("cmd", "save_cc_info");
-            json.put("consumer_id", PreferenceManager.getUserId());
+            json.put("consumer_id", ((App)requireActivity().getApplication()).getProfile().getUid());
             json.put("cc_no", cardNo);
             json.put("expiration_date", expirationDate);
             json.put("cvv", cvv);

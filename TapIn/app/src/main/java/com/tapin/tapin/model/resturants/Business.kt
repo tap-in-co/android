@@ -1,146 +1,143 @@
 package com.tapin.tapin.model.resturants
 
-
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 
 data class Business(
     @SerializedName("active")
-    val active: String = "",
+    val active: String,
     @SerializedName("address")
-    val address: String = "",
+    val address: String,
     @SerializedName("beta")
-    val beta: String = "",
+    val beta: String,
     @SerializedName("bg_color")
     val bgColor: String = "",
     @SerializedName("bg_image")
-    val bgImage: String = "",
+    val bgImage: String,
     @SerializedName("branch")
-    val branch: String = "",
+    val branch: String,
     @SerializedName("business_delivery_id")
-    val businessDeliveryId: String = "",
+    val businessDeliveryId: String,
     @SerializedName("businessID")
-    val businessID: String = "",
-    @SerializedName("business_promotion_id")
-    val businessPromotionId: String?,
+    val businessID: String,
     @SerializedName("businessTypes")
-    val businessTypes: String = "",
+    val businessTypes: String,
     @SerializedName("chat_masters")
-    val chatMasters: String = "",
+    val chatMasters: String,
     @SerializedName("chatroom_table")
-    val chatroomTable: String = "",
+    val chatroomTable: String,
     @SerializedName("city")
-    val city: String = "",
-    @SerializedName("closing_time")
-    val closingTime: String?,
+    val city: String,
+    @SerializedName("corp_cutoff")
+    val corpCutoff: String,
     @SerializedName("curr_code")
-    val currCode: String = "",
+    val currCode: String,
     @SerializedName("curr_symbol")
-    val currSymbol: String = "",
+    val currSymbol: String,
     @SerializedName("customerProfileName")
-    val customerProfileName: String = "",
+    val customerProfileName: String,
+    @SerializedName("cutoff_no_days")
+    val cutoffNoDays: String = "N/A",
+    @SerializedName("cutoff_time")
+    val cutoffTime: String = "N/A",
     @SerializedName("cycle_time")
-    val cycleTime: String = "",
+    val cycleTime: String = "N/A",
     @SerializedName("date_added")
-    val dateAdded: String = "",
+    val dateAdded: String,
     @SerializedName("date_dropped")
-    val dateDropped: String = "",
+    val dateDropped: String,
     @SerializedName("delivery_location_charge")
-    val deliveryLocationCharge: String = "",
+    val deliveryLocationCharge: String,
     @SerializedName("delivery_table_charge")
-    val deliveryTableCharge: String = "",
+    val deliveryTableCharge: String,
+    @SerializedName("description")
+    val description: String = "N/A",
     @SerializedName("display_icon_product_categories")
-    val displayIconProductCategories: String = "",
+    val displayIconProductCategories: String,
     @SerializedName("display_icon_products")
-    val displayIconProducts: String = "",
+    val displayIconProducts: String,
     @SerializedName("email")
-    val email: String = "",
+    val email: String,
     @SerializedName("exclusive")
-    val exclusive: String = "",
+    val exclusive: String,
+    @SerializedName("external_id")
+    val externalId: String = "N/A",
     @SerializedName("icon")
-    val icon: String?,
+    val icon: String,
     @SerializedName("inquiry_for_product")
-    val inquiryForProduct: String = "",
+    val inquiryForProduct: String,
     @SerializedName("keywords")
-    val keywords: String = "",
+    val keywords: String,
     @SerializedName("lat")
-    val lat: String = "",
+    val lat: String,
     @SerializedName("lng")
-    val lng: String = "",
+    val lng: String,
     @SerializedName("map_image_url")
-    val mapImageUrl: String = "",
+    val mapImageUrl: String,
     @SerializedName("marketing_statement")
-    val marketingStatement: String = "",
+    val marketingStatement: String,
     @SerializedName("name")
-    val name: String = "",
+    val name: String,
     @SerializedName("neighborhood")
-    val neighborhood: String = "",
+    val neighborhood: String,
     @SerializedName("note")
-    val note: String = "",
+    val note: String,
     @SerializedName("offer_points")
-    val offerPoints: String = "",
-    @SerializedName("opening_time")
-    val openingTime: String?,
+    val offerPoints: String,
     @SerializedName("order_when_closed")
-    val orderWhenClosed: String = "",
+    val orderWhenClosed: String,
     @SerializedName("password")
-    val password: String = "",
+    val password: String,
     @SerializedName("payment_processing_id")
-    val paymentProcessingId: String = "",
+    val paymentProcessingId: String,
     @SerializedName("phone")
-    val phone: String = "",
+    val phone: String,
     @SerializedName("pickup_counter_charge")
-    val pickupCounterCharge: String = "",
+    val pickupCounterCharge: String,
     @SerializedName("pickup_counter_later")
-    val pickupCounterLater: String = "",
+    val pickupCounterLater: String,
     @SerializedName("pickup_location_charge")
-    val pickupLocationCharge: String = "",
+    val pickupLocationCharge: String,
     @SerializedName("pictures")
-    var pictures: String = "",
+    val pictures: String,
     @SerializedName("process_time")
-    val processTime: String = "",
-    @SerializedName("promotion_code")
-    val promotionCode: String?,
-    @SerializedName("promotion_discount_amount")
-    val promotionDiscountAmount: String?,
-    @SerializedName("promotion_message")
-    val promotionMessage: String?,
+    val processTime: String,
     @SerializedName("rating")
-    val rating: String = "",
+    val rating: String,
+    @SerializedName("section_in_map")
+    val sectionInMap: String = "N/A",
     @SerializedName("service_charge")
-    val serviceCharge: String = "",
+    val serviceCharge: String,
     @SerializedName("short_name")
-    val shortName: String = "",
+    val shortName: String,
     @SerializedName("should_tip")
-    val shouldTip: String = "",
+    val shouldTip: String,
     @SerializedName("sms_no")
-    val smsNo: String = "",
+    val smsNo: String,
     @SerializedName("state")
-    val state: String = "",
+    val state: String,
     @SerializedName("stripe_password")
-    val stripePassword: String = "",
+    val stripePassword: String,
     @SerializedName("stripe_secret_key")
-    val stripeSecretKey: String = "",
+    val stripeSecretKey: String,
     @SerializedName("stripe_username")
-    val stripeUsername: String = "",
+    val stripeUsername: String,
     @SerializedName("sub_businesses")
-    val subBusinesses: String = "",
+    val subBusinesses: String,
     @SerializedName("tax_rate")
-    val taxRate: String = "",
+    val taxRate: String,
     @SerializedName("text_color")
     val textColor: String = "",
-    @SerializedName("ti_rating")
-    val tiRating: String?,
     @SerializedName("time_interval")
-    val timeInterval: String = "",
+    val timeInterval: String,
     @SerializedName("timestamp")
-    val timestamp: String = "",
+    val timestamp: String,
     @SerializedName("username")
-    val username: String = "",
+    val username: String,
     @SerializedName("validate_chat")
-    val validateChat: String = "",
+    val validateChat: String,
     @SerializedName("website")
-    val website: String = "",
+    val website: String,
     @SerializedName("zipcode")
-    val zipcode: String = ""
+    val zipcode: String
 ) : Serializable, Cloneable

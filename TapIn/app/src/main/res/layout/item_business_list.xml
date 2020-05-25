@@ -8,56 +8,34 @@
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/business_name"
-        style="@style/TextAppearance.AppCompat.Headline"
+        style="@style/TextAppearance.AppCompat.Body2"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/business_description"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="OHSU Farmers Market" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/business_description"
-        style="@style/TextAppearance.AppCompat.Small"
+        style="@style/TextAppearance.AppCompat.Body1"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
+
+        app:layout_constraintEnd_toStartOf="@+id/business_image"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/business_name"
         tools:text="Serving Contra Costa communities since 1982" />
 
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/business_address"
-        style="@style/TextAppearance.AppCompat.Small"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/business_image"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/business_description"
-        tools:text="1799 Locust St, Walnut Creek, CA 94596" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:scaleType="centerCrop"
+        app:srcCompat="@drawable/card_american" />
 
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/business_cut_off_time"
-        style="@style/TextAppearance.AppCompat.Small"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Cut off"
-        app:layout_constraintEnd_toStartOf="@+id/market_cut_off_time_value_text"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/business_address" />
 
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/business_cut_off_time_value_text"
-        style="@style/TextAppearance.AppCompat.Headline"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/business_cut_off_time"
-        app:layout_constraintTop_toTopOf="@+id/business_cut_off_time"
-        tools:text="10:30:00" />
 </androidx.constraintlayout.widget.ConstraintLayout>

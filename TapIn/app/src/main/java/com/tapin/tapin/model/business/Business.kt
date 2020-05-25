@@ -2,6 +2,7 @@ package com.tapin.tapin.model.business
 
 
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
 data class Business(
     @SerializedName("active")
@@ -140,4 +141,4 @@ data class Business(
     val website: String,
     @SerializedName("zipcode")
     val zipcode: String
-)
+): Serializable

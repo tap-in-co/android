@@ -5,7 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.tapin.tapin.R
-import com.tapin.tapin.model.business.Business
+import com.tapin.tapin.model.resturants.Business
 import kotlinx.android.synthetic.main.item_business_list.view.*
 
 class BusinessListAdapter(private val callback: (Business) -> Unit): RecyclerView.Adapter<BusinessViewHolder>() {
@@ -32,9 +32,7 @@ class BusinessListAdapter(private val callback: (Business) -> Unit): RecyclerVie
 class BusinessViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
     fun bind(business: Business, callback: (Business) -> Unit) {
         itemView.business_name.text = business.name
-        itemView.business_description.text = business.marketingStatement
-        itemView.business_address.text = business.address
-        itemView.business_cut_off_time_value_text.text = business.cutoffTime
+        itemView.business_description.text = business.description
 
         itemView.setOnClickListener {
             callback.invoke(business)

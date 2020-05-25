@@ -4,28 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="16dp">
-
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/market_name"
-        style="@style/TextAppearance.AppCompat.Headline"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="OHSU Farmers Market" />
-
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/market_description"
-        style="@style/TextAppearance.AppCompat.Small"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/market_name"
-        tools:text="Serving Contra Costa communities since 1982" />
+    android:padding="4dp">
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/market_image"
@@ -35,41 +14,120 @@
         android:scaleType="centerCrop"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/market_description"
-        tools:srcCompat="@drawable/card_american" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:src="@drawable/card_american" />
 
     <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/market_address"
-        style="@style/TextAppearance.AppCompat.Small"
+        android:id="@+id/market_name"
+        style="@style/TextAppearance.AppCompat.Body2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/logo_image_view"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/market_image"
+        tools:text="OHSU Farmers Market" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/market_description"
+        style="@style/TextAppearance.AppCompat.Body1"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/logo_image_view"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/market_name"
+        tools:text="Serving Contra Costa communities since 1982" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/logo_image_view"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:scaleType="centerCrop"
         app:layout_constraintTop_toBottomOf="@+id/market_image"
+        android:src="@drawable/card_american" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/market_address"
+        style="@style/TextAppearance.AppCompat.Body1"
+        android:layout_width="253dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/market_description"
         tools:text="1799 Locust St, Walnut Creek, CA 94596" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/distance_text_view"
+        style="@style/TextAppearance.AppCompat.Body1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.988"
+        app:layout_constraintStart_toEndOf="@+id/market_address"
+        app:layout_constraintTop_toBottomOf="@+id/logo_image_view"
+        tools:text="150Miles" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        style="@style/TextAppearance.AppCompat.Body1"
+        android:id="@+id/market_link"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/market_cut_off_time"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/market_address"
+        app:layout_constraintVertical_bias="0.0"
+        tools:text="http://www.google.com" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/market_cut_off_time"
         style="@style/TextAppearance.AppCompat.Small"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Cut off"
-        app:layout_constraintEnd_toStartOf="@+id/market_cut_off_time_value_text"
-        app:layout_constraintHorizontal_bias="0.5"
+        android:layout_marginTop="12dp"
+        android:text="Mobile app ordering Cut off:"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/market_address" />
+        app:layout_constraintTop_toBottomOf="@+id/market_link" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/market_cut_off_time_value_text"
-        style="@style/TextAppearance.AppCompat.Headline"
+        style="@style/TextAppearance.AppCompat.Light.Widget.PopupMenu.Small"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintBaseline_toBaselineOf="@+id/market_cut_off_time"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="4dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_bias="0.485"
         app:layout_constraintStart_toEndOf="@+id/market_cut_off_time"
+        app:layout_constraintTop_toBottomOf="@+id/market_link"
+        tools:text="10:30:00" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/market_pick_up_date"
+        style="@style/TextAppearance.AppCompat.Small"
+        android:layout_width="176dp"
+        android:gravity="right"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Pickup date:"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/market_cut_off_time_value_text" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/market_pick_up_date_value"
+        style="@style/TextAppearance.AppCompat.Light.Widget.PopupMenu.Small"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.504"
+        app:layout_constraintStart_toEndOf="@+id/market_pick_up_date"
+        app:layout_constraintTop_toBottomOf="@+id/market_cut_off_time_value_text"
         tools:text="10:30:00" />
 
 

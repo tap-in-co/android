@@ -12,7 +12,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.lang.IllegalArgumentException
 
-class BusinessListViewModel(val api: Api, val ids: String) : ViewModel() {
+class BusinessListViewModel(val api: Api, private val ids: String) : ViewModel() {
     private val allBusinessMutableLiveData = MutableLiveData<Result<AllBusiness>>()
     val allBusinessLiveData: LiveData<Result<AllBusiness>> = allBusinessMutableLiveData
 

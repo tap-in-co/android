@@ -27,6 +27,7 @@ import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
+import com.tapin.tapin.App;
 import com.tapin.tapin.R;
 import com.tapin.tapin.activity.HomeActivity;
 import com.tapin.tapin.adapter.BusinessDetailAdapter;
@@ -58,10 +59,6 @@ import cz.msebera.android.httpclient.Header;
 
 
 public class BusinessDetailFragment extends BaseFragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
     View view;
     TextView tvToolbarLeft;
     TextView tvToolbarTitle;
@@ -125,16 +122,13 @@ public class BusinessDetailFragment extends BaseFragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
      * @return A new instance of fragment HomeFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static BusinessDetailFragment newInstance(String param1, String param2) {
+    public static BusinessDetailFragment newInstance(final Business business) {
         BusinessDetailFragment fragment = new BusinessDetailFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putSerializable("business", business);
         fragment.setArguments(args);
         return fragment;
     }
@@ -147,9 +141,11 @@ public class BusinessDetailFragment extends BaseFragment {
 
         calendar = Calendar.getInstance();
 
-        business = Constant.business;
+        //business = Constant.business;
 
         messages = new AlertMessages(getActivity());
+
+        business = (Business) getArguments().get("business");
 
         initHeader();
 
@@ -205,7 +201,7 @@ public class BusinessDetailFragment extends BaseFragment {
         RequestParams params = new RequestParams();
         params.put("business_id", business.getBusinessID());
         params.put("cmd", "previous_order");
-        params.put("consumer_id", PreferenceManager.getUserId());
+        params.put("consumer_id", ((App)requireActivity().getApplication()).getProfile().getUid());
 
         Debug.d("Okhttp", "API: " + UrlGenerator.INSTANCE.getMainUrl() + " " + params.toString());
 
@@ -309,7 +305,7 @@ public class BusinessDetailFragment extends BaseFragment {
     private void setBusinessData(Business business) {
 
         if (business.getPictures().endsWith(",")) {
-            business.setPictures(business.getPictures().substring(0, business.getPictures().length() - 1));
+            //business.setPictures(business.getPictures().substring(0, business.getPictures().length() - 1));
         }
 
         final List<String> image_list = Arrays.asList((business.getPictures().split("\\s*,\\s*")));
@@ -334,13 +330,11 @@ public class BusinessDetailFragment extends BaseFragment {
         tvWebsite.setText(Utils.isNotEmpty(business.getWebsite()) ? business.getWebsite() : "");
         textViewBusinessType.setText(Utils.isNotEmpty(business.getCustomerProfileName()) ? business.getCustomerProfileName() : "");
         tvPaymentEmail.setText(Utils.isNotEmpty(business.getNeighborhood()) ? business.getNeighborhood() : "");
-        tvTime.setText(Utils.getOpenTime(business.getOpeningTime(), business.getClosingTime()));
-        ratingBar.setRating(Float.parseFloat(business.getRating()));
-        // tvRateCount.setText(Utils.isNotEmpty(business.ti_rating) ? "("+business.ti_rating +")": "");
-        // tvPrice.setText(Utils.isNotEmpty(business.website)?business.website:"");
+        //tvTime.setText(Utils.getOpenTime(business.getOpeningTime(), business.getClosingTime()));
+        //ratingBar.setRating(Float.parseFloat(business.getRating()));
 
         // opening_time & closing_time is not applicable for Corp Order
-        if (business.getOpeningTime() != null && business.getClosingTime() != null) {
+        /*if (business.getOpeningTime() != null && business.getClosingTime() != null) {
             try {
 
                 SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
@@ -357,7 +351,7 @@ public class BusinessDetailFragment extends BaseFragment {
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-        }
+        }*/
 
     }
 
@@ -377,7 +371,7 @@ public class BusinessDetailFragment extends BaseFragment {
             }
         });
 
-        tvToolbarTitle.setText(business.getShortName() + "");
+        //tvToolbarTitle.setText(business.getShortName() + "");
 
         tvToolbarLeft.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -494,7 +488,7 @@ public class BusinessDetailFragment extends BaseFragment {
         RequestParams params = new RequestParams();
         params.put("businessID", business.getBusinessID());
         params.put("cmd", "get_all_points");
-        params.put("consumerID", PreferenceManager.getUserId());
+        params.put("consumerID", ((App)requireActivity().getApplication()).getProfile().getUid());
 
         Debug.d("Okhttp", "API: " + UrlGenerator.INSTANCE.getRewardApi() + " " + params.toString());
 
@@ -507,7 +501,7 @@ public class BusinessDetailFragment extends BaseFragment {
                 String content = new String(responseBody, StandardCharsets.UTF_8);
                 Debug.d("Okhttp", "Success Response: " + content);
                 GetPointsResp userInfo = new Gson().fromJson(content, GetPointsResp.class);
-                PreferenceManager.putPointsData(userInfo);
+                //PreferenceManager.putPointsData(userInfo);
                 if (getActivity() != null)
 //                        ((HomeActivity) getActivity()).refreshPointsFragment();
                     Debug.e("getAllPoint", content + "-");

@@ -209,7 +209,7 @@ public class CateringFragment extends BaseFragment {
         // image slider
 
         if (business.getPictures().endsWith(",")) {
-            business.setPictures(business.getPictures().substring(0, business.getPictures().length() - 1));
+            //business.setPictures(business.getPictures().substring(0, business.getPictures().length() - 1));
         }
 
         final List<String> image_list = Arrays.asList((business.getPictures().split("\\s*,\\s*")));
@@ -236,14 +236,14 @@ public class CateringFragment extends BaseFragment {
         tvWebsite.setText(Utils.isNotEmpty(business.getWebsite()) ? business.getWebsite() : "");
         textViewBusinessType.setText(Utils.isNotEmpty(business.getCustomerProfileName()) ? business.getCustomerProfileName() : "");
         tvPaymentEmail.setText(Utils.isNotEmpty(business.getNeighborhood()) ? business.getNeighborhood() : "");
-        tvTime.setText(Utils.getOpenTime(business.getOpeningTime(), business.getClosingTime()));
+        //tvTime.setText(Utils.getOpenTime(business.getOpeningTime(), business.getClosingTime()));
         ratingBar.setRating(Float.parseFloat(business.getRating()));
         // tvRateCount.setText(Utils.isNotEmpty(business.ti_rating) ? "("+business.ti_rating +")": "");
         // tvPrice.setText(Utils.isNotEmpty(business.website)?business.website:"");
 
 
         // open - close now
-        try {
+        /*try {
             Date dateOpening = simpleDateFormat.parse(business.getOpeningTime());
             Date dateClosing = simpleDateFormat.parse(business.getClosingTime());
 
@@ -265,7 +265,7 @@ public class CateringFragment extends BaseFragment {
 
         } catch (ParseException e) {
             e.printStackTrace();
-        }
+        }*/
 
 
         //Glide.with(getActivity()).load(UrlGenerator.IMAGE_URL + "" + business.icon).into(ivFood);

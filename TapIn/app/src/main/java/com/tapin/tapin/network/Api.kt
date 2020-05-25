@@ -14,7 +14,7 @@ import retrofit2.http.Query
 
 interface Api {
     @POST("profilesystem/consumerprofile.php")
-    fun createProfile(@Body profile: ProfileRequest): Call<ProfileResponse>
+    suspend fun createProfile(@Body profile: ProfileRequest): ProfileResponse
 
     @POST("profilesystem/consumerprofile.php")
     suspend fun getProfile(@Body profile: GetProfileRequest): ProfileResponse

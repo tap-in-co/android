@@ -21,4 +21,16 @@ object AppViewModelProvider {
 
         return BusinessListViewModelFactory(app.api, ids)
     }
+
+    fun provideProfileViewModelFactory(context: Context): ProfileViewModelFactory {
+        val app: App = context.applicationContext as App
+
+        return ProfileViewModelFactory(app.api)
+    }
+
+    fun provideCardDetailsViewModelFactory(context: Context): CardDetailsViewModelFactory {
+        val app: App = context.applicationContext as App
+
+        return CardDetailsViewModelFactory(app.api)
+    }
 }

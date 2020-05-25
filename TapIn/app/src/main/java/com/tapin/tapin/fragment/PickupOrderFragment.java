@@ -194,7 +194,7 @@ public class PickupOrderFragment extends BaseFragment {
 
     }
 
-    private void setTime() {
+    /*private void setTime() {
 
         Calendar cal = Calendar.getInstance();
 
@@ -277,7 +277,7 @@ public class PickupOrderFragment extends BaseFragment {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
     private void setData() {
 
@@ -405,7 +405,7 @@ public class PickupOrderFragment extends BaseFragment {
                     progressHUD.dismiss();
                 }
 
-                setTime();
+                //setTime();
             }
 
             @Override
@@ -524,7 +524,7 @@ public class PickupOrderFragment extends BaseFragment {
             public void onClick(View view) {
 
                 if (!isOpened) {
-                    messages.showCustomMessage("Sorry!", "We are not able to deliver now,\nplease Order at " + Utils.convertTime("HH:mm:ss", "hh:mm a", business.getOpeningTime()));
+                    //messages.showCustomMessage("Sorry!", "We are not able to deliver now,\nplease Order at " + Utils.convertTime("HH:mm:ss", "hh:mm a", business.getOpeningTime()));
                 } else {
                     Calendar c = Calendar.getInstance();
                     RangeTimePickerDialog td = new RangeTimePickerDialog(getActivity(),
@@ -554,8 +554,8 @@ public class PickupOrderFragment extends BaseFragment {
 
                     td.show();
 
-                    td.setMin(Integer.parseInt(business.getOpeningTime().split(":")[0]), Integer.parseInt(business.getOpeningTime().split(":")[1]));
-                    td.setMax(Integer.parseInt(business.getClosingTime().split(":")[0]), Integer.parseInt(business.getClosingTime().split(":")[1]));
+                    //td.setMin(Integer.parseInt(business.getOpeningTime().split(":")[0]), Integer.parseInt(business.getOpeningTime().split(":")[1]));
+                    //td.setMax(Integer.parseInt(business.getClosingTime().split(":")[0]), Integer.parseInt(business.getClosingTime().split(":")[1]));
 
                 }
             }
@@ -565,7 +565,7 @@ public class PickupOrderFragment extends BaseFragment {
             @Override
             public void onClick(View view) {
                 if (!isOpened) {
-                    messages.showCustomMessage("Sorry!", "We are not able to deliver now,\nplease Order at " + Utils.convertTime("HH:mm:ss", "hh:mm a", business.getOpeningTime()));
+                    messages.showCustomMessage("Sorry!", "We are not able to deliver now,\nplease Order at " + Utils.convertTime("HH:mm:ss", "hh:mm a", ""/*business.getOpeningTime()*/));
                 } else {
                     Calendar c = Calendar.getInstance();
 
@@ -593,8 +593,8 @@ public class PickupOrderFragment extends BaseFragment {
                             },
                             locationHour, locationMin, DateFormat.is24HourFormat(getActivity()));
                     td.show();
-                    td.setMin(Integer.parseInt(business.getOpeningTime().split(":")[0]), Integer.parseInt(business.getOpeningTime().split(":")[1]));
-                    td.setMax(Integer.parseInt(business.getClosingTime().split(":")[0]), Integer.parseInt(business.getClosingTime().split(":")[1]));
+                    //td.setMin(Integer.parseInt(business.getOpeningTime().split(":")[0]), Integer.parseInt(business.getOpeningTime().split(":")[1]));
+                    //td.setMax(Integer.parseInt(business.getClosingTime().split(":")[0]), Integer.parseInt(business.getClosingTime().split(":")[1]));
                 }
             }
         });
@@ -604,7 +604,7 @@ public class PickupOrderFragment extends BaseFragment {
             public void onClick(View view) {
 
                 if (!isOpened) {
-                    messages.showCustomMessage("Sorry!", "We are not able to deliver now,\nplease Order at " + Utils.convertTime("HH:mm:ss", "hh:mm a", business.getOpeningTime()));
+                    messages.showCustomMessage("Sorry!", "We are not able to deliver now,\nplease Order at " + Utils.convertTime("HH:mm:ss", "hh:mm a", ""/*business.getOpeningTime()*/));
                 } else {
                     RangeTimePickerDialog td = new RangeTimePickerDialog(getActivity(),
                             new TimePickerDialog.OnTimeSetListener() {
@@ -631,8 +631,8 @@ public class PickupOrderFragment extends BaseFragment {
                             },
                             parkingHour, parkingMin, DateFormat.is24HourFormat(getActivity()));
                     td.show();
-                    td.setMin(Integer.parseInt(business.getOpeningTime().split(":")[0]), Integer.parseInt(business.getOpeningTime().split(":")[1]));
-                    td.setMax(Integer.parseInt(business.getClosingTime().split(":")[0]), Integer.parseInt(business.getClosingTime().split(":")[1]));
+                    //td.setMin(Integer.parseInt(business.getOpeningTime().split(":")[0]), Integer.parseInt(business.getOpeningTime().split(":")[1]));
+                    //td.setMax(Integer.parseInt(business.getClosingTime().split(":")[0]), Integer.parseInt(business.getClosingTime().split(":")[1]));
                 }
             }
         });

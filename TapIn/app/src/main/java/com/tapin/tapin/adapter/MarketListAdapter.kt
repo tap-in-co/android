@@ -1,5 +1,7 @@
 package com.tapin.tapin.adapter
 
+import android.content.Intent
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -36,6 +38,17 @@ class MarketViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         itemView.market_description.text = market.marketingStatement
         itemView.market_address.text = market.address
         itemView.market_cut_off_time_value_text.text = market.cutoffTime
+        itemView.distance_text_view.text = "100mi"
+        itemView.market_link.text = market.website
+        itemView.market_cut_off_time_value_text.text = "${market.cutoffDate} ${market.cutoffTime}"
+        itemView.market_pick_up_date_value.text = "${market.pickupDate} ${market.driverPickupTime}"
+
+        itemView.market_link.setOnClickListener {
+            val intent = Intent(Intent.ACTION_VIEW).also {
+                it.data = Uri.parse(market.website)
+            }
+            itemView.context.startActivity(intent)
+        }
 
         itemView.setOnClickListener {
             callback.invoke(market)

@@ -23,6 +23,7 @@ import com.tapin.tapin.R;
 import com.tapin.tapin.callbacks.Communication;
 import com.tapin.tapin.fragment.*;
 import com.tapin.tapin.model.market.Market;
+import com.tapin.tapin.model.resturants.Business;
 import com.tapin.tapin.utils.AlertMessages;
 import com.tapin.tapin.utils.Constant;
 import org.jetbrains.annotations.NotNull;
@@ -164,7 +165,7 @@ public class HomeActivity extends BaseActivity implements Communication {
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction().replace(R.id.frame_home, MarketListFragment.Companion.marketListFragment()).commit();
-            getSupportFragmentManager().beginTransaction().replace(R.id.frame_profile, ProfileFragment.Companion.newInstance("DASHBOARD")).commit();
+            getSupportFragmentManager().beginTransaction().replace(R.id.frame_profile, ProfileFragment.Companion.newInstance()).commit();
             getSupportFragmentManager().beginTransaction().replace(R.id.frame_notifications, NotificationsFragment.newInstance("", "")).commit();
             getSupportFragmentManager().beginTransaction().replace(R.id.frame_points, PointsFragment.newInstance("", "")).commit();
         }
@@ -367,6 +368,21 @@ public class HomeActivity extends BaseActivity implements Communication {
 
     @Override
     public void onMarketSelected(@NotNull Market market) {
-        getSupportFragmentManager().beginTransaction().replace(R.id.frame_home, BusinessListFragment.Companion.businessListFragment(market.getMerchantIds())).addToBackStack("").commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.frame_home, BusinessListFragment.Companion.businessListFragment(market)).addToBackStack("").commit();
+    }
+
+    @Override
+    public void onProfileBackClicked() {
+        markHomeAsSelected();
+    }
+
+    @Override
+    public void onBusinessSelected(@NotNull Business business) {
+        getSupportFragmentManager().beginTransaction().replace(R.id.frame_home, BusinessDetailFragment.newInstance(business)).addToBackStack("").commit();
+    }
+
+    @Override
+    public void onProfileManageCardClicked() {
+        getSupportFragmentManager().beginTransaction().replace(R.id.frame_profile, new CardDetailFragment()).commit();
     }
 }

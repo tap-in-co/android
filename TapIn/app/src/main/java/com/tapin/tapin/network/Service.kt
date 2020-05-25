@@ -1,6 +1,5 @@
 package com.tapin.tapin.network
 
-import com.tapin.tapin.utils.UrlGenerator
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -15,7 +14,7 @@ class Service {
         val client = OkHttpClient.Builder().addInterceptor(interceptor).build()
 
         return Retrofit.Builder()
-            .baseUrl(UrlGenerator.getBaseUrl())
+            .baseUrl(ApiConstants.BASE_URL)
             .addConverterFactory(ScalarsConverterFactory.create())
             .addConverterFactory(GsonConverterFactory.create())
             .client(client)

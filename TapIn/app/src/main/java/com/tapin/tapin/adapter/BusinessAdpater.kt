@@ -122,7 +122,7 @@ class BusinessAdpater(internal var activity: FragmentActivity, internal var time
             }
 
             // opening_time & closing_time is not applicable for Corp Order
-            if (business.openingTime != null && business.closingTime != null) {
+            /*if (business.openingTime != null && business.closingTime != null) {
                 try {
 
                     val df = SimpleDateFormat("HH:mm:ss")
@@ -161,7 +161,7 @@ class BusinessAdpater(internal var activity: FragmentActivity, internal var time
                     e.printStackTrace()
                 }
 
-            }
+            }*/
             ratingBar.rating = java.lang.Float.parseFloat(business.rating)
 
             card_view.setOnClickListener {

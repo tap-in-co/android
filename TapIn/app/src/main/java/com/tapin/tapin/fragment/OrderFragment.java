@@ -118,7 +118,7 @@ public class OrderFragment extends BaseFragment {
 
         Log.e("CURRENT_TIME", "" + currentTime);
 
-        try {
+        /*try {
             if (!Utils.isTimeBetweenTwoTime(business.getOpeningTime(), business.getClosingTime(), currentTime)) {
 
                 try {
@@ -143,7 +143,7 @@ public class OrderFragment extends BaseFragment {
             }
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
 
         return view;
     }

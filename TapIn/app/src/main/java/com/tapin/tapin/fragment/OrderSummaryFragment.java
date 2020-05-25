@@ -136,7 +136,7 @@ public class OrderSummaryFragment extends BaseFragment {
 
         tvTotalPoints.setText("Earn " + Math.round(subTotal) + " Pts");
 
-        try {
+        /*try {
             if (business.getCurrSymbol() != null && business.getPromotionCode().length() > 0) {
 
                 tvPromotionalCode.setText("" + business.getCurrSymbol());
@@ -154,7 +154,7 @@ public class OrderSummaryFragment extends BaseFragment {
             }
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
 
         tip10 = subTotal * 0.10;
         tip15 = subTotal * 0.15;

@@ -27,6 +27,7 @@ import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
+import com.tapin.tapin.App;
 import com.tapin.tapin.R;
 import com.tapin.tapin.activity.HomeActivity;
 import com.tapin.tapin.adapter.MenuAdapter;
@@ -172,7 +173,7 @@ public class MenuFoodListFragment extends BaseFragment {
 
         checkIsOpened();
 
-        menuAdapter = new MenuAdapter(getActivity(), Utils.getColor(business.getBgColor()), Utils.getColor(business.getTextColor()));
+        menuAdapter = new MenuAdapter(getActivity(), "#000000"/*Utils.getColor(business.getBgColor())*/, "#000000"/*Utils.getColor(business.getTextColor()*/);
 
         initHeader();
 
@@ -213,13 +214,13 @@ public class MenuFoodListFragment extends BaseFragment {
 
         String currentTime = dateFormat.format(cal.getTime());
 
-        try {
+        /*try {
 
             isOpened = Utils.isTimeBetweenTwoTime(business.getOpeningTime(), business.getClosingTime(), currentTime);
 
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
     private void getMenuOfFoods() {
@@ -232,7 +233,7 @@ public class MenuFoodListFragment extends BaseFragment {
         RequestParams params = new RequestParams();
         params.put("cmd", "products_for_business");
         params.put("businessID", business.getBusinessID());
-        params.put("consumer_id", PreferenceManager.getUserId()/*"1234570319"*/);
+        params.put("consumer_id", ((App)requireActivity().getApplication()).getProfile().getUid()/*"1234570319"*/);
         params.put("sub_businesses", business.getSubBusinesses());
 
 
@@ -419,7 +420,7 @@ public class MenuFoodListFragment extends BaseFragment {
             android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(getActivity());
 
             builder.setTitle("Sorry!");
-            builder.setMessage("We are not able to deliver now,\nplease Order at " + Utils.convertTime("HH:mm:ss", "hh:mm a", business.getOpeningTime())).setCancelable(false)
+            builder.setMessage("We are not able to deliver now,\nplease Order at " + Utils.convertTime("HH:mm:ss", "hh:mm a", ""/*business.getOpeningTime()*/)).setCancelable(false)
                     .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
 
