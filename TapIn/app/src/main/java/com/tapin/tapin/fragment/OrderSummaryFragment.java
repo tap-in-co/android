@@ -124,10 +124,10 @@ public class OrderSummaryFragment extends BaseFragment {
         }
         // For Corporate Order
         else {
-            if (PreferenceManager.getInstance().getSelectedCorporateDomain() != null) {
+            /*if (PreferenceManager.getInstance().getSelectedCorporateDomain() != null) {
                 tvDeliveryTo.setText(orderSummaryInfo.deliveryLocation + " at " + orderSummaryInfo.locationDeliveryTime);
                 deliveryCharge = Double.parseDouble(business.getDeliveryLocationCharge());
-            }
+            }*/
         }
 
         tvSubTotal.setText("" + business.getCurrSymbol() + String.format("%.2f", subTotal));

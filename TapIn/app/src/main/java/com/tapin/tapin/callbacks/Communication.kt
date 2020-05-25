@@ -10,5 +10,5 @@ interface Communication {
 
     fun onProfileManageCardClicked()
 
-    fun onBusinessSelected(business: Business)
+    fun onBusinessSelected(business: Business, market: Market)
 }

@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 
 import com.tapin.tapin.R;
+import com.tapin.tapin.activity.HomeActivity;
 import com.tapin.tapin.adapter.FinalOrderSummaryAdapter;
 import com.tapin.tapin.model.CardInfo;
 import com.tapin.tapin.model.OrderSummaryInfo;
@@ -111,6 +112,7 @@ public class ConfirmationFragment extends BaseFragment {
                 for (int i = 0; i < fm.getBackStackEntryCount(); ++i) {
                     fm.popBackStack();
                 }
+                ((HomeActivity)getActivity()).clearOrders();
             }
         });
     }

@@ -16,6 +16,7 @@ import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
+import com.tapin.tapin.App;
 import com.tapin.tapin.R;
 import com.tapin.tapin.activity.HomeActivity;
 import com.tapin.tapin.adapter.CardPagerAdapter;
@@ -145,7 +146,7 @@ public class PaymentFragment extends BaseFragment {
         RequestParams params = new RequestParams();
         params.put("businessID", business.getBusinessID());
         params.put("cmd", "get_all_points");
-        params.put("consumerID", PreferenceManager.getUserId());
+        params.put("consumerID", ((App)requireActivity().getApplication()).getProfile().getUid());
 
         Debug.d("Okhttp", "API: " + UrlGenerator.INSTANCE.getRewardApi() + " " + params.toString());
 
@@ -165,7 +166,8 @@ public class PaymentFragment extends BaseFragment {
 
                     GetPointsInfo getPointsInfo = geoPointsResp.getPointsInfo;
 
-                    PreferenceManager.putPointsData(geoPointsResp);
+                    //PreferenceManager.putPointsData(geoPointsResp);
+                    ((App) getContext().getApplicationContext()).putPointsData(geoPointsResp);
 
                     tvTotalPoints.setText("" + getPointsInfo.total_available_points + " Points");
 
@@ -266,9 +268,10 @@ public class PaymentFragment extends BaseFragment {
 
         try {
 
-            UserInfo userInfo = PreferenceManager.getUserInfo();
+            //UserInfo userInfo = PreferenceManager.getUserInfo();
+            //((App) getContext().getApplicationContext()).getProfile().getUid();
 
-            String URL = UrlGenerator.INSTANCE.getMainUrl() + "cmd=get_consumer_all_cc_info&consumer_id=" + userInfo.uid;
+            String URL = UrlGenerator.INSTANCE.getMainUrl() + "cmd=get_consumer_all_cc_info&consumer_id=" + ((App) getContext().getApplicationContext()).getProfile().getUid();
 
             AsyncHttpClient client = new AsyncHttpClient();
             client.setTimeout(Constant.TIMEOUT);
@@ -367,9 +370,9 @@ public class PaymentFragment extends BaseFragment {
         tvAddRemoveCard = view.findViewById(R.id.tvAddRemoveCard);
 
         waitingOrDeliveryTime =  view.findViewById(R.id.tvWaitTime);
-        if (PreferenceManager.getInstance().getSelectedCorporateDomain() != null) {
-            waitingOrDeliveryTime.setText("Delivery at " + PreferenceManager.getInstance().getSelectedCorporateDomain().getDeliveryTime());
-        }
+//        if (PreferenceManager.getInstance().getSelectedCorporateDomain() != null) {
+//            waitingOrDeliveryTime.setText("Delivery at " + PreferenceManager.getInstance().getSelectedCorporateDomain().getDeliveryTime());
+//        }
 
         tvAddRemoveCard.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -496,7 +499,7 @@ public class PaymentFragment extends BaseFragment {
             json.put("subtotal", orderSummaryInfo.subtotal);
             json.put("tip_amount", orderSummaryInfo.tip_amount);
             json.put("note", orderSummaryInfo.note);
-            json.put("consumer_id", PreferenceManager.getUserInfo().uid);
+            json.put("consumer_id", ((App) getContext().getApplicationContext()).getProfile().getUid());
             json.put("promotion_discount_amount", "" + orderSummaryInfo.promotion_discount_amount);
             json.put("pd_locations_id", orderSummaryInfo.pd_locations_id);
             json.put("pd_charge_amount", orderSummaryInfo.pd_charge_amount);

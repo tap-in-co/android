@@ -14,37 +14,19 @@
         android:orientation="vertical"
         android:padding="5dp">
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/tvAddress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/tvAddress"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:ellipsize="end"
-                android:gravity="center_vertical"
-                android:maxLines="1"
-                android:paddingTop="5dp"
-                android:textAppearance="?android:attr/textAppearanceSmallInverse"
-                android:textColor="@color/colorText"
-                android:typeface="normal"
-                tools:text="NAme" />
-
-            <TextView
-                android:id="@+id/tvPrice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:maxLines="1"
-                android:paddingTop="5dp"
-                android:text="$$$$"
-                android:textAppearance="?android:attr/textAppearanceSmallInverse"
-                android:textColor="@color/colorText"
-                android:typeface="normal" />
-        </LinearLayout>
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:gravity="center_vertical"
+            android:maxLines="1"
+            android:paddingTop="5dp"
+            android:textAppearance="?android:attr/textAppearanceSmallInverse"
+            android:textColor="@color/colorText"
+            android:typeface="normal"
+            tools:text="North Locus Street Walnut Creek, CA 94596" />
 
         <TextView
             android:id="@+id/tvWebsite"
@@ -53,65 +35,125 @@
             android:gravity="center_vertical"
             android:maxLines="1"
             android:paddingTop="5dp"
-            android:text="NAme"
+            tools:text="https://rainboworchards.com"
             android:textAppearance="?android:attr/textAppearanceSmallInverse"
-            android:textColor="@color/colorText"
+            android:textColor="@color/light_blue"
             android:typeface="normal" />
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="horizontal"
-            android:paddingTop="5dp">
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/textViewBusinessType"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center_vertical"
+                android:ellipsize="end"
+                android:gravity="end"
                 android:maxLines="1"
-
-                android:text="NAme"
-                android:textAppearance="?android:attr/textAppearanceSmallInverse"
-                android:textColor="@color/colorHighlight"
-                android:typeface="normal" />
-
-            <TextView
-                android:id="@+id/tvPaymentEmail"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center_vertical"
-                android:maxLines="1"
-                android:text="NAme"
+                android:paddingTop="5dp"
                 android:textAppearance="?android:attr/textAppearanceSmallInverse"
                 android:textColor="@color/colorText"
-                android:typeface="normal" />
+                android:typeface="normal"
+                android:text="Pickup on:" />
+
+            <View
+                android:layout_width="48dp"
+                android:layout_height="10dp"/>
 
             <TextView
-                android:id="@+id/tvTime"
-                android:layout_width="wrap_content"
+                android:id="@+id/pick_up_on_text"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
                 android:layout_weight="1"
-                android:gravity="center_vertical|right"
+                android:ellipsize="end"
+                android:gravity="start"
                 android:maxLines="1"
-                android:paddingRight="@dimen/_5sdp"
-                android:text="NAme"
+                android:paddingTop="5dp"
                 android:textAppearance="?android:attr/textAppearanceSmallInverse"
-                android:textColor="@color/colorText"
-                android:textSize="@dimen/_10sdp"
-                android:typeface="normal" />
-
+                android:textColor="@color/colorPrimary"
+                android:typeface="normal"
+                tools:text="05/31/20 10:00" />
         </LinearLayout>
 
-
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:gravity="end"
+                android:maxLines="1"
+                android:paddingTop="5dp"
+                android:textAppearance="?android:attr/textAppearanceSmallInverse"
+                android:textColor="@color/colorText"
+                android:typeface="normal"
+                android:text="Cut for ordering:" />
+
+            <View
+                android:layout_width="48dp"
+                android:layout_height="10dp"/>
+
+            <TextView
+                android:id="@+id/cut_ordering_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:gravity="start"
+                android:maxLines="1"
+                android:paddingTop="5dp"
+                android:textAppearance="?android:attr/textAppearanceSmallInverse"
+                android:textColor="@color/colorPrimary"
+                android:typeface="normal"
+                tools:text="05/29/20 01:00" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:gravity="end"
+                android:maxLines="1"
+                android:paddingTop="5dp"
+                android:textAppearance="?android:attr/textAppearanceSmallInverse"
+                android:textColor="@color/colorText"
+                android:typeface="normal"
+                android:text="Pickup location:" />
+
+            <View
+                android:layout_width="48dp"
+                android:layout_height="10dp"/>
+
+            <TextView
+                android:id="@+id/pick_up_location_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:gravity="start"
+                android:maxLines="1"
+                android:paddingTop="5dp"
+                android:textAppearance="?android:attr/textAppearanceSmallInverse"
+                android:textColor="@color/colorPrimary"
+                android:typeface="normal"
+                tools:text="Vendor's counter" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="horizontal">
 
             <RatingBar
@@ -122,36 +164,25 @@
                 android:layout_gravity="center_vertical"
                 android:theme="@style/RatingBar" />
 
-            <TextView
-                android:id="@+id/tvRateCount"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="6dp"
-                android:layout_toRightOf="@id/ratingBar"
-                android:gravity="center_vertical"
-                android:maxLines="1"
-                android:text="(90)"
-                android:textAllCaps="true"
-                android:textAppearance="?android:attr/textAppearanceSmallInverse"
-                android:textColor="@color/colorTextLight"
-                android:typeface="normal" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="10dp"
+                android:layout_weight="0.75"/>
 
             <TextView
-                android:id="@+id/textViewOpenClosed"
-                android:layout_width="wrap_content"
+                android:id="@+id/hours_text"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:gravity="center_vertical"
-                android:maxLines="1"
-                android:textAllCaps="true"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:maxLines="2"
+                android:paddingTop="5dp"
                 android:textAppearance="?android:attr/textAppearanceSmallInverse"
-                android:textColor="@color/colorTextLight"
+                android:textColor="@color/colorText"
                 android:typeface="normal"
-                tools:text="NAme" />
-
-        </RelativeLayout>
-
-
+                tools:text="Hours\n10:00am-2:00pm" />
+        </LinearLayout>
     </LinearLayout>
 
     <androidx.viewpager.widget.ViewPager

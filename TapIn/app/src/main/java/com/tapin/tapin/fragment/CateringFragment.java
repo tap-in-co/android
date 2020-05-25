@@ -237,7 +237,11 @@ public class CateringFragment extends BaseFragment {
         textViewBusinessType.setText(Utils.isNotEmpty(business.getCustomerProfileName()) ? business.getCustomerProfileName() : "");
         tvPaymentEmail.setText(Utils.isNotEmpty(business.getNeighborhood()) ? business.getNeighborhood() : "");
         //tvTime.setText(Utils.getOpenTime(business.getOpeningTime(), business.getClosingTime()));
-        ratingBar.setRating(Float.parseFloat(business.getRating()));
+        try {
+            ratingBar.setRating(Float.parseFloat(business.getRating()));
+        } catch (Exception e) {
+            ratingBar.setRating(0.0f);
+        }
         // tvRateCount.setText(Utils.isNotEmpty(business.ti_rating) ? "("+business.ti_rating +")": "");
         // tvPrice.setText(Utils.isNotEmpty(business.website)?business.website:"");
 

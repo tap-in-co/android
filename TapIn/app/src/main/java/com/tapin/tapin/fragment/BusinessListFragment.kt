@@ -32,7 +32,7 @@ class BusinessListFragment : BaseTap4MarketFragment() {
 
     private val businessAdapter = BusinessListAdapter {
         Constant.business = it
-        communication?.onBusinessSelected(business = it)
+        communication?.onBusinessSelected(business = it, market = arguments?.getSerializable(MARKET) as Market)
     }
 
     override fun onCreateView(

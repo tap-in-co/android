@@ -104,4 +104,8 @@
     <string name="please_update_your_work_email">We are taking you to the profile page. Please update you profile info and work email. Then come back to this page.</string>
     <string name="join_tap_in_text_with_email">Based on your work email, your company has not joined our lunch service. Request service at info@Tap-in.com.</string>
     <string name="delivery_location">Delivery location?</string>
+    <string name="mobile_app_ordering_cut_off">Mobile app ordering Cut off:</string>
+    <string name="pickup_date">Pickup date:</string>
+    <string name="pickup_at">Pickup at</string>
+    <string name="business_hours">Business hours</string>
 </resources>

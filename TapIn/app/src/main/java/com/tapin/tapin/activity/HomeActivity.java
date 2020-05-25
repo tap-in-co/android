@@ -377,8 +377,8 @@ public class HomeActivity extends BaseActivity implements Communication {
     }
 
     @Override
-    public void onBusinessSelected(@NotNull Business business) {
-        getSupportFragmentManager().beginTransaction().replace(R.id.frame_home, BusinessDetailFragment.newInstance(business)).addToBackStack("").commit();
+    public void onBusinessSelected(@NotNull Business business, @NonNull Market market) {
+        getSupportFragmentManager().beginTransaction().replace(R.id.frame_home, BusinessDetailFragment.newInstance(business, market)).addToBackStack("").commit();
     }
 
     @Override

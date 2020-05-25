@@ -70,26 +70,20 @@ public class FinalOrderSummaryAdapter extends BaseAdapter {
 
         }
 
-        try {
+        final OrderedInfo order = listOrders.get(position);
 
-            final OrderedInfo order = listOrders.get(position);
+        holder.tvItemCount.setText("" + order.quantity);
 
-            holder.tvItemCount.setText("" + order.quantity);
+        holder.tvItemName.setText("" + order.product_name);
 
-            holder.tvItemName.setText("" + order.product_name);
+        holder.tvExtraItem.setText("" + order.product_option);
 
-            holder.tvExtraItem.setText("" + order.product_option);
+        holder.tvItemPriceTotal.setText("" + business.getCurrSymbol() + " " + String.format("%.2f", (order.quantity * order.price)));
 
-            holder.tvItemPriceTotal.setText("" + business.getCurrSymbol() + " " + String.format("%.2f", (order.quantity * order.price)));
-
-            if (position == getCount() - 1) {
+        if (position == getCount() - 1) {
 
 //                setTotal(listOrdered);
 
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
         }
 
         return convertView;

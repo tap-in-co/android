@@ -22,6 +22,7 @@
         style="@style/TextAppearance.AppCompat.Body2"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/logo_image_view"
         app:layout_constraintStart_toStartOf="parent"
@@ -44,10 +45,11 @@
         android:id="@+id/logo_image_view"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="4dp"
         android:scaleType="centerCrop"
-        app:layout_constraintTop_toBottomOf="@+id/market_image"
-        android:src="@drawable/card_american" />
+        android:src="@drawable/card_american"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/market_image" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/market_address"
@@ -90,7 +92,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:text="Mobile app ordering Cut off:"
+        android:text="@string/mobile_app_ordering_cut_off"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/market_link" />
 
@@ -111,10 +113,10 @@
         android:id="@+id/market_pick_up_date"
         style="@style/TextAppearance.AppCompat.Small"
         android:layout_width="176dp"
-        android:gravity="right"
+        android:gravity="end"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="Pickup date:"
+        android:text="@string/pickup_date"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/market_cut_off_time_value_text" />
 
@@ -129,6 +131,46 @@
         app:layout_constraintStart_toEndOf="@+id/market_pick_up_date"
         app:layout_constraintTop_toBottomOf="@+id/market_cut_off_time_value_text"
         tools:text="10:30:00" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/market_pickup_at_text"
+        style="@style/TextAppearance.AppCompat.Small"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/pickup_at"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/market_pick_up_date" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/market_business_hours_text"
+        style="@style/TextAppearance.AppCompat.Small"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/business_hours"
+        app:layout_constraintBottom_toBottomOf="@+id/market_pickup_at_text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/market_pickup_at_text" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/market_pickup_at_value_text"
+        style="@style/TextAppearance.AppCompat.Light.Widget.PopupMenu.Small"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        tools:text="Vendor's counter"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/market_pickup_at_text" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/market_business_hours_value_text"
+        style="@style/TextAppearance.AppCompat.Light.Widget.PopupMenu.Small"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="10:00am-2:00pm"
+        app:layout_constraintBottom_toBottomOf="@+id/market_pickup_at_value_text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/market_pickup_at_value_text" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

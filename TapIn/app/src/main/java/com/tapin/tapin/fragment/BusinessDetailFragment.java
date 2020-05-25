@@ -20,7 +20,6 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.core.content.ContextCompat;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.gson.Gson;
@@ -36,18 +35,16 @@ import com.tapin.tapin.model.GetPointsResp;
 import com.tapin.tapin.model.GetPreviousOrderInfo;
 import com.tapin.tapin.model.Options;
 import com.tapin.tapin.model.OrderedInfo;
+import com.tapin.tapin.model.market.Market;
 import com.tapin.tapin.model.resturants.Business;
 import com.tapin.tapin.utils.AlertMessages;
 import com.tapin.tapin.utils.Constant;
 import com.tapin.tapin.utils.Debug;
-import com.tapin.tapin.utils.PreferenceManager;
 import com.tapin.tapin.utils.ProgressHUD;
 import com.tapin.tapin.utils.UrlGenerator;
 import com.tapin.tapin.utils.Utils;
 
 import java.nio.charset.StandardCharsets;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -65,6 +62,7 @@ public class BusinessDetailFragment extends BaseFragment {
     ImageView ivTitleDropDown;
     Timer timer;
     Calendar calendar;
+    Market market;
     Business business;
     BusinessDetailAdapter adapter;
     ArrayList<OrderedInfo> listOrdered = new ArrayList<>();
@@ -114,6 +112,11 @@ public class BusinessDetailFragment extends BaseFragment {
     private ImageView ivFood;
     private ListView lvFoodDetail;
 
+    TextView pickupOn;
+    TextView cutOffOrdering;
+    TextView pickupLocation;
+    TextView hours;
+
     public BusinessDetailFragment() {
         // Required empty public constructor
     }
@@ -125,9 +128,10 @@ public class BusinessDetailFragment extends BaseFragment {
      * @return A new instance of fragment HomeFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static BusinessDetailFragment newInstance(final Business business) {
+    public static BusinessDetailFragment newInstance(final Business business, final Market market) {
         BusinessDetailFragment fragment = new BusinessDetailFragment();
         Bundle args = new Bundle();
+        args.putSerializable("market", market);
         args.putSerializable("business", business);
         fragment.setArguments(args);
         return fragment;
@@ -146,6 +150,7 @@ public class BusinessDetailFragment extends BaseFragment {
         messages = new AlertMessages(getActivity());
 
         business = (Business) getArguments().get("business");
+        market = (Market) getArguments().get("market");
 
         initHeader();
 
@@ -326,10 +331,10 @@ public class BusinessDetailFragment extends BaseFragment {
         timer = new Timer();
         timer.schedule(timerTask, 3000, 3000);
 
-        tvAddress.setText(Utils.isNotEmpty(business.getAddress()) ? business.getAddress() : "");
-        tvWebsite.setText(Utils.isNotEmpty(business.getWebsite()) ? business.getWebsite() : "");
-        textViewBusinessType.setText(Utils.isNotEmpty(business.getCustomerProfileName()) ? business.getCustomerProfileName() : "");
-        tvPaymentEmail.setText(Utils.isNotEmpty(business.getNeighborhood()) ? business.getNeighborhood() : "");
+        tvAddress.setText(Utils.isNotEmpty(business.getAddress()) ? business.getAddress() : market.getAddress());
+        tvWebsite.setText(Utils.isNotEmpty(business.getWebsite()) ? business.getWebsite() : market.getWebsite());
+        //textViewBusinessType.setText(Utils.isNotEmpty(business.getCustomerProfileName()) ? business.getCustomerProfileName() : "");
+        //tvPaymentEmail.setText(Utils.isNotEmpty(business.getNeighborhood()) ? business.getNeighborhood() : "");
         //tvTime.setText(Utils.getOpenTime(business.getOpeningTime(), business.getClosingTime()));
         //ratingBar.setRating(Float.parseFloat(business.getRating()));
 
@@ -394,6 +399,15 @@ public class BusinessDetailFragment extends BaseFragment {
         ratingBar = view.findViewById(R.id.ratingBar);
         tvRateCount = view.findViewById(R.id.tvRateCount);
         textViewOpenClosed = view.findViewById(R.id.textViewOpenClosed);
+
+        pickupOn = view.findViewById(R.id.pick_up_on_text);
+        pickupOn.setText(market.getPickupDate() + " " + market.getDriverPickupTime());
+        cutOffOrdering = view.findViewById(R.id.cut_ordering_text);
+        cutOffOrdering.setText(market.getCutoffDate() + " " + market.getCutoffTime());
+        pickupLocation = view.findViewById(R.id.pick_up_location_text);
+        pickupLocation.setText(market.getDeliveryLocation());
+        hours = view.findViewById(R.id.hours_text);
+        hours.setText("Hours\n" + market.getMarketOpenHours());
 
         mPager = view.findViewById(R.id.pager);
         lvFoodDetail = view.findViewById(R.id.lvFoodDetail);
@@ -502,6 +516,7 @@ public class BusinessDetailFragment extends BaseFragment {
                 Debug.d("Okhttp", "Success Response: " + content);
                 GetPointsResp userInfo = new Gson().fromJson(content, GetPointsResp.class);
                 //PreferenceManager.putPointsData(userInfo);
+                ((App) getContext().getApplicationContext()).putPointsData(userInfo);
                 if (getActivity() != null)
 //                        ((HomeActivity) getActivity()).refreshPointsFragment();
                     Debug.e("getAllPoint", content + "-");

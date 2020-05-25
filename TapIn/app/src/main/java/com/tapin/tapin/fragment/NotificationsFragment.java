@@ -12,6 +12,7 @@ import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
+import com.tapin.tapin.App;
 import com.tapin.tapin.R;
 import com.tapin.tapin.adapter.NotificationAdapter;
 import com.tapin.tapin.model.GetPointsResp;
@@ -126,7 +127,8 @@ public class NotificationsFragment extends BaseFragment {
                     String content = new String(responseBody, StandardCharsets.UTF_8);
                     Debug.d("Okhttp", "Success Response: " + content);
                     GetPointsResp userInfo = new Gson().fromJson(content, GetPointsResp.class);
-                    PreferenceManager.putPointsData(userInfo);
+                    //PreferenceManager.putPointsData(userInfo);
+                    ((App) getContext().getApplicationContext()).putPointsData(userInfo);
 //                    ((HomeActivity) getActivity()).refreshPointsFragment();
                     Debug.e("Notification", content + "-");
                 } catch (Exception e) {
@@ -186,7 +188,8 @@ public class NotificationsFragment extends BaseFragment {
                     String content = new String(responseBody, StandardCharsets.UTF_8);
                     Debug.d("Okhttp", "Success Response: " + content);
                     GetPointsResp userInfo = new Gson().fromJson(content, GetPointsResp.class);
-                    PreferenceManager.putPointsData(userInfo);
+                    //PreferenceManager.putPointsData(userInfo);
+                    ((App) getContext().getApplicationContext()).putPointsData(userInfo);
 //                    ((HomeActivity) getActivity()).refreshPointsFragment();
                     Debug.e("Notification", content + "-");
                 } catch (Exception e) {

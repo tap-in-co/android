@@ -84,7 +84,7 @@ public class MenuFoodListFragment extends BaseFragment {
     ProgressHUD pd;
     AlertMessages messages;
     SimpleDateFormat dateFormat;
-    boolean isOpened;
+    boolean isOpened = true;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;

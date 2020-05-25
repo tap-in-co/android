@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.tapin.tapin.App;
 import com.tapin.tapin.R;
 import com.tapin.tapin.activity.HomeActivity;
 import com.tapin.tapin.model.OrderSummaryInfo;
@@ -163,7 +164,7 @@ public class OrderFragment extends BaseFragment {
 
                     messages.showCustomMessage("Please select menu item to place an order.");
 
-                } else if (PreferenceManager.getUserInfo() == null) {
+                } else if (((App)requireActivity().getApplication()).getProfile() == null) {
 
                     String positiveButton = "OK";
                     messages.alert(getActivity(), "", "We are taking you to the profile page.\nPlease update your profile info then come back to this page.", positiveButton, null, null, new AlertMessages.AlertDialogCallback() {
@@ -236,11 +237,12 @@ public class OrderFragment extends BaseFragment {
     }
 
     private void navigateToNext() {
-        if (isCorporateOrder()) {
+        /*if (isCorporateOrder()) {
             navigateToOrderSummaryForCorporateOrder();
         } else {
             navigateToPickupOrderForIndividualOrder();
-        }
+        }*/
+        navigateToOrderSummaryForCorporateOrder();
     }
 
     private void navigateToPickupOrderForIndividualOrder() {
