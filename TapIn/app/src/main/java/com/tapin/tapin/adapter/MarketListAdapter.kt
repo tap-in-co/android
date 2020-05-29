@@ -11,6 +11,7 @@ import com.tapin.tapin.R
 import com.tapin.tapin.model.market.Market
 import com.tapin.tapin.utils.UrlGenerator.getImageBaseApi
 import com.tapin.tapin.utils.UrlGenerator.getImageIconsBaseApi
+import com.tapin.tapin.utils.UrlGenerator.getLogoURL
 import kotlinx.android.synthetic.main.item_market_list.view.*
 
 class MarketListAdapter(private val callback: (Market) -> Unit): RecyclerView.Adapter<MarketViewHolder>() {
@@ -49,12 +50,12 @@ class MarketViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
 
         kotlin.runCatching {
             val images = market.pictures.split("\\s*,\\s*")
-            val url = getImageIconsBaseApi() + images[0]
+            val url = getLogoURL(images[0])
             Glide.with(itemView.context).load(url).placeholder(R.color.gray).into(itemView.market_image)
         }
 
         kotlin.runCatching {
-            val url = getImageBaseApi() + market.logo
+            val url = getLogoURL(market.logo)
             Glide.with(itemView.context).load(url).placeholder(R.color.gray).into(itemView.logo_image_view)
         }
 

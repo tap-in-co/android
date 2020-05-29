@@ -4,9 +4,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.tapin.tapin.R
 import com.tapin.tapin.model.resturants.Business
+import com.tapin.tapin.utils.UrlGenerator
 import kotlinx.android.synthetic.main.item_business_list.view.*
+import kotlinx.android.synthetic.main.item_market_list.view.*
 
 class BusinessListAdapter(private val callback: (Business) -> Unit): RecyclerView.Adapter<BusinessViewHolder>() {
     private val items: MutableList<Business> = mutableListOf()
@@ -33,6 +36,11 @@ class BusinessViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
     fun bind(business: Business, callback: (Business) -> Unit) {
         itemView.business_name.text = business.name
         itemView.business_description.text = business.description
+
+        kotlin.runCatching {
+            val url = UrlGenerator.getBusinessURL(business.icon)
+            Glide.with(itemView.context).load(url).placeholder(R.color.gray).into(itemView.business_image)
+        }
 
         itemView.setOnClickListener {
             callback.invoke(business)

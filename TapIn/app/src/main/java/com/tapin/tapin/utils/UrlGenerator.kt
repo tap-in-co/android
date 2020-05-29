@@ -8,7 +8,7 @@ object UrlGenerator {
     //https://tapforall.com/tap-in-servers/tap-in/include/model.php?cmd=getAllCorps
     //https://tapforall.com/tap-in-servers/tap-in/include/model.php?business_id=0&cmd=getBusinessInfoWithConsumerRating
 
-    fun getBaseUrl(): String = if (!BuildConfig.DEBUG) PROD_URL else STAGING_URL
+    private fun getBaseUrl(): String = if (!BuildConfig.DEBUG) PROD_URL else STAGING_URL
 
     fun getMainUrl(): String = "${getBaseUrl()}include/model.php?"
 
@@ -33,6 +33,10 @@ object UrlGenerator {
     fun getImageBaseApi(): String = "${getBaseUrl()}customer_files/"
 
     fun getImageIconsBaseApi(): String = "${getBaseUrl()}customer_files/icons/"
+
+    fun getLogoURL(logo: String) = "${getBaseUrl()}/customer_files/corps/icons/$logo"
+
+    fun getBusinessURL(logo: String) = "${getBaseUrl()}/customer_files/icons/$logo"
 
     fun getConsumerCardDetails(consumerId: String) =
         "${getMainUrl()}cmd=get_consumer_default_cc&consumer_id=$consumerId"
