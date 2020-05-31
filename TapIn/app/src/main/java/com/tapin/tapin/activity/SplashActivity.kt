@@ -1,7 +1,10 @@
 package com.tapin.tapin.activity
 
+import android.app.AlertDialog
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -56,7 +59,33 @@ class SplashActivity : BaseActivity() {
     }
 
     private fun navigateToOrderScreen() {
-        startActivity(Intent(this, HomeActivity::class.java))
-        finish()
+        if (checkLocationPermission()) {
+            startActivity(Intent(this, HomeActivity::class.java))
+            finish()
+        } else {
+            showAllowLocationDialog()
+            //finish()
+        }
+    }
+
+    private fun showAllowLocationDialog() {
+        AlertDialog.Builder(this)
+            .setTitle("Grant Location to proceed")
+            .setMessage("Go to App Settings and grand location permission")
+            .setPositiveButton(
+                "Ok"
+            ) { dialogInterface, _ -> //Prompt the user once explanation has been shown
+                dialogInterface.dismiss()
+                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).also {
+                    it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    val uri: Uri = Uri.fromParts("package", packageName, null)
+                    it.data = uri
+                }
+                startActivity(intent)
+
+                this.finish()
+            }
+            .create()
+            .show()
     }
 }

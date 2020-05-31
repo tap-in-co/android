@@ -32,7 +32,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class HomeActivity extends BaseActivity implements Communication {
-    public static final int PERMISSION_FINE_LOCATION = 1001;
     private static String SELECTED_TAB_NUMBER = "selected_tab_number";
 
     private static final List<String> FRAGMENT_NAMES_TO_GO_HOME = new ArrayList<>();
@@ -178,24 +177,6 @@ public class HomeActivity extends BaseActivity implements Communication {
             case 2: markNotificationAsSelected(); break;
             case 1: markProfileAsSelected(); break;
             default: markHomeAsSelected(); break;
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        if (requestCode == PERMISSION_FINE_LOCATION) {
-
-            int permissionCheck = ContextCompat.checkSelfPermission(HomeActivity.this,
-                    android.Manifest.permission.ACCESS_FINE_LOCATION);
-
-            if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this,
-                        new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1001);
-            } else {
-
-            }
         }
     }
 

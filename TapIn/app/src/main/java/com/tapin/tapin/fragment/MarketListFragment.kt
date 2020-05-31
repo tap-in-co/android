@@ -1,6 +1,7 @@
 package com.tapin.tapin.fragment
 
 import android.content.Context
+import android.location.Location
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +11,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.tapin.tapin.R
+import com.tapin.tapin.activity.BaseActivity
 import com.tapin.tapin.adapter.MarketListAdapter
 import com.tapin.tapin.callbacks.Communication
 import com.tapin.tapin.model.market.AllMarkets
@@ -62,9 +64,14 @@ class MarketListFragment : BaseTap4MarketFragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
+        var location: Location? = null
+        if (requireActivity() is BaseActivity) {
+            location = ((requireActivity()) as BaseActivity).location
+        }
+
         progressHUD?.show()
         marketListViewModel.allMarketLiveData.observe(viewLifecycleOwner, Observer { result ->
-            marketAdapter.submitList(result.getOrDefault(AllMarkets(data = emptyList(), success = -1)).data)
+            marketAdapter.submitList(location, result.getOrDefault(AllMarkets(data = emptyList(), success = -1)).data)
             progressHUD?.dismiss()
         })
     }
