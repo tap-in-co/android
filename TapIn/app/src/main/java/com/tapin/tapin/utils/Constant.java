@@ -99,10 +99,10 @@ public class Constant {
         businessType88.display_name = "Text";
         businessType88.icon = getIcon(businessType88.display_name);
         businessTypeList8.listbuBusinessTypes.add(businessType88);
-        BusinessType businessType888 = new BusinessType();
+        /*BusinessType businessType888 = new BusinessType();
         businessType888.display_name = "Catering";
         businessType888.icon = getIcon(businessType888.display_name);
-        businessTypeList8.listbuBusinessTypes.add(businessType888);
+        businessTypeList8.listbuBusinessTypes.add(businessType888);*/
         listBusinessTypeLists.add(businessTypeList8);
 
 

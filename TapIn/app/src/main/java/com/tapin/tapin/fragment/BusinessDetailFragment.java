@@ -37,12 +37,7 @@ import com.tapin.tapin.model.Options;
 import com.tapin.tapin.model.OrderedInfo;
 import com.tapin.tapin.model.market.Market;
 import com.tapin.tapin.model.resturants.Business;
-import com.tapin.tapin.utils.AlertMessages;
-import com.tapin.tapin.utils.Constant;
-import com.tapin.tapin.utils.Debug;
-import com.tapin.tapin.utils.ProgressHUD;
-import com.tapin.tapin.utils.UrlGenerator;
-import com.tapin.tapin.utils.Utils;
+import com.tapin.tapin.utils.*;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -401,9 +396,9 @@ public class BusinessDetailFragment extends BaseFragment {
         textViewOpenClosed = view.findViewById(R.id.textViewOpenClosed);
 
         pickupOn = view.findViewById(R.id.pick_up_on_text);
-        pickupOn.setText(market.getPickupDate() + " " + market.getDriverPickupTime());
+        pickupOn.setText(market.getPickupDate() + " " + StringExtensionKt.toHoursAndMinutes(market.getDriverPickupTime()));
         cutOffOrdering = view.findViewById(R.id.cut_ordering_text);
-        cutOffOrdering.setText(market.getCutoffDate() + " " + market.getCutoffTime());
+        cutOffOrdering.setText(market.getCutoffDate() + " " + StringExtensionKt.toHoursAndMinutes(market.getCutoffTime()));
         pickupLocation = view.findViewById(R.id.pick_up_location_text);
         pickupLocation.setText(market.getDeliveryLocation());
         hours = view.findViewById(R.id.hours_text);

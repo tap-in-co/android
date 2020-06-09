@@ -182,6 +182,11 @@ public class HomeActivity extends BaseActivity implements Communication {
 
     @Override
     public void onBackPressed() {
+        View view = this.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
 
         if (frame_home.getVisibility() == View.VISIBLE) {
 
@@ -195,20 +200,11 @@ public class HomeActivity extends BaseActivity implements Communication {
                 e.printStackTrace();
             }
 
-            View view = this.getCurrentFocus();
-            if (view != null) {
-                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-            }
             super.onBackPressed();
-
-        } else {
-            View view = this.getCurrentFocus();
-            if (view != null) {
-                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-            }
-            super.onBackPressed();
+        } else if (frame_profile.getVisibility() == View.VISIBLE ||
+                frame_notifications.getVisibility() == View.VISIBLE ||
+                frame_points.getVisibility() == View.VISIBLE) {
+            onProfileBackClicked();
         }
     }
 

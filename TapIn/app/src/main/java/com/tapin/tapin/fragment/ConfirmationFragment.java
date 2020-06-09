@@ -10,9 +10,12 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import com.tapin.tapin.R;
 import com.tapin.tapin.activity.HomeActivity;
 import com.tapin.tapin.adapter.FinalOrderSummaryAdapter;
+import com.tapin.tapin.adapter.FinalOrderSummaryAdapterNew;
 import com.tapin.tapin.model.CardInfo;
 import com.tapin.tapin.model.OrderSummaryInfo;
 import com.tapin.tapin.model.resturants.Business;
@@ -30,7 +33,8 @@ public class ConfirmationFragment extends BaseFragment {
     TextView tvOrderId;
 
     ListView lvOrders;
-    FinalOrderSummaryAdapter finalOrderSummaryAdapter;
+    //FinalOrderSummaryAdapter finalOrderSummaryAdapter;
+    FinalOrderSummaryAdapterNew adapterNew;
 
     TextView tvOrder;
     TextView tvTotal;
@@ -59,7 +63,8 @@ public class ConfirmationFragment extends BaseFragment {
 
         business = Constant.business;
 
-        finalOrderSummaryAdapter = new FinalOrderSummaryAdapter(getActivity(), business);
+        //finalOrderSummaryAdapter = new FinalOrderSummaryAdapter(getActivity(), business);
+        adapterNew = new FinalOrderSummaryAdapterNew(business);
 
         if (getArguments() != null) {
 
@@ -68,7 +73,8 @@ public class ConfirmationFragment extends BaseFragment {
             reward_points = getArguments().getInt("REWARD_POINTS");
             cardInfo = (CardInfo) getArguments().getSerializable("CARDINFO");
 
-            finalOrderSummaryAdapter.addAll(orderSummaryInfo.listOrdered);
+            //finalOrderSummaryAdapter.addAll(orderSummaryInfo.listOrdered);
+            adapterNew.submitList(orderSummaryInfo.listOrdered);
 
             setData();
 
@@ -122,7 +128,11 @@ public class ConfirmationFragment extends BaseFragment {
         tvOrderId = view.findViewById(R.id.tvOrderId);
 
         lvOrders = view.findViewById(R.id.lvOrders);
-        lvOrders.setAdapter(finalOrderSummaryAdapter);
+        //lvOrders.setAdapter(finalOrderSummaryAdapter);
+
+        final RecyclerView recyclerView = view.findViewById(R.id.order_list);
+        recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext(), RecyclerView.VERTICAL, false));
+        recyclerView.setAdapter(adapterNew);
 
         tvOrder = view.findViewById(R.id.tvOrder);
         tvTotal = view.findViewById(R.id.tvTotal);

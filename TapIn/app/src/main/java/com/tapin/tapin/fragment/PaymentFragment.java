@@ -505,6 +505,11 @@ public class PaymentFragment extends BaseFragment {
             json.put("pd_charge_amount", orderSummaryInfo.pd_charge_amount);
             json.put("points_reedemed", "" + orderSummaryInfo.points_redeemed);
             json.put("delivery_charge_amount", orderSummaryInfo.delivery_charge_amount);
+
+            // Newly Added for Tap4Market
+            json.put("order_type", 5);
+            json.put("pd_mode", 8);
+
             json.put("data", jsonArray);
 
             Log.e("PARAMS_PAY", "" + json.toString());
