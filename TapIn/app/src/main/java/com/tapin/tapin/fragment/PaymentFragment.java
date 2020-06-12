@@ -539,15 +539,16 @@ public class PaymentFragment extends BaseFragment {
 
                         if (status > 0) {
 
-                            ConfirmationFragment fragment = new ConfirmationFragment();
+                            /*ConfirmationFragment fragment = new ConfirmationFragment();
                             Bundle bundle = new Bundle();
                             bundle.putSerializable("ORDER_SUMMARY", orderSummaryInfo);
                             bundle.putInt("ORDER_ID", order_id);
                             bundle.putInt("REWARD_POINTS", points);
                             bundle.putSerializable("CARDINFO", listCards.get(viewPager.getCurrentItem()));
                             fragment.setArguments(bundle);
-                            ((HomeActivity) getActivity()).addFragment(fragment, R.id.frame_home);
+                            ((HomeActivity) getActivity()).addFragment(fragment, R.id.frame_home);*/
 
+                            ((HomeActivity) getActivity()).addFragment(ConfirmationFragmentNew.Companion.getConfirmationFragment(orderSummaryInfo, order_id, points, listCards.get(viewPager.getCurrentItem())), R.id.frame_home);
                         }
 
                         if (pd != null && pd.isShowing()) {
