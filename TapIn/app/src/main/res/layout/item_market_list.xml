@@ -12,10 +12,10 @@
         android:layout_height="200dp"
         android:layout_marginTop="16dp"
         android:scaleType="centerCrop"
+        android:src="@drawable/card_american"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:src="@drawable/card_american" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/market_name"
@@ -75,8 +75,8 @@
         tools:text="150Miles" />
 
     <androidx.appcompat.widget.AppCompatTextView
-        style="@style/TextAppearance.AppCompat.Body1"
         android:id="@+id/market_link"
+        style="@style/TextAppearance.AppCompat.Body1"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -94,6 +94,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:text="@string/mobile_app_ordering_cut_off"
+        app:layout_constraintEnd_toStartOf="@+id/guideline"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/market_link" />
 
@@ -106,6 +107,7 @@
         android:layout_marginEnd="4dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.485"
+        app:layout_constraintStart_toStartOf="@+id/guideline"
         app:layout_constraintStart_toEndOf="@+id/market_cut_off_time"
         app:layout_constraintTop_toBottomOf="@+id/market_link"
         tools:text="10:30:00" />
@@ -114,11 +116,12 @@
         android:id="@+id/market_pick_up_date"
         style="@style/TextAppearance.AppCompat.Small"
         android:layout_width="176dp"
-        android:gravity="end"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
+        android:gravity="end"
         android:text="@string/pickup_date"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/guideline"
         app:layout_constraintTop_toBottomOf="@+id/market_cut_off_time_value_text" />
 
     <androidx.appcompat.widget.AppCompatTextView
@@ -129,6 +132,7 @@
         android:layout_marginTop="12dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.504"
+        app:layout_constraintStart_toStartOf="@+id/guideline"
         app:layout_constraintStart_toEndOf="@+id/market_pick_up_date"
         app:layout_constraintTop_toBottomOf="@+id/market_cut_off_time_value_text"
         tools:text="10:30:00" />
@@ -159,19 +163,26 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
-        tools:text="Vendor's counter"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/market_pickup_at_text" />
+        app:layout_constraintTop_toBottomOf="@+id/market_pickup_at_text"
+        tools:text="Vendor's counter" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/market_business_hours_value_text"
         style="@style/TextAppearance.AppCompat.Light.Widget.PopupMenu.Small"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        tools:text="10:00am-2:00pm"
         app:layout_constraintBottom_toBottomOf="@+id/market_pickup_at_value_text"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/market_pickup_at_value_text" />
+        app:layout_constraintTop_toTopOf="@+id/market_pickup_at_value_text"
+        tools:text="10:00am-2:00pm" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="192dp" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
